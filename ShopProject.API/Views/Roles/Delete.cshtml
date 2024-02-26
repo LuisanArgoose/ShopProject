@@ -1,4 +1,4 @@
-﻿@model ShopProject.EFDB.Models.Category
+﻿@model ShopProject.EFDB.Models.Role
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,19 +8,19 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Category</h4>
+    <h4>Role</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryName)
+            @Html.DisplayNameFor(model => model.RoleName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CategoryName)
+            @Html.DisplayFor(model => model.RoleName)
         </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="CategoryId" />
+        <input type="hidden" asp-for="RoleId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ShopProject.API.Models;
+using ShopProject.EFDB.Models;
 
 namespace ShopProject.API.Helpers
 {
