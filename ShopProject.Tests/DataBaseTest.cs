@@ -22,7 +22,7 @@ namespace ShopProject.Tests
         [TestMethod]
         public void APIConnectionTest()
         {
-            _example.
+            _example.Categories = 
             var result = _example.SaveChangesAsync();
         }
     }
