@@ -25,7 +25,7 @@ namespace ShopProject.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return Json(await _context.Categories.ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -44,15 +44,10 @@ namespace ShopProject.API.Controllers
                 return NotFound();
             }
 
-            return View(category);
+            return Json(category);
         }
 
-        // GET: Categories/Create
-        [HttpGet("Create")]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        
 
         // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -67,7 +62,7 @@ namespace ShopProject.API.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return Json(category);
         }
 
         // GET: Categories/Edit/5
@@ -84,7 +79,7 @@ namespace ShopProject.API.Controllers
             {
                 return NotFound();
             }
-            return View(category);
+            return Json(category);
         }
 
         // POST: Categories/Edit/5
@@ -119,7 +114,7 @@ namespace ShopProject.API.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return Json(category);
         }
 
         // GET: Categories/Delete/5
@@ -138,7 +133,7 @@ namespace ShopProject.API.Controllers
                 return NotFound();
             }
 
-            return View(category);
+            return Json(category);
         }
 
         // POST: Categories/Delete/5

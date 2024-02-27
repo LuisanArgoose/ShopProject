@@ -1,29 +1,34 @@
 
 using ShopProject.EFDB;
+using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests
 {
     [TestClass]
     public class DataBaseTest
     {
-        private ProjectShopDbContext _example;
+        private ProjectShopDbContext _serverExample;
+        private ExternalApiDbContext _clientExample;
 
         public DataBaseTest() {
             
-            _example = new ProjectShopDbContext();
+            
  
         }
 
         [TestMethod]
         public void ConnectionTest()
         {
-            var result =  _example.Categories.First();
+            _serverExample = new ProjectShopDbContext();
+            var result =  _serverExample.Categories.First();
             Assert.IsNotNull(result);
         }
         [TestMethod]
         public void APIConnectionTest()
         {
-            _example.Categories = 
-            var result = _example.SaveChangesAsync();
+            HttpClient client = new HttpClient();
+            _clientExample = new ExternalApiDbContext(client, "https://localhost:7178/api/");
+            var result = _clientExample.Categories.ToList();
+            Assert.IsNotNull(result);
         }
     }
 }
