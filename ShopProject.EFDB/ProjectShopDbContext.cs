@@ -76,8 +76,7 @@ public partial class ProjectShopDbContext : DbContext
 
         var connectionString = configuration.GetConnectionString("ShopProjectDB");
         optionsBuilder.UseNpgsql(connectionString);
-        //var connectionString = _handConnectionString ?? connectionString;
-        //optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=ShopProjectDB;Username=ShopProject.API;Password=Underware");
+
 
     }
 
