@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
+using System.Text.Json;
 using ShopProject.EFDB.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace ShopProject.EFDB
 {
@@ -27,11 +28,43 @@ namespace ShopProject.EFDB
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(databaseName: "ExternalApiDataBase");
-            FillCollections();
+            //FillCollections();
         }
+        private struct PropData
+        {
+            public MethodInfo? MethodInfo { get; set; }
+            public string Name { get; set; }
+        }
+
         public async void FillCollections()
         {
-            var tables = GetType().GetProperties().Where(x => x.PropertyType.Name == "DbSet`1");
+            
+
+            var tables = GetType().GetProperties()
+                .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
+            List<PropData> properties = tables
+                .Select(p => new PropData
+                {
+                    MethodInfo = p.GetGetMethod(),
+                    Name = p.Name
+                })
+                .ToList();
+
+            foreach(var property in properties)
+            {
+                var response = await _httpClient.GetAsync(property.Name);
+                if (response.IsSuccessStatusCode)
+                {
+                    var data =  await response.Content.ReadAsStringAsync();
+
+                    var dbSet = property.MethodInfo.Invoke(this, null);
+                    Type entityType = dbSet.GetType().GetGenericArguments()[0];
+                    var entityList = JsonSerializer.Deserialize(data, typeof(List<>).MakeGenericType(entityType)) as IEnumerable<object>;
+                    (dbSet as ICollection<object>).ToList().AddRange(entityList);
+                }
+            }
+            SaveChanges();
+            /*
             foreach (var table in tables)
             {
                 var response = await _httpClient.GetAsync(table.Name);
@@ -45,8 +78,8 @@ namespace ShopProject.EFDB
                     
                 }
                 
-            }
-            
+            }*/
+
 
         }
     }

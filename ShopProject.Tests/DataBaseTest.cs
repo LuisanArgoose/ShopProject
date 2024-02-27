@@ -27,6 +27,7 @@ namespace ShopProject.Tests
         {
             HttpClient client = new HttpClient();
             _clientExample = new ExternalApiDbContext(client, "https://localhost:7178/api/");
+            _clientExample.FillCollections();
             var result = _clientExample.Categories.ToList();
             Assert.IsNotNull(result);
         }
