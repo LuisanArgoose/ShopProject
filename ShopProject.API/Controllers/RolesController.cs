@@ -25,7 +25,7 @@ namespace ShopProject.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Roles.ToListAsync());
+            return Json(await _context.Roles.ToListAsync());
         }
 
         // GET: Roles/Details/5
@@ -44,15 +44,9 @@ namespace ShopProject.API.Controllers
                 return NotFound();
             }
 
-            return View(role);
+            return Json(role);
         }
 
-        // GET: Roles/Create
-        [HttpGet("Create")]
-        public IActionResult Create()
-        {
-            return View();
-        }
 
         // POST: Roles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -67,7 +61,7 @@ namespace ShopProject.API.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return Json(role);
         }
 
         // GET: Roles/Edit/5
@@ -84,7 +78,7 @@ namespace ShopProject.API.Controllers
             {
                 return NotFound();
             }
-            return View(role);
+            return Json(role);
         }
 
         // POST: Roles/Edit/5
@@ -119,7 +113,7 @@ namespace ShopProject.API.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return Json(role);
         }
 
         // GET: Roles/Delete/5
@@ -138,7 +132,7 @@ namespace ShopProject.API.Controllers
                 return NotFound();
             }
 
-            return View(role);
+            return Json(role);
         }
 
         // POST: Roles/Delete/5

@@ -1,5 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
 using ShopProject.EFDB;
+using ShopProject.EFDB.Models;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests
 {
@@ -23,13 +25,28 @@ namespace ShopProject.Tests
             Assert.IsNotNull(result);
         }
         [TestMethod]
-        public void APIConnectionTest()
+        public void AddToDbSetTest()
+        {
+            _serverExample = new ProjectShopDbContext();
+            _serverExample.Categories.Load();
+            _serverExample.Categories.Add(new Category
+            {
+                CategoryId = -1,
+                CategoryName = "Test",
+                Products = []
+            });
+            
+            var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList() ;
+            Assert.IsNotNull(result.Count > 0 ? true : null);
+        }
+        [TestMethod]
+        public async Task APIConnectionTest()
         {
             HttpClient client = new HttpClient();
             _clientExample = new ExternalApiDbContext(client, "https://localhost:7178/api/");
-            _clientExample.FillCollections();
-            var result = _clientExample.Categories.ToList();
-            Assert.IsNotNull(result);
+            await _clientExample.FillCollections();
+            var result = _clientExample.Categories.First();
+            Assert.AreEqual("Нижнее бельё", result.CategoryName);
         }
     }
 }
