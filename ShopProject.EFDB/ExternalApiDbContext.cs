@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 
 namespace ShopProject.EFDB
@@ -19,11 +20,10 @@ namespace ShopProject.EFDB
     public class ExternalApiDbContext : ProjectShopDbContext
     {
 
-        private readonly HttpClient _httpClient;
-        public ExternalApiDbContext(HttpClient httpClient, string baseAddress)
+        private readonly ClientDbController _clientDbController;
+        public ExternalApiDbContext(string baseAddress)
         {
-            _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(baseAddress);
+            _clientDbController = new ClientDbController(baseAddress);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,18 +42,16 @@ namespace ShopProject.EFDB
 
             foreach (var property in properties)
             {
-                var response = await _httpClient.GetAsync(property.Name);
-                if (response.IsSuccessStatusCode)
+                var dbSet = property.GetValue(this);
+                if (dbSet == null)
+                    continue;
+                Type entityType = dbSet.GetType().GetGenericArguments()[0];
+                var entityList = await _clientDbController.GetEntitiesAsync(property.Name, entityType);
+                if(entityList != null)
                 {
-                    var data = await response.Content.ReadAsStringAsync();
-
-                    var dbSet = property.GetValue(this);
-
-                    Type entityType = dbSet.GetType().GetGenericArguments()[0];
-                    var entityList = JsonConvert.DeserializeObject(data, typeof(List<>).MakeGenericType(entityType)) as IEnumerable<object>;
-                    
-                    await this.AddRangeAsync(entityList);
+                    await AddRangeAsync(entityList);
                 }
+                
             }
 
             await SaveChangesAsync();

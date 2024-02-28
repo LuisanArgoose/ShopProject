@@ -42,8 +42,7 @@ namespace ShopProject.Tests
         [TestMethod]
         public async Task APIConnectionTest()
         {
-            HttpClient client = new HttpClient();
-            _clientExample = new ExternalApiDbContext(client, "https://localhost:7178/api/");
+            _clientExample = new ExternalApiDbContext("https://localhost:7178/api/");
             await _clientExample.FillCollections();
             var result = _clientExample.Categories.First();
             Assert.AreEqual("Нижнее бельё", result.CategoryName);
