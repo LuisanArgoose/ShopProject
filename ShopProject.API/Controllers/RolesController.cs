@@ -21,32 +21,12 @@ namespace ShopProject.API.Controllers
             _context = context;
         }
 
-        // GET: Roles
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        // GET: Roles/Select
+        [HttpGet("Select")]
+        public async Task<IActionResult> Select()
         {
             return Json(await _context.Roles.ToListAsync());
         }
-
-        // GET: Roles/Details/5
-        [HttpGet("Details")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            return Json(role);
-        }
-
 
         // POST: Roles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -64,34 +44,15 @@ namespace ShopProject.API.Controllers
             return Json(role);
         }
 
-        // GET: Roles/Edit/5
-        [HttpGet("Edit")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-            return Json(role);
-        }
 
-        // POST: Roles/Edit/5
+        // POST: Roles/Update
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("Edit")]
+        [HttpPost("Update")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName")] Role role)
+        public async Task<IActionResult> Update([Bind("RoleId,RoleName")] Role role)
         {
-            if (id != role.RoleId)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -113,25 +74,6 @@ namespace ShopProject.API.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return Json(role);
-        }
-
-        // GET: Roles/Delete/5
-        [HttpGet("Delete")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (role == null)
-            {
-                return NotFound();
-            }
-
             return Json(role);
         }
 

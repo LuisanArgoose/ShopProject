@@ -40,7 +40,14 @@ namespace ShopProject.Tests
             Assert.IsNotNull(result.Count > 0 ? true : null);
         }
         [TestMethod]
-        public async Task APIConnectionTest()
+        public async Task APISelectTest()
+        {
+            _clientExample = new ExternalApiDbContext("https://localhost:7178/api/");
+            await _clientExample.FillCollections();
+            var result = _clientExample.Categories.First();
+            Assert.AreEqual("Нижнее бельё", result.CategoryName);
+        }
+        public async Task APICreateTest()
         {
             _clientExample = new ExternalApiDbContext("https://localhost:7178/api/");
             await _clientExample.FillCollections();
