@@ -63,6 +63,8 @@ public partial class ProjectShopDbContext : DbContext
 
     public virtual DbSet<ShopType> ShopTypes { get; set; }
 
+    public virtual DbSet<TestTable> TestTables { get; set; }
+
     public virtual DbSet<Worker> Workers { get; set; }
 
     public virtual DbSet<WorkerType> WorkerTypes { get; set; }
@@ -477,6 +479,13 @@ public partial class ProjectShopDbContext : DbContext
 
             entity.Property(e => e.ShopTypeId).HasColumnName("Shop_type_id");
             entity.Property(e => e.ShopTypeName).HasColumnName("Shop_type_name");
+        });
+
+        modelBuilder.Entity<TestTable>(entity =>
+        {
+            entity.HasKey(e => e.TestId).HasName("TestTable_pkey");
+
+            entity.ToTable("TestTable");
         });
 
         modelBuilder.Entity<Worker>(entity =>
