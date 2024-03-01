@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Xml;
 
 
 namespace ShopProject.EFDB
@@ -62,9 +63,24 @@ namespace ShopProject.EFDB
                 Entry(entity).State = EntityState.Deleted;
             }
         }
-        public override EntityEntry Entry(object entity)
+
+        public void SaveData()
         {
-            return base.Entry(entity);
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        //Create(entry.Entity as MyEntity);
+                        break;
+                    case EntityState.Deleted:
+                        //Delete(entry.Entity.Id);
+                        break;
+                    case EntityState.Modified:
+                        //Update(entry.Entity as MyEntity);
+                        break;
+                }
+            }
         }
 
 

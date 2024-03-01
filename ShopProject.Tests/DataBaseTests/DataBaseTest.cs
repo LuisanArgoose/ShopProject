@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShopProject.EFDB;
 using ShopProject.EFDB.Models;
 using static System.Net.WebRequestMethods;
-namespace ShopProject.Tests
+namespace ShopProject.Tests.DataBaseTests
 {
     [TestClass]
     public class DataBaseTest
@@ -11,17 +11,18 @@ namespace ShopProject.Tests
         private ServerAPIDbContext _serverExample;
         private ClientAPIDbContext _clientExample;
 
-        public DataBaseTest() {
-            
-            
- 
+        public DataBaseTest()
+        {
+
+
+
         }
 
         [TestMethod]
         public void ConnectionTest()
         {
             _serverExample = new ServerAPIDbContext();
-            var result =  _serverExample.Categories.First();
+            var result = _serverExample.Categories.First();
             Assert.IsNotNull(result);
         }
         [TestMethod]
@@ -35,8 +36,8 @@ namespace ShopProject.Tests
                 CategoryName = "Test",
                 Products = []
             });
-            
-            var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList() ;
+
+            var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList();
             Assert.IsNotNull(result.Count > 0 ? true : null);
         }
         [TestMethod]
@@ -52,8 +53,13 @@ namespace ShopProject.Tests
         {
             _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
             await _clientExample.FillCollections();
-            var result = _clientExample.Categories.First();
+            var testTable = new TestTable()
+            {
+                TestText = "Test"
+            };
+            var result = _clientExample.TestTables.Add(testTable);
             Assert.AreEqual("Нижнее бельё", result.CategoryName);
         }
+        
     }
 }
