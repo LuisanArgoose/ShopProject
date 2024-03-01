@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using EntityFrameworkCore.Extensions;
 using Newtonsoft.Json;
-using ShopProject.EFDB.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,21 +12,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using ShopProject.EFDB.Helpers;
 
 
 namespace ShopProject.EFDB
 {
-    public class ExternalApiDbContext : ProjectShopDbContext
+    public class ClientAPIDbContext : ServerAPIDbContext
     {
 
         private readonly ClientDbController _clientDbController;
-        public ExternalApiDbContext(string baseAddress)
+        public ClientAPIDbContext(string baseAddress)
         {
             _clientDbController = new ClientDbController(baseAddress);
-        }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

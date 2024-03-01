@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShopProject.EFDB.Models;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 
-namespace ShopProject.EFDB;
+namespace ShopProject.EFDB.Models;
 
-public partial class ProjectShopDbContext : DbContext
+public partial class ShopProjectDbContext : DbContext
 {
-    public ProjectShopDbContext()
+    public ShopProjectDbContext()
     {
     }
 
-    public ProjectShopDbContext(DbContextOptions<ProjectShopDbContext> options)
+    public ShopProjectDbContext(DbContextOptions<ShopProjectDbContext> options)
         : base(options)
     {
     }
@@ -63,22 +59,15 @@ public partial class ProjectShopDbContext : DbContext
 
     public virtual DbSet<ShopType> ShopTypes { get; set; }
 
+    public virtual DbSet<TestTable> TestTables { get; set; }
+
     public virtual DbSet<Worker> Workers { get; set; }
 
     public virtual DbSet<WorkerType> WorkerTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var configuration = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json")
-               .Build();
-
-        var connectionString = configuration.GetConnectionString("ShopProjectDB");
-        optionsBuilder.UseNpgsql(connectionString);
-
-
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=ShopProjectDB;Username=ShopProject.API;Password=Underware");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -477,6 +466,13 @@ public partial class ProjectShopDbContext : DbContext
 
             entity.Property(e => e.ShopTypeId).HasColumnName("Shop_type_id");
             entity.Property(e => e.ShopTypeName).HasColumnName("Shop_type_name");
+        });
+
+        modelBuilder.Entity<TestTable>(entity =>
+        {
+            entity.HasKey(e => e.TestId).HasName("TestTable_pkey");
+
+            entity.ToTable("TestTable");
         });
 
         modelBuilder.Entity<Worker>(entity =>

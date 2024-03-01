@@ -14,9 +14,9 @@ namespace ShopProject.API.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : Controller
     {
-        private readonly ProjectShopDbContext _context;
+        private readonly ServerAPIDbContext _context;
         
-        public CategoriesController(ProjectShopDbContext context)
+        public CategoriesController(ServerAPIDbContext context)
         {
             _context = context;
         }
