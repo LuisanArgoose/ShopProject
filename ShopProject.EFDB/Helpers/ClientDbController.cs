@@ -21,7 +21,7 @@ namespace ShopProject.EFDB.Helpers
         }
         public async Task<IEnumerable<object>?> GetEntitiesAsync(string tableName, Type entityType)
         {
-            var responseEntityCollection = await _httpClient.GetAsync(tableName);
+            var responseEntityCollection = await _httpClient.GetAsync(tableName + "/Select");
             if (responseEntityCollection.IsSuccessStatusCode)
             {
                 var jsonEntityCollection = await responseEntityCollection.Content.ReadAsStringAsync();
