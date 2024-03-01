@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(
     .AddCertificate();
 
 var connectionString = builder.Configuration.GetConnectionString("ShopProjectAPIContext");
-builder.Services.AddDbContext<ProjectShopDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+builder.Services.AddDbContext<ServerAPIDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
 
 var app = builder.Build();
 

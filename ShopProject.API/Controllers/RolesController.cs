@@ -14,9 +14,9 @@ namespace ShopProject.API.Controllers
     [Route("api/[controller]")]
     public class RolesController : Controller
     {
-        private readonly ProjectShopDbContext _context;
+        private readonly ServerAPIDbContext _context;
 
-        public RolesController(ProjectShopDbContext context)
+        public RolesController(ServerAPIDbContext context)
         {
             _context = context;
         }
