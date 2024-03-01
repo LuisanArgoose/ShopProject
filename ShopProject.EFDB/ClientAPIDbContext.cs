@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using ShopProject.EFDB.Helpers;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 
 namespace ShopProject.EFDB
@@ -43,8 +44,9 @@ namespace ShopProject.EFDB
                     continue;
                 Type entityType = dbSet.GetType().GetGenericArguments()[0];
                 var entityList = await _clientDbController.GetEntitiesAsync(property.Name, entityType);
-                if(entityList != null)
+                if(entityList != null && dbSet != null)
                 {
+                    ClearDbSet(dbSet as IEnumerable<object>);
                     await AddRangeAsync(entityList);
                 }
                 
@@ -53,6 +55,18 @@ namespace ShopProject.EFDB
             await SaveChangesAsync();
             return;
         }
-        
+        private void ClearDbSet(IEnumerable<object> entityList)
+        {
+            foreach(var entity in entityList)
+            {
+                Entry(entity).State = EntityState.Deleted;
+            }
+        }
+        public override EntityEntry Entry(object entity)
+        {
+            return base.Entry(entity);
+        }
+
+
     }
 }
