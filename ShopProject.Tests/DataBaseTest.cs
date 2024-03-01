@@ -47,6 +47,7 @@ namespace ShopProject.Tests
             var result = _clientExample.Categories.First();
             Assert.AreEqual("Нижнее бельё", result.CategoryName);
         }
+        [TestMethod]
         public async Task APICreateTest()
         {
             _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
