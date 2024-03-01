@@ -50,6 +50,7 @@ namespace ShopProject.Tests
         [TestMethod]
         public async Task APICreateTest()
         {
+            var test = 0;
             _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
             await _clientExample.FillCollections();
             var result = _clientExample.Categories.First();
