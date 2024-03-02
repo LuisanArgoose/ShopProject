@@ -33,5 +33,9 @@ namespace ShopProject.EFDB.Helpers
                 return null;
             }
         }
+        public async Task PostCreate()
+        {
+
+        }
     }
 }

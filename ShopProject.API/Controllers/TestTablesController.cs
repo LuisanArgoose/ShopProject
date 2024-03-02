@@ -12,50 +12,54 @@ namespace ShopProject.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CategoriesController : Controller
+    public class TestTablesController : Controller
     {
         private readonly ServerAPIDbContext _context;
-        
-        public CategoriesController(ServerAPIDbContext context)
+
+        public TestTablesController(ServerAPIDbContext context)
         {
             _context = context;
         }
-        // GET: Categories/Select
+
+        // GET: TestTables/Select
         [HttpGet("Select")]
-        public  async Task<IActionResult> Select()
+        public async Task<IActionResult> Select()
         {
-            return Json(await _context.Categories.ToListAsync());
+            return Json(await _context.TestTables.ToListAsync());
         }
-        // POST: Categories/Create
+
+
+        // POST: TestTables/Create
         [HttpPost("Create")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,CategoryName")] Category category)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("TestId,TestText")] TestTable testTable)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
+                _context.Add(testTable);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return Json(category);
+            return Json(testTable);
         }
 
-        // POST: Categories/Update
+
+        // POST: TestTables/Update
         [HttpPost("Update")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("CategoryId,CategoryName")] Category category)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update([Bind("TestId,TestText")] TestTable testTable)
         {
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(category);
+                    _context.Update(testTable);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryId))
+                    if (!TestTableExists(testTable.TestId))
                     {
                         return NotFound();
                     }
@@ -66,28 +70,28 @@ namespace ShopProject.API.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return Json(category);
+            return Json(testTable);
         }
 
 
-        // POST: Categories/Delete/5
+        // POST: TestTables/Delete/5
         [HttpPost("Delete")]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var testTable = await _context.TestTables.FindAsync(id);
+            if (testTable != null)
             {
-                _context.Categories.Remove(category);
+                _context.TestTables.Remove(testTable);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool TestTableExists(int id)
         {
-            return _context.Categories.Any(e => e.CategoryId == id);
+            return _context.TestTables.Any(e => e.TestId == id);
         }
     }
 }

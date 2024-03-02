@@ -9,52 +9,27 @@ using ShopProject.EFDB.Models;
 
 namespace ShopProject.API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class OrderConsignmentsController : Controller
     {
-        private readonly ShopProjectDbContext _context;
+        private readonly ServerAPIDbContext _context;
 
-        public OrderConsignmentsController(ShopProjectDbContext context)
+        public OrderConsignmentsController(ServerAPIDbContext context)
         {
             _context = context;
         }
 
-        // GET: OrderConsignments
-        public async Task<IActionResult> Index()
+        // GET: OrderConsignments/Select
+        [HttpGet("Select")]
+        public async Task<IActionResult> Select()
         {
-            var shopProjectDbContext = _context.OrderConsignments.Include(o => o.Worker);
-            return View(await shopProjectDbContext.ToListAsync());
-        }
-
-        // GET: OrderConsignments/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var orderConsignment = await _context.OrderConsignments
-                .Include(o => o.Worker)
-                .FirstOrDefaultAsync(m => m.OrderConsignmentId == id);
-            if (orderConsignment == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderConsignment);
-        }
-
-        // GET: OrderConsignments/Create
-        public IActionResult Create()
-        {
-            ViewData["WorkerId"] = new SelectList(_context.Workers, "WorkerId", "Fullname");
-            return View();
+            var serverAPIDbContext = _context.OrderConsignments.Include(o => o.Worker);
+            return Json(await serverAPIDbContext.ToListAsync());
         }
 
         // POST: OrderConsignments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OrderConsignmentId,WorkerId,DateTime")] OrderConsignment orderConsignment)
         {
@@ -65,37 +40,15 @@ namespace ShopProject.API.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["WorkerId"] = new SelectList(_context.Workers, "WorkerId", "Fullname", orderConsignment.WorkerId);
-            return View(orderConsignment);
+            return Json(orderConsignment);
         }
 
-        // GET: OrderConsignments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var orderConsignment = await _context.OrderConsignments.FindAsync(id);
-            if (orderConsignment == null)
-            {
-                return NotFound();
-            }
-            ViewData["WorkerId"] = new SelectList(_context.Workers, "WorkerId", "Fullname", orderConsignment.WorkerId);
-            return View(orderConsignment);
-        }
-
-        // POST: OrderConsignments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        // POST: OrderConsignments/Update
+        [HttpPost("Update")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderConsignmentId,WorkerId,DateTime")] OrderConsignment orderConsignment)
+        public async Task<IActionResult> Edit([Bind("OrderConsignmentId,WorkerId,DateTime")] OrderConsignment orderConsignment)
         {
-            if (id != orderConsignment.OrderConsignmentId)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -118,30 +71,13 @@ namespace ShopProject.API.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["WorkerId"] = new SelectList(_context.Workers, "WorkerId", "Fullname", orderConsignment.WorkerId);
-            return View(orderConsignment);
+            return Json(orderConsignment);
         }
 
-        // GET: OrderConsignments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var orderConsignment = await _context.OrderConsignments
-                .Include(o => o.Worker)
-                .FirstOrDefaultAsync(m => m.OrderConsignmentId == id);
-            if (orderConsignment == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderConsignment);
-        }
+       
 
         // POST: OrderConsignments/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

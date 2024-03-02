@@ -78,7 +78,7 @@ namespace ShopProject.API.Controllers
         }
 
         // POST: Roles/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
