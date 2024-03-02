@@ -32,7 +32,7 @@ namespace ShopProject.EFDB
             optionsBuilder.UseInMemoryDatabase(databaseName: "ExternalApiDataBase");
             
         }
-        public async Task FillCollections()
+        public async Task FillAllCollections()
         {
             
                 var properties = GetType().GetProperties()
@@ -56,9 +56,38 @@ namespace ShopProject.EFDB
             await SaveChangesAsync();
             return;
         }
-        private void ClearDbSet(IEnumerable<object> entityList)
+        public async Task FillCollection(string collectionName)
         {
-            foreach(var entity in entityList)
+
+            var properties = GetType().GetProperties()
+                .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
+
+            foreach (var property in properties)
+            {
+                await FillCollection(property);
+
+            }
+            await SaveChangesAsync();
+            return;
+        }
+        private async Task FillCollection(PropertyInfo? property)
+        {
+            var dbSet = property.GetValue(this);
+            if (dbSet == null)
+                return;
+            Type entityType = dbSet.GetType().GetGenericArguments()[0];
+            var entityList = await _clientDbController.GetEntitiesAsync(property.Name, entityType);
+            if (entityList != null && dbSet != null)
+            {
+                ClearDbSet(dbSet as IEnumerable<object>);
+                await AddRangeAsync(entityList);
+            }
+        }
+        private void ClearDbSet(IEnumerable<object>? dbSet)
+        {
+            if(dbSet == null)
+                return;
+            foreach(var entity in dbSet)
             {
                 Entry(entity).State = EntityState.Deleted;
             }
