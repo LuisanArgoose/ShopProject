@@ -39,7 +39,17 @@ namespace ShopProject.Tests.DataBaseTests
             var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList();
             Assert.IsNotNull(result.Count > 0 ? true : null);
         }
-       
-        
+        [TestMethod]
+        public void GetDbSetTest()
+        {
+
+            _serverExample.Categories.Load();
+            var dbSet = _serverExample.GetDbSet(typeof(TestTable));
+
+            var result = (dbSet as DbSet<object>).ToList();
+            Assert.IsNotNull(result.Count > 0 ? true : null);
+        }
+
+
     }
 }
