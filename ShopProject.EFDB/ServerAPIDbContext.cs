@@ -14,6 +14,7 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
 {
     public ServerAPIDbContext()
     {
+        DbCollectionsInit();
     }
 
     public ServerAPIDbContext(DbContextOptions<ShopProjectDbContext> options)
@@ -36,23 +37,20 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
     
     
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-    public IEnumerable GetDbSet(Type dbSetEntityType)
+    
+    private async Task DbCollectionsInit()
     {
-        var dbSetProperty = GetType().GetProperties()
-            .FirstOrDefault(p => p.PropertyType.IsGenericType
-                                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
-                                && p.PropertyType.GetGenericArguments()[0] == dbSetEntityType);
-
-        if (dbSetProperty != null)
+        await Task.Run(() =>
         {
-            var dbSet = dbSetProperty.GetValue(this) as IEnumerable;
-            return dbSet;
-        }
-        else
-        {
-            // Обработка ошибки в случае, если не удалось найти соответствующий Dbset
-            return null;
-        }
+            _dbCollections.Add(typeof(TestTable), TestTables.ToListAsync);
+        });
+        
+        return;
+        
+    }
+    private Dictionary<Type, Action> _dbCollections = new();
+    public KeyValuePair<Type, Action> GetDbCollection(string name)
+    {
+        return  _dbCollections.First(x => x.Key.Name == name).Valu;
     }
 }

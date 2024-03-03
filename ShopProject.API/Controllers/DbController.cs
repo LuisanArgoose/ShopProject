@@ -21,10 +21,10 @@ namespace ShopProject.API.Controllers
         }
         // GET: api/<DbController>/Select/TestTableType
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(Type type)
+        public async Task<IActionResult> Select(string type)
         {
-            type = typeof(TestTable);
-            var entities = await _context.Set(type);
+
+            var entities = await _context.GetDbCollection(type).Value;
             return Json(entities);
            
         }
