@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Reflection;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,7 +11,7 @@ namespace ShopProject.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DbController : Controller
+    public class DbController: Controller
     {
         private readonly ServerAPIDbContext _context;
 
@@ -20,8 +23,10 @@ namespace ShopProject.API.Controllers
         [HttpGet("Select")]
         public async Task<IActionResult> Select(Type type)
         {
-            return Json(await ((DbSet<object>)_context.GetType().GetMethod("Set")
-                .MakeGenericMethod(type.GetGenericTypeDefinition()).Invoke(_context, null)).ToListAsync());
+            type = typeof(TestTable);
+            var entities = await _context.Set(type);
+            return Json(entities);
+           
         }
 
         // GET api/<DbController>/5
