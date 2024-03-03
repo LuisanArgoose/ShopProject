@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -19,9 +20,12 @@ namespace ShopProject.EFDB.Helpers
                 BaseAddress = new Uri(baseAddress)
             };
         }
-        public async Task<IEnumerable<object>?> GetEntitiesAsync(string tableName, Type entityType)
+        public async Task<IEnumerable<object>?> GetEntitiesAsync(Type entityType)
         {
-            var responseEntityCollection = await _httpClient.GetAsync(tableName);
+            string jsonObject = JsonConvert.SerializeObject(entityType);
+            var encodedJson = Uri.EscapeDataString(jsonObject);
+            var url = "Db/Select?Json=" + encodedJson;
+            var responseEntityCollection = await _httpClient.GetAsync(url);
             if (responseEntityCollection.IsSuccessStatusCode)
             {
                 var jsonEntityCollection = await responseEntityCollection.Content.ReadAsStringAsync();
@@ -33,6 +37,25 @@ namespace ShopProject.EFDB.Helpers
                 return null;
             }
         }
+        /*
+        public async Task SendObjectToApi<T>(T entity)
+        {
+            string apiUrl = "http://localhost:5555/api/create/";
+
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(entity);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await client.PostAsync(apiUrl, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Object sent successfully to API");
+            }
+            else
+            {
+                Console.WriteLine("Error sending object to API. Status code: " + response.StatusCode);
+            }
+        }*/
         public async Task PostCreate()
         {
 

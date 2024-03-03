@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using ShopProject.EFDB;
+using ShopProject.EFDB.Helpers;
 using ShopProject.EFDB.Models;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests.DataBaseTests
@@ -13,16 +14,14 @@ namespace ShopProject.Tests.DataBaseTests
         public ClientAPIDbContextTest()
         {
             _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
-
-
         }
 
         [TestMethod]
         public async Task APISelectTest()
         {
            
-            //await _clientExample.FillCollection();
-            _clientExample.Categories.Load();
+            await _clientExample.TestTables.FillAsync();
+            //_clientExample.Categories.Load();
             var result = _clientExample.Categories.First();
             Assert.AreEqual("Нижнее бельё", result.CategoryName);
         }
