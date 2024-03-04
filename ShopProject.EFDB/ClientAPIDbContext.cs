@@ -22,13 +22,16 @@ namespace ShopProject.EFDB
     public class ClientAPIDbContext : ServerAPIDbContext
     {
 
-        private readonly ClientDbController _clientDbController;
-        public ClientAPIDbContext(string baseAddress)
+        private readonly ClientDbProvider _clientDbController;
+        public ClientAPIDbContext()
         {
-            _clientDbController = ClientDbController.GetInstance();
-            
+            _clientDbController = ClientDbProvider.GetInstance();
+            _clientDbController.SetUri("https://localhost:7178/api/");
+            DbSetFillExtention.OnFillEvent += (sender, e) => SaveChangesAsync();
+
+
         }
-        public ClientDbController ClientDbController { get => _clientDbController; }
+        public ClientDbProvider ClientDbController { get => _clientDbController; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(databaseName: "ExternalApiDataBase");

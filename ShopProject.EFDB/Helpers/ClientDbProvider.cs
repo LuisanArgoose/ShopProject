@@ -10,17 +10,17 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopProject.EFDB.Helpers
 {
-    public class ClientDbController
+    public class ClientDbProvider
     {
-        private static ClientDbController? _instance;
-        public static ClientDbController GetInstance()
+        private static ClientDbProvider? _instance;
+        public static ClientDbProvider GetInstance()
         {
-            _instance ??= new ClientDbController();
+            _instance ??= new ClientDbProvider();
             return _instance;
         }
 
         private readonly HttpClient _httpClient;
-        private ClientDbController()
+        private ClientDbProvider()
         {
             string baseAddress = "https://localhost:7178/api/";
             _httpClient = new HttpClient

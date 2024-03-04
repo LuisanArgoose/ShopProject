@@ -14,8 +14,7 @@ namespace ShopProject.Tests.DataBaseTests
 
         public ClientAPIDbContextTest()
         {
-            _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
-            DbSetFillExtention.SetContext(_clientExample);
+            _clientExample = new ClientAPIDbContext();
         }
 
         [TestMethod]
