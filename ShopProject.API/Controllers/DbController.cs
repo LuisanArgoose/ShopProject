@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection;
 using System.Text.Json;
+using System.Xml.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,12 +22,24 @@ namespace ShopProject.API.Controllers
         }
         // GET: api/<DbController>/Select/TestTableType
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(string type)
+        public async Task<IActionResult> Select(string name)
         {
 
-            var entities = await _context.GetDbCollection(type).Value;
-            return Json(entities);
-           
+            PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == name);
+
+            if (dbSetProperty != null && dbSetProperty.PropertyType.IsGenericType && dbSetProperty.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+            {
+                var dbSet = dbSetProperty.GetValue(_context);
+                MethodInfo toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
+                    .GetMethod("ToListAsync")
+                    .MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
+
+                var results = await (dynamic)toListAsyncMethod.Invoke(null, new object[] { dbSet, null });
+                return Json(results);
+            }
+
+            return BadRequest("Invalid DbSet name");
+
         }
 
         // GET api/<DbController>/5

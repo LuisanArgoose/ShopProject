@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using System.Collections;
+using System.ComponentModel;
 
 namespace ShopProject.EFDB;
 
@@ -38,19 +39,18 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
     
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     
-    private async Task DbCollectionsInit()
+    private void DbCollectionsInit()
     {
-        await Task.Run(() =>
+        Task.Run(() =>
         {
-            _dbCollections.Add(typeof(TestTable), TestTables.ToListAsync);
+            _dbCollections.Add(typeof(TestTable), TestTables);
         });
         
-        return;
-        
     }
-    private Dictionary<Type, Action> _dbCollections = new();
-    public KeyValuePair<Type, Action> GetDbCollection(string name)
+    private readonly Dictionary<Type, IListSource> _dbCollections = [];
+    public string GetDbCollectionJson(string name)
     {
-        return  _dbCollections.First(x => x.Key.Name == name).Valu;
+
+        return _dbCollections.First(x => x.Key.Name == name).Value.GetList().GetType().Name;
     }
 }

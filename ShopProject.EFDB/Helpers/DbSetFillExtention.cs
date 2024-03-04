@@ -17,15 +17,9 @@ namespace ShopProject.EFDB.Helpers
             _context = context;
         }
 
-        public static async Task FillAsync<T>(this DbSet<T> dbSet) where T : class
+        public static async Task FillAsync(this DbSet<> dbSet)
         {
             
-
-            var dbSetEntityType = dbSet.GetType().GetGenericArguments()[0];
-
-            var entitiesList = await _context.ClientDbController.GetEntitiesAsync(dbSetEntityType);
-
-            dbSet.AddRange(entitiesList as T);
         }
         
     }

@@ -44,10 +44,8 @@ namespace ShopProject.Tests.DataBaseTests
         {
 
             _serverExample.Categories.Load();
-            var dbSet = _serverExample.GetDbSet(typeof(TestTable));
-
-            var result = (dbSet as DbSet<object>).ToList();
-            Assert.IsNotNull(result.Count > 0 ? true : null);
+            var dbSet = _serverExample.GetDbCollectionJson(typeof(TestTable).Name);
+            Assert.AreEqual(typeof(TestTable).Name, dbSet);
         }
 
 
