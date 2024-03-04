@@ -25,58 +25,49 @@ namespace ShopProject.EFDB
         private readonly ClientDbController _clientDbController;
         public ClientAPIDbContext(string baseAddress)
         {
-            _clientDbController = new ClientDbController(baseAddress);
+            _clientDbController = ClientDbController.GetInstance();
+            
         }
+        public ClientDbController ClientDbController { get => _clientDbController; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(databaseName: "ExternalApiDataBase");
             
         }
-        public async Task FillAllCollections()
+        public async Task FillAllCollections(string collectionName = "All")
         {
             
                 var properties = GetType().GetProperties()
                     .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
-
-            foreach (var property in properties)
+            if(collectionName == "All")
             {
-                var dbSet = property.GetValue(this);
-                if (dbSet == null)
-                    continue;
-                Type entityType = dbSet.GetType().GetGenericArguments()[0];
-                var entityList = await _clientDbController.GetEntitiesAsync(property.Name, entityType);
-                if(entityList != null && dbSet != null)
+                foreach (var property in properties)
                 {
-                    ClearDbSet(dbSet as IEnumerable<object>);
-                    await AddRangeAsync(entityList);
+                    await FillCollection(property);
                 }
-                
             }
-
-            await SaveChangesAsync();
-            return;
-        }
-        public async Task FillCollection(string collectionName)
-        {
-
-            var properties = GetType().GetProperties()
-                .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
-
-            foreach (var property in properties)
+            else
             {
+                var property = properties.First(p => p.Name == collectionName);
                 await FillCollection(property);
 
             }
+            
+
             await SaveChangesAsync();
             return;
         }
+        
+        // Fills the collection by property info
         private async Task FillCollection(PropertyInfo? property)
         {
+            if (property == null)
+                return;
             var dbSet = property.GetValue(this);
             if (dbSet == null)
                 return;
             Type entityType = dbSet.GetType().GetGenericArguments()[0];
-            var entityList = await _clientDbController.GetEntitiesAsync(property.Name, entityType);
+            var entityList = await _clientDbController.GetEntitiesAsync(entityType);
             if (entityList != null && dbSet != null)
             {
                 ClearDbSet(dbSet as IEnumerable<object>);
