@@ -15,7 +15,6 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
 {
     public ServerAPIDbContext()
     {
-        DbCollectionsInit();
     }
 
     public ServerAPIDbContext(DbContextOptions<ShopProjectDbContext> options)
@@ -38,19 +37,6 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
     
     
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-    
-    private void DbCollectionsInit()
-    {
-        Task.Run(() =>
-        {
-            _dbCollections.Add(typeof(TestTable), TestTables);
-        });
-        
-    }
-    private readonly Dictionary<Type, IListSource> _dbCollections = [];
-    public string GetDbCollectionJson(string name)
-    {
 
-        return _dbCollections.First(x => x.Key.Name == name).Value.GetList().GetType().Name;
-    }
+   
 }

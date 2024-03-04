@@ -12,20 +12,24 @@ namespace ShopProject.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DbController: Controller
+    public class ServerDbController: Controller
     {
         private readonly ServerAPIDbContext _context;
 
-        public DbController(ServerAPIDbContext context)
+        public ServerDbController(ServerAPIDbContext context)
         {
             _context = context;
         }
         // GET: api/<DbController>/Select/TestTableType
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(string collectionName)
+        public async Task<IActionResult> Select(string tableType)
         {
 
-            PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == collectionName);
+            //PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == collectionName);
+            PropertyInfo dbSetProperty = _context.GetType().GetProperties()
+                .FirstOrDefault(p => p.PropertyType.IsGenericType && 
+                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
+                p.PropertyType.GetGenericArguments()[0].Name == tableType);
 
             if (dbSetProperty != null && dbSetProperty.PropertyType.IsGenericType && dbSetProperty.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
             {

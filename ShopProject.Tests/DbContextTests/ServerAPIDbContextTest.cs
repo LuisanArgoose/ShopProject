@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using ShopProject.EFDB;
+using ShopProject.EFDB.Helpers;
 using ShopProject.EFDB.Models;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests.DataBaseTests
@@ -39,14 +40,8 @@ namespace ShopProject.Tests.DataBaseTests
             var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList();
             Assert.IsNotNull(result.Count > 0 ? true : null);
         }
-        [TestMethod]
-        public void GetDbSetTest()
-        {
-
-            _serverExample.Categories.Load();
-            var dbSet = _serverExample.GetDbCollectionJson(typeof(TestTable).Name);
-            Assert.AreEqual(typeof(TestTable).Name, dbSet);
-        }
+        
+        
 
 
     }

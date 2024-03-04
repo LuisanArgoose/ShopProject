@@ -25,8 +25,8 @@ namespace ShopProject.EFDB
         private readonly ClientDbController _clientDbController;
         public ClientAPIDbContext(string baseAddress)
         {
-            _clientDbController = new ClientDbController(baseAddress);
-            DbSetFillExtention.SetContext(this);
+            _clientDbController = ClientDbController.GetInstance();
+            
         }
         public ClientDbController ClientDbController { get => _clientDbController; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

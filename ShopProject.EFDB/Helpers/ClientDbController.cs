@@ -12,25 +12,35 @@ namespace ShopProject.EFDB.Helpers
 {
     public class ClientDbController
     {
-        private readonly HttpClient _httpClient;
-        public ClientDbController(string baseAddress)
+        private static ClientDbController? _instance;
+        public static ClientDbController GetInstance()
         {
+            _instance ??= new ClientDbController();
+            return _instance;
+        }
+
+        private readonly HttpClient _httpClient;
+        private ClientDbController()
+        {
+            string baseAddress = "https://localhost:7178/api/";
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(baseAddress)
             };
         }
-        public async Task<IEnumerable<object>?> GetEntitiesAsync(Type entityType)
+        public void SetUri(string uri)
         {
-            string jsonObject = JsonConvert.SerializeObject(entityType);
-            var encodedJson = Uri.EscapeDataString(jsonObject);
-            var url = "Db/Select?Json=" + encodedJson;
+            _httpClient.BaseAddress = new Uri(uri); 
+        }
+        public async Task<string?> GetEntitiesAsync(Type entityType)
+        {
+            var url = "ServerDb/Select?tableType=" + entityType.Name;
             var responseEntityCollection = await _httpClient.GetAsync(url);
             if (responseEntityCollection.IsSuccessStatusCode)
             {
                 var jsonEntityCollection = await responseEntityCollection.Content.ReadAsStringAsync();
-                var entityList = JsonConvert.DeserializeObject(jsonEntityCollection, typeof(List<>).MakeGenericType(entityType)) as IEnumerable<object>;
-                return entityList;
+
+                return jsonEntityCollection;
             }
             else
             {
