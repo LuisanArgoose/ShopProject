@@ -22,10 +22,10 @@ namespace ShopProject.API.Controllers
         }
         // GET: api/<DbController>/Select/TestTableType
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(string name)
+        public async Task<IActionResult> Select(string collectionName)
         {
 
-            PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == name);
+            PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == collectionName);
 
             if (dbSetProperty != null && dbSetProperty.PropertyType.IsGenericType && dbSetProperty.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
             {
