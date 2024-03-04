@@ -34,8 +34,10 @@ namespace ShopProject.EFDB.Helpers
         }
         public async Task<string?> GetEntitiesAsync(Type entityType)
         {
+
             var url = "ServerDb/Select?tableType=" + entityType.Name;
             var responseEntityCollection = await _httpClient.GetAsync(url);
+
             if (responseEntityCollection.IsSuccessStatusCode)
             {
                 var jsonEntityCollection = await responseEntityCollection.Content.ReadAsStringAsync();
