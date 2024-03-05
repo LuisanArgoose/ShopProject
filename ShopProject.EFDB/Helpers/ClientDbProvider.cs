@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -49,28 +50,19 @@ namespace ShopProject.EFDB.Helpers
                 return null;
             }
         }
-        /*
-        public async Task SendObjectToApi<T>(T entity)
+        
+        public async Task PostCRD(string jsonEntity, string operationName)
         {
-            string apiUrl = "http://localhost:5555/api/create/";
-
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(entity);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await client.PostAsync(apiUrl, httpContent);
-
-            if (response.IsSuccessStatusCode)
+            List<string> operations = new()
             {
-                Console.WriteLine("Object sent successfully to API");
-            }
-            else
-            {
-                Console.WriteLine("Error sending object to API. Status code: " + response.StatusCode);
-            }
-        }*/
-        public async Task PostCreate()
-        {
-
+                "Create",
+                "Delete",
+                "Update"
+            };
+            if (!operations.Contains(operationName))
+                throw new Exception("Bad operation name");
+            var url = "ServerDb/" + operationName + "?tableType=" + jsonEntity;
         }
+       
     }
 }

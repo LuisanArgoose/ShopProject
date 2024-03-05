@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using EntityFrameworkCore.Extensions;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Xml;
+using Microsoft.Extensions.Options;
 
 
 namespace ShopProject.EFDB
@@ -22,16 +23,15 @@ namespace ShopProject.EFDB
     public class ClientAPIDbContext : ServerAPIDbContext
     {
 
-        private readonly ClientDbProvider _clientDbController;
+        private readonly ClientDbProvider _clientDbProvider;
         public ClientAPIDbContext()
         {
-            _clientDbController = ClientDbProvider.GetInstance();
-            _clientDbController.SetUri("https://localhost:7178/api/");
+            _clientDbProvider = ClientDbProvider.GetInstance();
+            _clientDbProvider.SetUri("https://localhost:7178/api/");
             DbSetFillExtention.OnFillEvent += (sender, e) => SaveChangesAsync();
 
 
         }
-        public ClientDbProvider ClientDbController { get => _clientDbController; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(databaseName: "ExternalApiDataBase");
@@ -70,7 +70,7 @@ namespace ShopProject.EFDB
             if (dbSet == null)
                 return;
             Type entityType = dbSet.GetType().GetGenericArguments()[0];
-            var entityList = await _clientDbController.GetEntitiesAsync(entityType);
+            var entityList = await _clientDbProvider.GetEntitiesAsync(entityType);
             if (entityList != null && dbSet != null)
             {
                 ClearDbSet(dbSet as IEnumerable<object>);
@@ -87,22 +87,30 @@ namespace ShopProject.EFDB
             }
         }
 
-        public void SaveData()
+        public async void SaveData()
         {
             foreach (var entry in ChangeTracker.Entries())
             {
+
+                string operationName;
                 switch (entry.State)
                 {
+
                     case EntityState.Added:
-                        //Create(entry.Entity as MyEntity);
+                        operationName = "Create";
                         break;
                     case EntityState.Deleted:
-                        //Delete(entry.Entity.Id);
+                        operationName = "Delete";
                         break;
                     case EntityState.Modified:
-                        //Update(entry.Entity as MyEntity);
+                        operationName = "Update";
                         break;
+                    default:
+                        continue;
                 }
+                string jsonEntity = JsonSerializer.Serialize(entry);
+                await _clientDbProvider.PostCRD(jsonEntity, operationName);
+
             }
         }
 
