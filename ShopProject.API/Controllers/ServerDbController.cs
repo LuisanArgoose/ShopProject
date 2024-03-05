@@ -45,22 +45,14 @@ namespace ShopProject.API.Controllers
             return BadRequest("Invalid DbSet name");
 
         }
-
-        // GET api/<DbController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/<DbController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("Create")]
+        public void Create(string value)
         {
         }
 
         // PUT api/<DbController>/5
-        [HttpPut("{id}")]
+        [HttpPost("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }

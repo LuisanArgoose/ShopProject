@@ -86,8 +86,14 @@ namespace ShopProject.EFDB
                 Entry(entity).State = EntityState.Deleted;
             }
         }
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var result = await base.SaveChangesAsync(cancellationToken);
+            await PostChangesAsync();
+            return result;
 
-        public async void SaveData()
+        }
+        public async Task PostChangesAsync()
         {
             foreach (var entry in ChangeTracker.Entries())
             {
