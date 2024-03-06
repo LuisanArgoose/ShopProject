@@ -44,11 +44,10 @@ namespace ShopProject.Tests.DataBaseTests
         [TestMethod]
         public void AddDeserializedEntityTest()
         {
-
             _serverExample.TestTables.Load();
             var entity = _serverExample.TestTables.First();
             var jsonEntity = JsonSerializer.Serialize(entity);
-            var entityNew = JsonSerializer.Deserialize<object>(jsonEntity);
+            var entityNew = JsonSerializer.Deserialize(jsonEntity, entity.GetType());
             var result = _serverExample.Update(entityNew).State.ToString();
             //Assert.IsNotNull(result.Count > 0 ? true : null);
         }

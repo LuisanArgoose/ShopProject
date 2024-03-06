@@ -25,13 +25,12 @@ namespace ShopProject.API.Controllers
         public async Task<IActionResult> Select(string tableType)
         {
 
-            //PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == collectionName);
-            PropertyInfo dbSetProperty = _context.GetType().GetProperties()
+            PropertyInfo? dbSetProperty = _context.GetType().GetProperties()
                 .FirstOrDefault(p => p.PropertyType.IsGenericType && 
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
                 p.PropertyType.GetGenericArguments()[0].Name == tableType);
 
-            if (dbSetProperty != null && dbSetProperty.PropertyType.IsGenericType && dbSetProperty.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+            if (dbSetProperty != null)
             {
                 var dbSet = dbSetProperty.GetValue(_context);
                 MethodInfo toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
@@ -47,7 +46,7 @@ namespace ShopProject.API.Controllers
         }
         // POST api/<DbController>
         [HttpPost("Create")]
-        public void Create(string value)
+        public void Create(string jsonEntity)
         {
         }
 
