@@ -28,14 +28,16 @@ namespace ShopProject.Tests.DataBaseTests
         [TestMethod]
         public async Task APICreateTest()
         {
-
-            //await _clientExample.FillCollections();
+            await _clientExample.TestTables.Fill();
             var testTable = new TestTable()
             {
                 TestText = "AddTestExample"
             };
-            var result = _clientExample.TestTables.Add(testTable);
-            //Assert.AreEqual("Нижнее бельё", result.TestText);
+            _clientExample.TestTables.Add(testTable);
+            await _clientExample.SaveChangesAPIAsync();
+            await _clientExample.TestTables.Fill();
+            var addedEntity = _clientExample.TestTables.First(x => x.TestText == "AddTestExample");
+            Assert.AreEqual("AddTestExample", addedEntity.TestText);
         }
         [TestMethod]
         public async Task DeseriliseModelTest()
@@ -44,5 +46,6 @@ namespace ShopProject.Tests.DataBaseTests
             var collection = JsonSerializer.Deserialize<List<TestTable>>(collectionJson);
             Assert.AreEqual("Test", collection.First().TestText);
         }
+
     }
 }

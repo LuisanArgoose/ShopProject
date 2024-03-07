@@ -86,10 +86,11 @@ namespace ShopProject.EFDB
                 Entry(entity).State = EntityState.Deleted;
             }
         }
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public async Task<int> SaveChangesAPIAsync(CancellationToken cancellationToken = default)
         {
-            var result = await base.SaveChangesAsync(cancellationToken);
             await PostChangesAsync();
+            var result = await base.SaveChangesAsync(cancellationToken);
+           
             return result;
 
         }
@@ -115,7 +116,7 @@ namespace ShopProject.EFDB
                         continue;
                 }
                 
-                await _clientDbProvider.PostCRD(jsonEntity, operationName);
+                await _clientDbProvider.PostCRD(entry.Entity, operationName);
 
             }
         }

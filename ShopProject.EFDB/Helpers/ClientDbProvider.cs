@@ -51,7 +51,7 @@ namespace ShopProject.EFDB.Helpers
             }
         }
         
-        public async Task PostCRD(EntityEntry entityEntry, string operationName)
+        public async Task<string> PostCRD(object entity, string operationName)
         {
 
             List<string> operations = new()
@@ -62,8 +62,26 @@ namespace ShopProject.EFDB.Helpers
             };
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
-            string jsonEntity = JsonSerializer.Serialize(entityEntry);
-            var url = "ServerDb/" + operationName + "?jsonEntity=" + jsonEntity + "&entityTypeName=123";
+            string jsonEntity = JsonSerializer.Serialize(entity);
+            var requestData = new
+            {
+                jsonEntity,
+                entityTypeName = entity.GetType().Name
+            };
+            var url = "ServerDb/" + operationName;
+
+            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
+            var content = new StringContent(requestDataJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(url, content);
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                return result;
+            }
+            else
+            {
+                return "Request failed with status code: " + response.StatusCode;
+            }
         }
        
     }

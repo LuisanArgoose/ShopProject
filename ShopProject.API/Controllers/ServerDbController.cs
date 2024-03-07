@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection;
 using System.Text.Json;
 using System.Xml.Linq;
+using System.Net.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -48,23 +49,25 @@ namespace ShopProject.API.Controllers
         
         // POST api/<DbController>/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(string jsonEntity, string entityTypeName)
+        public async Task<IActionResult> Create(dynamic stringContent)
         {
-            return await CUD(jsonEntity, entityTypeName, "Create");
+            return await CUD(stringContent, "Create");
         }
 
         // PUT api/<DbController>/Update
         [HttpPost("Update")]
         public async Task<IActionResult> Update(string jsonEntity, string entityTypeName)
         {
-            return await CUD(jsonEntity, entityTypeName, "Update");
+            //return await CUD(jsonEntity, entityTypeName, "Update");
+            return Ok();
         }
 
         // DELETE api/<DbController>/Delete
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(string jsonEntity, string entityTypeName)
         {
-            return await CUD(jsonEntity, entityTypeName, "Delete");
+            //return await CUD(jsonEntity, entityTypeName, "Delete");
+            return Ok();
         }
         private Type GetEntityType(string entityTypeName)
         {
@@ -84,8 +87,14 @@ namespace ShopProject.API.Controllers
 
             return JsonSerializer.Deserialize(jsonEntity, entityType, options);
         }
-        private async Task<IActionResult> CUD(string jsonEntity, string entityTypeName, string operationName)
+        private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
         {
+
+            //var JsonContent = await stringContent.ReadAsStringAsync();
+            var jsonEntity = (string)stringContent.jsonEntity;
+            var entityTypeName = (string)stringContent.entityTypeName;
+            //var result = Newtonsoft.Json.JsonConvert.DeserializeObject(JsonContent);
+            
             Type entityType = GetEntityType(entityTypeName);
             if (entityType == null)
                 return BadRequest("Invalid entity type name");

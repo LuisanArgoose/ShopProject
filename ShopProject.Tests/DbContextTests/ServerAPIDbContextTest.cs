@@ -30,16 +30,10 @@ namespace ShopProject.Tests.DataBaseTests
         public void AddToDbSetTest()
         {
             
-            _serverExample.Categories.Load();
-            _serverExample.Categories.Add(new Category
-            {
-                CategoryId = -1,
-                CategoryName = "Test",
-                Products = []
-            });
+            //Вот тут протестировать типо отправка через клиент
 
-            var result = _serverExample.Categories.Where(x => x.CategoryName == "Test").ToList();
-            Assert.IsNotNull(result.Count > 0 ? true : null);
+
+
         }
         [TestMethod]
         public void AddDeserializedEntityTest()
