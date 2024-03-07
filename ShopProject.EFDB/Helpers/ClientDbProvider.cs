@@ -51,6 +51,19 @@ namespace ShopProject.EFDB.Helpers
             }
         }
         
+        public static StringContent ComplectEntity(object entity)
+        {
+            string jsonEntity = JsonSerializer.Serialize(entity);
+            var requestData = new
+            {
+                jsonEntity,
+                entityTypeName = entity.GetType().Name
+
+            };
+            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
+            return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
+
+        }
         public async Task<string> PostCRD(object entity, string operationName)
         {
 
@@ -62,16 +75,8 @@ namespace ShopProject.EFDB.Helpers
             };
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
-            string jsonEntity = JsonSerializer.Serialize(entity);
-            var requestData = new
-            {
-                jsonEntity,
-                entityTypeName = entity.GetType().Name
-            };
+            var content = ComplectEntity(entity);
             var url = "ServerDb/" + operationName;
-
-            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
-            var content = new StringContent(requestDataJson, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(url, content);
             if (response.IsSuccessStatusCode)
             {

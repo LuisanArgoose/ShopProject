@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopProject.API", "ShopProj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopProject.UI", "ShopProject.UI\ShopProject.UI.csproj", "{C3B93714-A717-451B-AEBA-3CE229E573AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopProject.Tests", "ShopProject.Tests\ShopProject.Tests.csproj", "{957ACF40-C5AB-4350-9095-3FFDD9263276}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopProject.Tests", "ShopProject.Tests\ShopProject.Tests.csproj", "{957ACF40-C5AB-4350-9095-3FFDD9263276}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopProject.EFDB", "ShopProject.EFDB\ShopProject.EFDB.csproj", "{68150D58-7BD2-4428-83C0-80935BE2F669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopProject.EFDB", "ShopProject.EFDB\ShopProject.EFDB.csproj", "{68150D58-7BD2-4428-83C0-80935BE2F669}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

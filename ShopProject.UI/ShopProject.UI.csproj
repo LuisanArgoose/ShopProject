@@ -20,4 +20,8 @@
     <PackageReference Include="WPF-UI" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ShopProject.EFDB\ShopProject.EFDB.csproj" />
+  </ItemGroup>
+
 </Project>

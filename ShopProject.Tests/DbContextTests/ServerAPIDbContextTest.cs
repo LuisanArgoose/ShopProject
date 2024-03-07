@@ -1,22 +1,20 @@
 
-using Microsoft.EntityFrameworkCore;
-using ShopProject.EFDB;
-using ShopProject.EFDB.Helpers;
-using ShopProject.EFDB.Models;
-using System.Text.Json;
+
+using ShopProject.API.Controllers;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests.DataBaseTests
 {
     [TestClass]
     public class ServerAPIDbContextTest
     {
-        private ServerAPIDbContext _serverExample;
+        private readonly ServerAPIDbContext _serverExample;
+        private readonly ServerDbController _testController;
 
         public ServerAPIDbContextTest()
         {
 
             _serverExample = new ServerAPIDbContext();
-
+            _testController = new ServerDbController(_serverExample);
         }
 
         [TestMethod]
@@ -29,7 +27,7 @@ namespace ShopProject.Tests.DataBaseTests
         [TestMethod]
         public void AddToDbSetTest()
         {
-            
+
             //Вот тут протестировать типо отправка через клиент
 
 

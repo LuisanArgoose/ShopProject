@@ -40,7 +40,7 @@ namespace ShopProject.Tests.DataBaseTests
             Assert.AreEqual("AddTestExample", addedEntity.TestText);
         }
         [TestMethod]
-        public async Task DeseriliseModelTest()
+        public void DeseriliseModelTest()
         {
             var collectionJson = "[{ \"TestId\":1,\"TestText\":\"Test\"},{ \"TestId\":2,\"TestText\":\"Test\"}]";
             var collection = JsonSerializer.Deserialize<List<TestTable>>(collectionJson);

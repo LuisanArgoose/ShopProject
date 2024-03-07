@@ -17,6 +17,7 @@ namespace ShopProject.API.Controllers
     {
         private readonly ServerAPIDbContext _context;
 
+        
         public ServerDbController(ServerAPIDbContext context)
         {
             _context = context;
