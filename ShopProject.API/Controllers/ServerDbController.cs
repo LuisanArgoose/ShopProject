@@ -20,15 +20,15 @@ namespace ShopProject.API.Controllers
         {
             _context = context;
         }
-        // GET: api/<DbController>/Select/TestTableType
+        // GET: api/<DbController>/Select/entityTypeName
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(string tableType)
+        public async Task<IActionResult> Select(string entityTypeName)
         {
 
             PropertyInfo? dbSetProperty = _context.GetType().GetProperties()
                 .FirstOrDefault(p => p.PropertyType.IsGenericType && 
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
-                p.PropertyType.GetGenericArguments()[0].Name == tableType);
+                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName);
 
             if (dbSetProperty != null)
             {
@@ -41,25 +41,72 @@ namespace ShopProject.API.Controllers
                 return Json(results);
             }
 
-            return BadRequest("Invalid DbSet name");
+            return BadRequest("Invalid entity type name");
 
         }
-        // POST api/<DbController>
+
+        
+        // POST api/<DbController>/Create
         [HttpPost("Create")]
-        public void Create(string jsonEntity)
+        public async Task<IActionResult> Create(string jsonEntity, string entityTypeName)
         {
+            return await CUD(jsonEntity, entityTypeName, "Create");
         }
 
-        // PUT api/<DbController>/5
-        [HttpPost("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT api/<DbController>/Update
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update(string jsonEntity, string entityTypeName)
         {
+            return await CUD(jsonEntity, entityTypeName, "Update");
         }
 
-        // DELETE api/<DbController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // DELETE api/<DbController>/Delete
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(string jsonEntity, string entityTypeName)
         {
+            return await CUD(jsonEntity, entityTypeName, "Delete");
+        }
+        private Type GetEntityType(string entityTypeName)
+        {
+            Type? entityType = _context.GetType().GetProperties()
+                .FirstOrDefault(p => p.PropertyType.IsGenericType &&
+                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
+                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName)
+                .PropertyType.GetGenericArguments()[0];
+            return entityType;
+        }
+        private static JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+        private static object DeserilizeEntity(string jsonEntity, Type entityType)
+        {
+
+            return JsonSerializer.Deserialize(jsonEntity, entityType, options);
+        }
+        private async Task<IActionResult> CUD(string jsonEntity, string entityTypeName, string operationName)
+        {
+            Type entityType = GetEntityType(entityTypeName);
+            if (entityType == null)
+                return BadRequest("Invalid entity type name");
+            var entity = DeserilizeEntity(jsonEntity, entityType);
+            if (entity == null)
+                return BadRequest("Deserialize was failed");
+            switch (operationName)
+            {
+                case "Create":
+                    _context.Add(entity);
+                    break;
+                case "Update":
+                    _context.Update(entity);
+                    break;
+                case "Delete":
+                    _context.Remove(entity);
+                    break;
+            }
+            await _context.SaveChangesAsync();
+            return Ok();
+
         }
     }
 }

@@ -114,7 +114,7 @@ namespace ShopProject.EFDB
                     default:
                         continue;
                 }
-                string jsonEntity = JsonSerializer.Serialize(entry);
+                
                 await _clientDbProvider.PostCRD(jsonEntity, operationName);
 
             }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace ShopProject.EFDB.Helpers
         public async Task<string?> GetEntitiesAsync(Type entityType)
         {
 
-            var url = "ServerDb/Select?tableType=" + entityType.Name;
+            var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
             var responseEntityCollection = await _httpClient.GetAsync(url);
 
             if (responseEntityCollection.IsSuccessStatusCode)
@@ -51,8 +51,9 @@ namespace ShopProject.EFDB.Helpers
             }
         }
         
-        public async Task PostCRD(string jsonEntity, string operationName)
+        public async Task PostCRD(EntityEntry entityEntry, string operationName)
         {
+
             List<string> operations = new()
             {
                 "Create",
@@ -61,7 +62,8 @@ namespace ShopProject.EFDB.Helpers
             };
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
-            var url = "ServerDb/" + operationName + "?tableType=" + jsonEntity;
+            string jsonEntity = JsonSerializer.Serialize(entityEntry);
+            var url = "ServerDb/" + operationName + "?jsonEntity=" + jsonEntity + "&entityTypeName=123";
         }
        
     }
