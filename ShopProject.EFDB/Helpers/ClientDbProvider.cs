@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -13,15 +13,10 @@ namespace ShopProject.EFDB.Helpers
 {
     public class ClientDbProvider
     {
-        private static ClientDbProvider? _instance;
-        public static ClientDbProvider GetInstance()
-        {
-            _instance ??= new ClientDbProvider();
-            return _instance;
-        }
+        
 
-        private readonly HttpClient _httpClient;
-        private ClientDbProvider()
+        private static readonly HttpClient _httpClient;
+        static ClientDbProvider()
         {
             string baseAddress = "https://localhost:7178/api/";
             _httpClient = new HttpClient
@@ -29,11 +24,11 @@ namespace ShopProject.EFDB.Helpers
                 BaseAddress = new Uri(baseAddress)
             };
         }
-        public void SetUri(string uri)
+        public static void SetUri(string uri)
         {
             _httpClient.BaseAddress = new Uri(uri); 
         }
-        public async Task<string?> GetEntitiesAsync(Type entityType)
+        public static async Task<string?> GetEntitiesAsync(Type entityType)
         {
 
             var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
@@ -54,17 +49,18 @@ namespace ShopProject.EFDB.Helpers
         public static StringContent ComplectEntity(object entity)
         {
             string jsonEntity = JsonSerializer.Serialize(entity);
+            string entityTypeName = entity.GetType().Name;
             var requestData = new
             {
                 jsonEntity,
-                entityTypeName = entity.GetType().Name
+                entityTypeName
 
             };
             string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
             return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
 
         }
-        public async Task<string> PostCRD(object entity, string operationName)
+        public static async Task<string> PostCRD(object entity, string operationName)
         {
 
             List<string> operations = new()

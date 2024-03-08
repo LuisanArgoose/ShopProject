@@ -14,13 +14,12 @@ namespace ShopProject.EFDB.Helpers
 {
     public static class DbSetFillExtention
     {
-        public static event EventHandler OnFillEvent;
+        public static event EventHandler? OnFillEvent;
 
         public static async Task Fill<T>(this DbSet<T> dbSet) where T : class
         {
             
-            var clientController = ClientDbProvider.GetInstance();
-            var collectionJson = await clientController.GetEntitiesAsync(dbSet.EntityType.ClrType);
+            var collectionJson = await ClientDbProvider.GetEntitiesAsync(dbSet.EntityType.ClrType);
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

@@ -23,11 +23,10 @@ namespace ShopProject.EFDB
     public class ClientAPIDbContext : ServerAPIDbContext
     {
 
-        private readonly ClientDbProvider _clientDbProvider;
         public ClientAPIDbContext()
         {
-            _clientDbProvider = ClientDbProvider.GetInstance();
-            _clientDbProvider.SetUri("https://localhost:7178/api/");
+            
+            ClientDbProvider.SetUri("https://localhost:7178/api/");
             DbSetFillExtention.OnFillEvent += (sender, e) => SaveChangesAsync();
 
 
@@ -70,7 +69,7 @@ namespace ShopProject.EFDB
             if (dbSet == null)
                 return;
             Type entityType = dbSet.GetType().GetGenericArguments()[0];
-            var entityList = await _clientDbProvider.GetEntitiesAsync(entityType);
+            var entityList = await ClientDbProvider.GetEntitiesAsync(entityType);
             if (entityList != null && dbSet != null)
             {
                 ClearDbSet(dbSet as IEnumerable<object>);
@@ -116,7 +115,7 @@ namespace ShopProject.EFDB
                         continue;
                 }
                 
-                await _clientDbProvider.PostCRD(entry.Entity, operationName);
+                await ClientDbProvider.PostCRD(entry.Entity, operationName);
 
             }
         }

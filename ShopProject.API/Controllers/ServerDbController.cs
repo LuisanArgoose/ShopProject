@@ -3,9 +3,10 @@ using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection;
-using System.Text.Json;
+//using System.Text.Json;
 using System.Xml.Linq;
 using System.Net.Http;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +23,8 @@ namespace ShopProject.API.Controllers
         {
             _context = context;
         }
+
+
         // GET: api/<DbController>/Select/entityTypeName
         [HttpGet("Select")]
         public async Task<IActionResult> Select(string entityTypeName)
@@ -79,29 +82,36 @@ namespace ShopProject.API.Controllers
                 .PropertyType.GetGenericArguments()[0];
             return entityType;
         }
-        private static JsonSerializerOptions options = new JsonSerializerOptions
+        
+        public async Task<object> DeserilizeEntity(dynamic content)
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-        private static object DeserilizeEntity(string jsonEntity, Type entityType)
-        {
+            try
+            {
+                dynamic stringContentJson = await content.ReadAsStringAsync();
+                
+                var stringContent = Newtonsoft.Json.JsonConvert.DeserializeObject(stringContentJson);
+                var jsonEntity = (string)stringContent.jsonEntity;
+                var entityTypeName = (string)stringContent.entityTypeName;
 
-            return JsonSerializer.Deserialize(jsonEntity, entityType, options);
+                Type entityType = GetEntityType(entityTypeName);
+                if (entityType == null)
+                    return BadRequest("Invalid entity type name");
+                var entity = JsonSerializer.Deserialize(jsonEntity, entityType);
+                if (entity == null)
+                    return BadRequest("Deserialize was failed");
+                return entity;
+            }
+            catch(Exception e)
+            {
+                return e;
+            }
+            
         }
         private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
         {
-
-            //var JsonContent = await stringContent.ReadAsStringAsync();
-            var jsonEntity = (string)stringContent.jsonEntity;
-            var entityTypeName = (string)stringContent.entityTypeName;
-            //var result = Newtonsoft.Json.JsonConvert.DeserializeObject(JsonContent);
+            var entity = await DeserilizeEntity(stringContent);
             
-            Type entityType = GetEntityType(entityTypeName);
-            if (entityType == null)
-                return BadRequest("Invalid entity type name");
-            var entity = DeserilizeEntity(jsonEntity, entityType);
-            if (entity == null)
-                return BadRequest("Deserialize was failed");
+
             switch (operationName)
             {
                 case "Create":

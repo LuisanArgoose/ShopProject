@@ -10,13 +10,13 @@ namespace ShopProject.Tests.HelpersTests
     [TestClass]
     public class ClientDbProviderTest
     {
-        private readonly ClientDbProvider _clientDbProvider = ClientDbProvider.GetInstance();
+
         [TestMethod]
         public async Task BadOperationNameTest()
         {
             try
             {
-                await _clientDbProvider.PostCRD("awd", "randomoperation");
+                await ClientDbProvider.PostCRD("awd", "randomoperation");
             }
             catch(Exception e)
             {

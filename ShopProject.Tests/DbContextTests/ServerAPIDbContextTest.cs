@@ -1,6 +1,10 @@
 
 
+using NuGet.ContentModel;
 using ShopProject.API.Controllers;
+using ShopProject.EFDB.Models;
+using System.Net.Http;
+using System.Text;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests.DataBaseTests
 {
@@ -17,33 +21,78 @@ namespace ShopProject.Tests.DataBaseTests
             _testController = new ServerDbController(_serverExample);
         }
 
+        private TestTable GetTestExample(string testMark)
+        {
+            return new TestTable()
+            {
+                TestText = testMark
+            };
+        }
+        private StringContent? GetTestContentCUD(string testMark)
+        {
+            //Создать Entity
+            var testTable = new TestTable()
+            {
+                TestText = testMark
+            };
+
+            //Обернуть содержание и тип в content 
+            string jsonEntity = JsonSerializer.Serialize(testTable);
+            string entityTypeName = testTable.GetType().Name;
+            var requestData = new
+            {
+                jsonEntity,
+                entityTypeName
+
+            };
+            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
+            return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
+        }
+
         [TestMethod]
-        public void ConnectionTest()
+        public async Task DeserializingAPostRequestTest()
+        {
+
+            string testMark = "DeserializeTest";
+            var content = GetTestContentCUD(testMark);
+            //Отправить content в тестируемый метод
+            var entity = await _testController.DeserilizeEntity(content);
+
+            Assert.AreEqual(testMark, (entity as TestTable).TestText);
+
+        }
+        [TestMethod]
+        public async Task ServerCreateTest()
         {
             
-            var result = _serverExample.Categories.First();
-            Assert.IsNotNull(result);
+            string testMark = "ServerCreateTest";
+            if(_serverExample.TestTables.Any(t => t.TestText == testMark))
+            {
+                var ifExist = _serverExample.TestTables.First(t => t.TestText == testMark);
+                if (ifExist != null)
+                    _serverExample.Remove(ifExist);
+            }
+            var content = GetTestContentCUD(testMark);
+            await _testController.Create(content);
+            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
+            Assert.IsTrue(ifExistNow);
         }
         [TestMethod]
-        public void AddToDbSetTest()
+        public async Task ServerUpdateTest()
         {
 
-            //Вот тут протестировать типо отправка через клиент
-
-
-
+            string testMark = "ServerUpdateTest";
+            if (!_serverExample.TestTables.Any(t => t.TestText == testMark))
+            {
+                var ifExist = _serverExample.TestTables.First(t => t.TestText == testMark);
+                if (ifExist != null)
+                    _serverExample.Remove(ifExist);
+            }
+            var content = GetTestContentCUD(testMark);
+            await _testController.Create(content);
+            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
+            Assert.IsTrue(ifExistNow);
         }
-        [TestMethod]
-        public void AddDeserializedEntityTest()
-        {
-            _serverExample.TestTables.Load();
-            var entity = _serverExample.TestTables.First();
-            var jsonEntity = JsonSerializer.Serialize(entity);
-            var entityNew = JsonSerializer.Deserialize(jsonEntity, entity.GetType());
-            var result = _serverExample.Update(entityNew).State.ToString();
-            //Assert.IsNotNull(result.Count > 0 ? true : null);
-        }
-
 
     }
 }
