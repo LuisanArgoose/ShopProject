@@ -59,19 +59,18 @@ namespace ShopProject.API.Controllers
         }
 
         // PUT api/<DbController>/Update
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update(string jsonEntity, string entityTypeName)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(dynamic stringContent)
         {
-            //return await CUD(jsonEntity, entityTypeName, "Update");
-            return Ok();
+            return await CUD(stringContent, "Update");
+
         }
 
         // DELETE api/<DbController>/Delete
         [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(string jsonEntity, string entityTypeName)
+        public async Task<IActionResult> Delete(dynamic stringContent)
         {
-            //return await CUD(jsonEntity, entityTypeName, "Delete");
-            return Ok();
+            return await CUD(stringContent, "Delete");
         }
         private Type GetEntityType(string entityTypeName)
         {
@@ -83,7 +82,7 @@ namespace ShopProject.API.Controllers
             return entityType;
         }
         
-        public async Task<object> DeserilizeEntity(dynamic content)
+        private async Task<object> DeserilizeEntity(dynamic content)
         {
             try
             {
@@ -110,21 +109,26 @@ namespace ShopProject.API.Controllers
         private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
         {
             var entity = await DeserilizeEntity(stringContent);
-            
-
-            switch (operationName)
+            try
             {
-                case "Create":
-                    _context.Add(entity);
-                    break;
-                case "Update":
-                    _context.Update(entity);
-                    break;
-                case "Delete":
-                    _context.Remove(entity);
-                    break;
+                switch (operationName)
+                {
+                    case "Create":
+                        _context.Add(entity);
+                        break;
+                    case "Update":
+                        _context.Update(entity);
+                        break;
+                    case "Delete":
+                        _context.Remove(entity);
+                        break;
+                }
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
+            catch(Exception e)
+            {
+                return Json(e.Message);
+            }
             return Ok();
 
         }

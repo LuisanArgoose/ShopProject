@@ -8,4 +8,6 @@ public partial class TestTable
     public int TestId { get; set; }
 
     public string TestText { get; set; } = null!;
+
+    public string? TextToUpdate { get; set; }
 }

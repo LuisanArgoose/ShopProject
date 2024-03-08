@@ -45,6 +45,7 @@ namespace ShopProject.EFDB.Helpers
                 return null;
             }
         }
+
         
         public static StringContent ComplectEntity(object entity)
         {
@@ -72,7 +73,7 @@ namespace ShopProject.EFDB.Helpers
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
             var content = ComplectEntity(entity);
-            var url = "ServerDb/" + operationName;
+            var url = "ServerDb/" + operationName ;
             var response = await _httpClient.PostAsync(url, content);
             if (response.IsSuccessStatusCode)
             {

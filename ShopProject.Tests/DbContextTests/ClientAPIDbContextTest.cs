@@ -16,6 +16,14 @@ namespace ShopProject.Tests.DataBaseTests
         {
             _clientExample = new ClientAPIDbContext();
         }
+        private TestTable GetTestExample(string testMark)
+        {
+            return  new TestTable()
+            {
+                TestText = testMark,
+                TextToUpdate = DateTime.Now.ToString()
+            };
+        }
 
         [TestMethod]
         public async Task APISelectTest()
@@ -26,18 +34,29 @@ namespace ShopProject.Tests.DataBaseTests
             Assert.AreEqual("Test", result.TestText);
         }
         [TestMethod]
-        public async Task APICreateTest()
+        public async Task ClientCreateTest()
         {
             await _clientExample.TestTables.Fill();
-            var testTable = new TestTable()
+
+            string testMark = "ClientCreateTest";
+            var marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
             {
-                TestText = "AddTestExample"
-            };
-            _clientExample.TestTables.Add(testTable);
+                _clientExample.RemoveRange(marks);
+                await _clientExample.SaveChangesAPIAsync();
+            }
+            await _clientExample.TestTables.Fill();
+            marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                Assert.Fail();
+            }
+            var entity = GetTestExample(testMark);
+            _clientExample.TestTables.Add(entity);
             await _clientExample.SaveChangesAPIAsync();
             await _clientExample.TestTables.Fill();
-            var addedEntity = _clientExample.TestTables.First(x => x.TestText == "AddTestExample");
-            Assert.AreEqual("AddTestExample", addedEntity.TestText);
+            var ifExistNow = _clientExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
+            Assert.IsTrue(ifExistNow);
         }
         [TestMethod]
         public void DeseriliseModelTest()

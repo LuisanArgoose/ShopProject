@@ -11,30 +11,29 @@ namespace ShopProject.Tests.DataBaseTests
     [TestClass]
     public class ServerAPIDbContextTest
     {
+        private readonly ServerAPIDbContext _serverExampleToController;
         private readonly ServerAPIDbContext _serverExample;
         private readonly ServerDbController _testController;
 
         public ServerAPIDbContextTest()
         {
-
+            _serverExampleToController = new ServerAPIDbContext();
             _serverExample = new ServerAPIDbContext();
-            _testController = new ServerDbController(_serverExample);
+            _testController = new ServerDbController(_serverExampleToController);
         }
 
         private TestTable GetTestExample(string testMark)
         {
-            return new TestTable()
+            return  new TestTable()
             {
-                TestText = testMark
+                TestText = testMark,
+                TextToUpdate = DateTime.Now.ToString()
             };
         }
         private StringContent? GetTestContentCUD(string testMark)
         {
             //Создать Entity
-            var testTable = new TestTable()
-            {
-                TestText = testMark
-            };
+            var testTable = GetTestExample(testMark);
 
             //Обернуть содержание и тип в content 
             string jsonEntity = JsonSerializer.Serialize(testTable);
@@ -48,33 +47,53 @@ namespace ShopProject.Tests.DataBaseTests
             string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
             return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
         }
+        private StringContent? GetTestContentCUD(TestTable testTable)
+        {
+            //Обернуть содержание и тип в content 
+            string jsonEntity = JsonSerializer.Serialize(testTable);
+            string entityTypeName = testTable.GetType().Name;
+            var requestData = new
+            {
+                jsonEntity,
+                entityTypeName
 
+            };
+            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
+            return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
+        }
+/*
         [TestMethod]
-        public async Task DeserializingAPostRequestTest()
+        public void DeserializingAPostRequestTest()
         {
 
             string testMark = "DeserializeTest";
             var content = GetTestContentCUD(testMark);
             //Отправить content в тестируемый метод
-            var entity = await _testController.DeserilizeEntity(content);
+            var entity = _testController.DeserilizeEntity(content);
 
             Assert.AreEqual(testMark, (entity as TestTable).TestText);
 
-        }
+        }*/
         [TestMethod]
         public async Task ServerCreateTest()
         {
             
             string testMark = "ServerCreateTest";
-            if(_serverExample.TestTables.Any(t => t.TestText == testMark))
+            var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
             {
-                var ifExist = _serverExample.TestTables.First(t => t.TestText == testMark);
-                if (ifExist != null)
-                    _serverExample.Remove(ifExist);
+                _serverExample.RemoveRange(marks);
+                _serverExample.SaveChanges();
             }
-            var content = GetTestContentCUD(testMark);
+            marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                Assert.Fail();
+            }
+            var entity = GetTestExample(testMark);
+            var content = GetTestContentCUD(entity);
             await _testController.Create(content);
-            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
+            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
             Assert.IsTrue(ifExistNow);
         }
         [TestMethod]
@@ -82,16 +101,48 @@ namespace ShopProject.Tests.DataBaseTests
         {
 
             string testMark = "ServerUpdateTest";
-            if (!_serverExample.TestTables.Any(t => t.TestText == testMark))
+            var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Count() != 1)
             {
-                var ifExist = _serverExample.TestTables.First(t => t.TestText == testMark);
-                if (ifExist != null)
-                    _serverExample.Remove(ifExist);
+                _serverExample.RemoveRange(marks);
+                var testTable = GetTestExample(testMark);
+                testTable.TextToUpdate = new Random().Next(0, 1000).ToString();
+                _serverExample.Add(testTable);
+                _serverExample.SaveChanges();
             }
-            var content = GetTestContentCUD(testMark);
-            await _testController.Create(content);
-            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
+            var entityId = _serverExample.TestTables.First(t => t.TestText == testMark).TestId;
+            var entityToUpdate = GetTestExample(testMark);
+            entityToUpdate.TestId = entityId;
+            var content = GetTestContentCUD(entityToUpdate);
+            await _testController.Update(content);
+            _serverExample.TestTables.Load();
+            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == entityToUpdate.TestText && t.TextToUpdate == entityToUpdate.TextToUpdate);
             Assert.IsTrue(ifExistNow);
+        }
+
+        [TestMethod]
+        public async Task ServerDeleteTest()
+        {
+
+            string testMark = "ServerDeleteTest";
+            var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
+            var testTable = GetTestExample(testMark);
+            if (!marks.Any())
+            {
+                _serverExample.Add(testTable);
+                _serverExample.SaveChanges();
+            }
+            marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
+            if (!marks.Any())
+            {
+                Assert.Fail();
+            }
+
+            var content = GetTestContentCUD(testTable);
+            await _testController.Delete(content);
+            _serverExample.TestTables.Load();
+            var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
+            Assert.IsTrue(!ifExistNow);
         }
 
     }
