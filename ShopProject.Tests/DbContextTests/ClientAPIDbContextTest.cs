@@ -65,6 +65,13 @@ namespace ShopProject.Tests.DataBaseTests
             var collection = JsonSerializer.Deserialize<List<TestTable>>(collectionJson);
             Assert.AreEqual("Test", collection.First().TestText);
         }
-
+        [TestMethod]
+        public async Task ClientUpdateTest()
+        {
+        }
+        [TestMethod]
+        public async Task ClientDeleteTest()
+        {
+        }
     }
 }
