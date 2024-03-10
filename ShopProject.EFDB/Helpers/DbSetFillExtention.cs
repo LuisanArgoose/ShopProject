@@ -14,17 +14,12 @@ namespace ShopProject.EFDB.Helpers
 {
     public static class DbSetFillExtention
     {
-        private static ClientAPIDbContext _context;
-        public static void SetContext(ClientAPIDbContext context)
-        {
-            _context = context;
-        }
+        public static event EventHandler? OnFillEvent;
 
         public static async Task Fill<T>(this DbSet<T> dbSet) where T : class
         {
             
-            var clientController = ClientDbController.GetInstance();
-            var collectionJson = await clientController.GetEntitiesAsync(dbSet.EntityType.ClrType);
+            var collectionJson = await ClientDbProvider.GetEntitiesAsync(dbSet.EntityType.ClrType);
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -34,7 +29,7 @@ namespace ShopProject.EFDB.Helpers
             {
                 dbSet.Local.Clear();
                 dbSet.AddRange(collection);
-                await _context.SaveChangesAsync();
+                OnFillEvent?.Invoke(null, EventArgs.Empty);
             }
             
 

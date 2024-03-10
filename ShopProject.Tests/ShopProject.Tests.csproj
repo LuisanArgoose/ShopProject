@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -29,7 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShopProject.API\ShopProject.API.csproj" />
     <ProjectReference Include="..\ShopProject.EFDB\ShopProject.EFDB.csproj" />
+    <ProjectReference Include="..\ShopProject.UI\ShopProject.UI.csproj" />
   </ItemGroup>
 
 </Project>

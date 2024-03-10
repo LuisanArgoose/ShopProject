@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShopProject.EFDB;
 using ShopProject.EFDB.Helpers;
 using ShopProject.EFDB.Models;
-using System.Text.Json;
+using System.Collections.Generic;
 using static System.Net.WebRequestMethods;
 namespace ShopProject.Tests.DataBaseTests
 {
@@ -14,8 +14,15 @@ namespace ShopProject.Tests.DataBaseTests
 
         public ClientAPIDbContextTest()
         {
-            _clientExample = new ClientAPIDbContext("https://localhost:7178/api/");
-            DbSetFillExtention.SetContext(_clientExample);
+            _clientExample = new ClientAPIDbContext();
+        }
+        private TestTable GetTestExample(string testMark)
+        {
+            return  new TestTable()
+            {
+                TestText = testMark,
+                TextToUpdate = DateTime.Now.ToString()
+            };
         }
 
         [TestMethod]
@@ -27,23 +34,62 @@ namespace ShopProject.Tests.DataBaseTests
             Assert.AreEqual("Test", result.TestText);
         }
         [TestMethod]
-        public async Task APICreateTest()
+        public async Task ClientCreateTest()
         {
+            await _clientExample.TestTables.Fill();
 
-            //await _clientExample.FillCollections();
-            var testTable = new TestTable()
+            string testMark = "ClientCreateTest";
+            /*var marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
             {
-                TestText = "AddTestExample"
-            };
-            var result = _clientExample.TestTables.Add(testTable);
-            //Assert.AreEqual("Нижнее бельё", result.TestText);
+                _clientExample.RemoveRange(marks);
+                await _clientExample.SaveChangesAPIAsync();
+            }
+            await _clientExample.TestTables.Fill();
+            marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                Assert.Fail();
+            }*/
+            var entity = GetTestExample(testMark);
+            _clientExample.TestTables.Add(entity);
+            await _clientExample.SaveChangesAPIAsync();
+            await _clientExample.TestTables.Fill();
+            var ifExistNow = _clientExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
+            Assert.IsTrue(ifExistNow);
+        }
+       
+        [TestMethod]
+        public async Task ClientUpdateTest()
+        {
+            await _clientExample.TestTables.Fill();
+
+            string testMark = "ClientCreateTest";
+            var marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                _clientExample.RemoveRange(marks);
+                await _clientExample.SaveChangesAPIAsync();
+            }
+            await _clientExample.TestTables.Fill();
+            marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                Assert.Fail();
+            }
+            var entity = GetTestExample(testMark);
+            _clientExample.TestTables.Add(entity);
+            await _clientExample.SaveChangesAPIAsync();
+            await _clientExample.TestTables.Fill();
+            var ifExistNow = _clientExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
+            Assert.IsTrue(ifExistNow);
         }
         [TestMethod]
-        public async Task DeseriliseModelTest()
+        public async Task ClientDeleteTest()
         {
-            var collectionJson = "[{ \"TestId\":1,\"TestText\":\"Test\"},{ \"TestId\":2,\"TestText\":\"Test\"}]";
-            var collection = JsonSerializer.Deserialize<List<TestTable>>(collectionJson);
-            Assert.AreEqual("Test", collection.First().TestText);
+        }
+        public async Task ClientCreateExistTest()
+        {
         }
     }
 }

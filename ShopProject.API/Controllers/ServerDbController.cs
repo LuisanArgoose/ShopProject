@@ -3,8 +3,11 @@ using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection;
-using System.Text.Json;
+//using System.Text.Json;
 using System.Xml.Linq;
+using System.Net.Http;
+using NuGet.Protocol;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,22 +19,24 @@ namespace ShopProject.API.Controllers
     {
         private readonly ServerAPIDbContext _context;
 
+        
         public ServerDbController(ServerAPIDbContext context)
         {
             _context = context;
         }
-        // GET: api/<DbController>/Select/TestTableType
+
+
+        // GET: api/<DbController>/Select/entityTypeName
         [HttpGet("Select")]
-        public async Task<IActionResult> Select(string tableType)
+        public async Task<IActionResult> Select(string entityTypeName)
         {
 
-            //PropertyInfo dbSetProperty = _context.GetType().GetProperties().FirstOrDefault(p => p.Name == collectionName);
-            PropertyInfo dbSetProperty = _context.GetType().GetProperties()
+            PropertyInfo? dbSetProperty = _context.GetType().GetProperties()
                 .FirstOrDefault(p => p.PropertyType.IsGenericType && 
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
-                p.PropertyType.GetGenericArguments()[0].Name == tableType);
+                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName);
 
-            if (dbSetProperty != null && dbSetProperty.PropertyType.IsGenericType && dbSetProperty.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+            if (dbSetProperty != null)
             {
                 var dbSet = dbSetProperty.GetValue(_context);
                 MethodInfo toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
@@ -42,33 +47,93 @@ namespace ShopProject.API.Controllers
                 return Json(results);
             }
 
-            return BadRequest("Invalid DbSet name");
+            return BadRequest("Invalid entity type name");
 
         }
 
-        // GET api/<DbController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        
+        // POST api/<DbController>/Create
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] dynamic stringContent)
         {
-            return "value";
+           
+            return await CUD(stringContent, "Create");
         }
 
-        // POST api/<DbController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // PUT api/<DbController>/Update
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] dynamic stringContent)
         {
+            return await CUD(stringContent, "Update");
+
         }
 
-        // PUT api/<DbController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // DELETE api/<DbController>/Delete
+        [HttpPost("Delete")]
+        public async Task<IActionResult> Delete([FromBody] dynamic stringContent)
         {
+            return await CUD(stringContent, "Delete");
         }
-
-        // DELETE api/<DbController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        private Type GetEntityType(string entityTypeName)
         {
+            Type? entityType = _context.GetType().GetProperties()
+                .FirstOrDefault(p => p.PropertyType.IsGenericType &&
+                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
+                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName)
+                .PropertyType.GetGenericArguments()[0];
+            return entityType;
+        }
+        
+        private object DeserilizeEntity(JsonElement content)
+        {
+            try
+            {
+                dynamic stringContentJson = content.ToString();
+                
+                
+                dynamic stringContent = Newtonsoft.Json.JsonConvert.DeserializeObject(stringContentJson);
+                var jsonEntity = (string)stringContent["jsonEntity"];
+                var entityTypeName = (string)stringContent["entityTypeName"];
+
+                Type entityType = GetEntityType(entityTypeName);
+                if (entityType == null)
+                    return BadRequest("Invalid entity type name");
+                var entity = JsonSerializer.Deserialize(jsonEntity, entityType);
+                if (entity == null)
+                    return BadRequest("Deserialize was failed");
+                return entity;
+            }
+            catch(Exception e)
+            {
+                return e;
+            }
+            
+        }
+        private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
+        {
+            var entity = DeserilizeEntity(stringContent);
+            try
+            {
+                switch (operationName)
+                {
+                    case "Create":
+                        _context.Add(entity);
+                        break;
+                    case "Update":
+                        _context.Update(entity);
+                        break;
+                    case "Delete":
+                        _context.Remove(entity);
+                        break;
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message + entity.ToString());
+            }
+            return Ok();
+
         }
     }
 }
