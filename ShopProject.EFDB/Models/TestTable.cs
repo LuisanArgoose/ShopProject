@@ -10,4 +10,8 @@ public partial class TestTable
     public string TestText { get; set; } = null!;
 
     public string? TextToUpdate { get; set; }
+    public override string ToString()
+    {
+        return TestId.ToString() + TestText + TextToUpdate;
+    }
 }

@@ -39,6 +39,32 @@ namespace ShopProject.Tests.DataBaseTests
             await _clientExample.TestTables.Fill();
 
             string testMark = "ClientCreateTest";
+            /*var marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                _clientExample.RemoveRange(marks);
+                await _clientExample.SaveChangesAPIAsync();
+            }
+            await _clientExample.TestTables.Fill();
+            marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
+            if (marks.Any())
+            {
+                Assert.Fail();
+            }*/
+            var entity = GetTestExample(testMark);
+            _clientExample.TestTables.Add(entity);
+            await _clientExample.SaveChangesAPIAsync();
+            await _clientExample.TestTables.Fill();
+            var ifExistNow = _clientExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
+            Assert.IsTrue(ifExistNow);
+        }
+       
+        [TestMethod]
+        public async Task ClientUpdateTest()
+        {
+            await _clientExample.TestTables.Fill();
+
+            string testMark = "ClientCreateTest";
             var marks = _clientExample.TestTables.Where(t => t.TestText == testMark);
             if (marks.Any())
             {
@@ -59,18 +85,10 @@ namespace ShopProject.Tests.DataBaseTests
             Assert.IsTrue(ifExistNow);
         }
         [TestMethod]
-        public void DeseriliseModelTest()
-        {
-            var collectionJson = "[{ \"TestId\":1,\"TestText\":\"Test\"},{ \"TestId\":2,\"TestText\":\"Test\"}]";
-            var collection = JsonSerializer.Deserialize<List<TestTable>>(collectionJson);
-            Assert.AreEqual("Test", collection.First().TestText);
-        }
-        [TestMethod]
-        public async Task ClientUpdateTest()
-        {
-        }
-        [TestMethod]
         public async Task ClientDeleteTest()
+        {
+        }
+        public async Task ClientCreateExistTest()
         {
         }
     }

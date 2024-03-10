@@ -16,7 +16,7 @@ namespace ShopProject.Tests.HelpersTests
         {
             try
             {
-                await ClientDbProvider.PostCRD("awd", "randomoperation");
+                await ClientDbProvider.PostCUD("awd", "randomoperation");
             }
             catch(Exception e)
             {

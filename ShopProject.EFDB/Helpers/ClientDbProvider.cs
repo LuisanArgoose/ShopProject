@@ -61,7 +61,8 @@ namespace ShopProject.EFDB.Helpers
             return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
 
         }
-        public static async Task<string> PostCRD(object entity, string operationName)
+
+        public static async Task<string> PostCUD(object entity, string operationName)
         {
 
             List<string> operations = new()
@@ -73,8 +74,10 @@ namespace ShopProject.EFDB.Helpers
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
             var content = ComplectEntity(entity);
-            var url = "ServerDb/" + operationName ;
+            var url = "ServerDb/" + operationName;
             var response = await _httpClient.PostAsync(url, content);
+            var myContent = response.Content.ReadAsStringAsync(); 
+
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();

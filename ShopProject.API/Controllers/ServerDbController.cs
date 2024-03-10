@@ -6,6 +6,7 @@ using System.Reflection;
 //using System.Text.Json;
 using System.Xml.Linq;
 using System.Net.Http;
+using NuGet.Protocol;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -53,22 +54,23 @@ namespace ShopProject.API.Controllers
         
         // POST api/<DbController>/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(dynamic stringContent)
+        public async Task<IActionResult> Create([FromBody] dynamic stringContent)
         {
+           
             return await CUD(stringContent, "Create");
         }
 
         // PUT api/<DbController>/Update
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(dynamic stringContent)
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] dynamic stringContent)
         {
             return await CUD(stringContent, "Update");
 
         }
 
         // DELETE api/<DbController>/Delete
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(dynamic stringContent)
+        [HttpPost("Delete")]
+        public async Task<IActionResult> Delete([FromBody] dynamic stringContent)
         {
             return await CUD(stringContent, "Delete");
         }
@@ -82,15 +84,16 @@ namespace ShopProject.API.Controllers
             return entityType;
         }
         
-        private async Task<object> DeserilizeEntity(dynamic content)
+        private object DeserilizeEntity(JsonElement content)
         {
             try
             {
-                dynamic stringContentJson = await content.ReadAsStringAsync();
+                dynamic stringContentJson = content.ToString();
                 
-                var stringContent = Newtonsoft.Json.JsonConvert.DeserializeObject(stringContentJson);
-                var jsonEntity = (string)stringContent.jsonEntity;
-                var entityTypeName = (string)stringContent.entityTypeName;
+                
+                dynamic stringContent = Newtonsoft.Json.JsonConvert.DeserializeObject(stringContentJson);
+                var jsonEntity = (string)stringContent["jsonEntity"];
+                var entityTypeName = (string)stringContent["entityTypeName"];
 
                 Type entityType = GetEntityType(entityTypeName);
                 if (entityType == null)
@@ -108,7 +111,7 @@ namespace ShopProject.API.Controllers
         }
         private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
         {
-            var entity = await DeserilizeEntity(stringContent);
+            var entity = DeserilizeEntity(stringContent);
             try
             {
                 switch (operationName)
@@ -127,7 +130,7 @@ namespace ShopProject.API.Controllers
             }
             catch(Exception e)
             {
-                return Json(e.Message);
+                return BadRequest(e.Message + entity.ToString());
             }
             return Ok();
 

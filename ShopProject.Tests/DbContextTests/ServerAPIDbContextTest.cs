@@ -61,19 +61,6 @@ namespace ShopProject.Tests.DataBaseTests
             string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
             return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
         }
-/*
-        [TestMethod]
-        public void DeserializingAPostRequestTest()
-        {
-
-            string testMark = "DeserializeTest";
-            var content = GetTestContentCUD(testMark);
-            //Отправить content в тестируемый метод
-            var entity = _testController.DeserilizeEntity(content);
-
-            Assert.AreEqual(testMark, (entity as TestTable).TestText);
-
-        }*/
         [TestMethod]
         public async Task ServerCreateTest()
         {
@@ -91,8 +78,10 @@ namespace ShopProject.Tests.DataBaseTests
                 Assert.Fail();
             }
             var entity = GetTestExample(testMark);
+            
             var content = GetTestContentCUD(entity);
-            await _testController.Create(content);
+            await ClientDbProvider.PostCUD(entity, "Create");
+            //await _testController.Create(content);
             var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
             Assert.IsTrue(ifExistNow);
         }

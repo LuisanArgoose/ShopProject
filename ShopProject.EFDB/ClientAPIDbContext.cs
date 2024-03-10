@@ -115,7 +115,7 @@ namespace ShopProject.EFDB
                         continue;
                 }
                 
-                await ClientDbProvider.PostCRD(entry.Entity, operationName);
+                await ClientDbProvider.PostCUD(entry.Entity, operationName);
 
             }
         }
