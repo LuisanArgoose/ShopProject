@@ -1,0 +1,57 @@
+﻿<Page x:Class="ShopProject.UI.Views.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SettingsPage">
+
+    <Grid>
+        <ScrollViewer >
+            <StackPanel>
+            <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon DatabasePlugConnected20}">
+                <ui:CardExpander.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                FontSize="16"
+                                FontTypography="Body"
+                                Text="Настройки сети" />
+                    </Grid>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:CardControl Padding="20,10,20,10" Header="Подключение к API">
+                        <StackPanel Orientation="Horizontal"   >
+                            <ui:TextBox
+                                FontSize="16"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsEnabled="True"
+                                    Width="200"
+                                
+                                    PlaceholderText="Введите адрес Api"
+                                   />
+
+                            <ui:Button Content="Проверить" Height="36" Margin="10,0,0,0"/>
+                        </StackPanel>
+
+                    
+                    </ui:CardControl>
+                    <ui:InfoBar IsOpen="False" Content="Статус подключения" />
+
+                </StackPanel>
+            </ui:CardExpander>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
