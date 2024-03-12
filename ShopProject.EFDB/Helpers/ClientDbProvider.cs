@@ -62,7 +62,7 @@ namespace ShopProject.EFDB.Helpers
 
         }
 
-        public static async Task<string> PostCUD(object entity, string operationName)
+        public static async Task<string> PostCUD(object entity, string operationName) 
         {
 
             List<string> operations = new()

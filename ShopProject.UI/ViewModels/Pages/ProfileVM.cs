@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ShopProject.UI.ViewModels.Pages
 {
-    public class SettingsVM
+    public partial class ProfileVM : ObservableObject
     {
+
+
     }
 }

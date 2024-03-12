@@ -127,12 +127,14 @@ namespace ShopProject.API.Controllers
                         break;
                 }
                 await _context.SaveChangesAsync();
+                return Json(entity);
+
             }
             catch(Exception e)
             {
-                return BadRequest(e.Message + entity.ToString());
+                return BadRequest();
             }
-            return Ok();
+            
 
         }
     }

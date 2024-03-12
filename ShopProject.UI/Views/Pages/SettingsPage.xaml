@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="1200"
       Title="SettingsPage">
 
     <Grid>
@@ -31,24 +31,45 @@
                     </Grid>
                 </ui:CardExpander.Header>
                 <StackPanel>
-                    <ui:CardControl Padding="20,10,20,10" Header="Подключение к API">
-                        <StackPanel Orientation="Horizontal"   >
-                            <ui:TextBox
-                                FontSize="16"
+                        <ui:CardControl Padding="20,10,20,10" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                    FontSize="16"
+                                    Text="Подключение к API"
+                                    TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+
+                            <StackPanel Orientation="Horizontal"   >
+                                <ui:TextBox
+                                    Margin="10,0,0,0"
+                                    FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    IsEnabled="True"
                                     Width="200"
-                                
-                                    PlaceholderText="Введите адрес Api"
-                                   />
+                                    IsEnabled="True"
+                                    PlaceholderText="Логин"/>
+                                <ui:PasswordBox
+                                    
+                                    Margin="10,0,0,0"
+                                    FontSize="16"
+                                    HorizontalContentAlignment="Stretch"
+                                    Width="200"
+                                    PlaceholderText="Пароль"/>
+                                <ui:TextBox
+                                    Margin="10,0,0,0"
+                                    FontSize="16"
+                                    HorizontalContentAlignment="Stretch"
+                                    Width="200"
+                                    IsEnabled="True"
+                                    PlaceholderText="Адрес Api"/>   
 
-                            <ui:Button Content="Проверить" Height="36" Margin="10,0,0,0"/>
-                        </StackPanel>
-
+                                <ui:Button Content="Проверить" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                                <Grid/>
+                            </StackPanel>
+                        
                     
                     </ui:CardControl>
                     <ui:InfoBar IsOpen="False" Content="Статус подключения" />
-
+                        
                 </StackPanel>
             </ui:CardExpander>
             </StackPanel>

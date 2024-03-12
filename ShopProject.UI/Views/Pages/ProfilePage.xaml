@@ -4,11 +4,21 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
 
     <Grid>
-        <Label Content="Profile"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ui:DataGrid />
+        <StackPanel Grid.Row="1" Margin="10,2" Orientation="Horizontal">
+            <ui:Button Content="Загрузить" Margin="0,0,10,0"/>
+            <ComboBox Height="30" Width="200" />
+
+        </StackPanel>
     </Grid>
 </Page>
