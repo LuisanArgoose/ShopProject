@@ -6,7 +6,7 @@ using ShopProject.EFDB.Models;
 using System.Net.Http;
 using System.Text;
 using static System.Net.WebRequestMethods;
-namespace ShopProject.Tests.DataBaseTests
+namespace ShopProject.Tests.DbContextTests
 {
     [TestClass]
     public class ServerAPIDbContextTest
@@ -22,32 +22,15 @@ namespace ShopProject.Tests.DataBaseTests
             _testController = new ServerDbController(_serverExampleToController);
         }
 
-        private TestTable GetTestExample(string testMark)
+        private static TestTable GetTestExample(string testMark)
         {
-            return  new TestTable()
+            return new TestTable()
             {
                 TestText = testMark,
                 TextToUpdate = DateTime.Now.ToString()
             };
         }
-        private StringContent? GetTestContentCUD(string testMark)
-        {
-            //Создать Entity
-            var testTable = GetTestExample(testMark);
-
-            //Обернуть содержание и тип в content 
-            string jsonEntity = JsonSerializer.Serialize(testTable);
-            string entityTypeName = testTable.GetType().Name;
-            var requestData = new
-            {
-                jsonEntity,
-                entityTypeName
-
-            };
-            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
-            return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
-        }
-        private StringContent? GetTestContentCUD(TestTable testTable)
+        private static StringContent GetTestContentCUD(TestTable testTable)
         {
             //Обернуть содержание и тип в content 
             string jsonEntity = JsonSerializer.Serialize(testTable);
@@ -64,7 +47,7 @@ namespace ShopProject.Tests.DataBaseTests
         [TestMethod]
         public async Task ServerCreateTest()
         {
-            
+
             string testMark = "ServerCreateTest";
             var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
             if (marks.Any())
@@ -78,7 +61,7 @@ namespace ShopProject.Tests.DataBaseTests
                 Assert.Fail();
             }
             var entity = GetTestExample(testMark);
-            
+
             var content = GetTestContentCUD(entity);
             await ClientDbProvider.PostCUD(entity, "Create");
             //await _testController.Create(content);

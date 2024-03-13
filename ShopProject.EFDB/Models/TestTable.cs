@@ -3,13 +3,17 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class TestTable
+public partial class TestTable : ObservableObject
 {
-    public int TestId { get; set; }
+    [ObservableProperty]
+    private int _testId;
 
-    public string TestText { get; set; } = null!;
+    [ObservableProperty]
+    private string _testText = null!;
 
-    public string? TextToUpdate { get; set; }
+    [ObservableProperty]
+    private string? _textToUpdate;
+
     public override string ToString()
     {
         return TestId.ToString() + TestText + TextToUpdate;

@@ -35,8 +35,6 @@ public partial class ServerAPIDbContext : ShopProjectDbContext
 
     }
     
-    
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
    
 }

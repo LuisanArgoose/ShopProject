@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopProject.EFDB.Helpers
 {
@@ -28,26 +28,16 @@ namespace ShopProject.EFDB.Helpers
         {
             _httpClient.BaseAddress = new Uri(uri); 
         }
-        public static async Task<string?> GetEntitiesAsync(Type entityType)
+        public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)
         {
-
             var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
-            var responseEntityCollection = await _httpClient.GetAsync(url);
+            var response = await _httpClient.GetAsync(url);
+            return response;
 
-            if (responseEntityCollection.IsSuccessStatusCode)
-            {
-                var jsonEntityCollection = await responseEntityCollection.Content.ReadAsStringAsync();
-
-                return jsonEntityCollection;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         
-        public static StringContent ComplectEntity(object entity)
+        private static StringContent ComplectEntity(object entity)
         {
             string jsonEntity = JsonSerializer.Serialize(entity);
             string entityTypeName = entity.GetType().Name;
@@ -62,32 +52,21 @@ namespace ShopProject.EFDB.Helpers
 
         }
 
-        public static async Task<string> PostCUD(object entity, string operationName)
+        public static async Task<HttpResponseMessage> PostCUD(object entity, string operationName) 
         {
 
-            List<string> operations = new()
-            {
+            List<string> operations =
+            [
                 "Create",
                 "Delete",
                 "Update"
-            };
+            ];
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
             var content = ComplectEntity(entity);
             var url = "ServerDb/" + operationName;
             var response = await _httpClient.PostAsync(url, content);
-            var myContent = response.Content.ReadAsStringAsync(); 
-
-            if (response.IsSuccessStatusCode)
-            {
-                string result = await response.Content.ReadAsStringAsync();
-                return result;
-            }
-            else
-            {
-                return "Request failed with status code: " + response.StatusCode;
-            }
+            return response;
         }
-       
     }
 }

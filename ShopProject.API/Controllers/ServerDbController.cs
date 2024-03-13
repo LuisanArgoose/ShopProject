@@ -15,15 +15,9 @@ namespace ShopProject.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServerDbController: Controller
+    public class ServerDbController(ServerAPIDbContext context) : Controller
     {
-        private readonly ServerAPIDbContext _context;
-
-        
-        public ServerDbController(ServerAPIDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ServerAPIDbContext _context = context;
 
 
         // GET: api/<DbController>/Select/entityTypeName
@@ -39,11 +33,19 @@ namespace ShopProject.API.Controllers
             if (dbSetProperty != null)
             {
                 var dbSet = dbSetProperty.GetValue(_context);
-                MethodInfo toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
-                    .GetMethod("ToListAsync")
-                    .MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
+                if (dbSet == null)
+                {
+                    return BadRequest("Not found property in dbContext");
+                }
+                MethodInfo? toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
+                    .GetMethod("ToListAsync");
+                if(toListAsyncMethod == null)
+                {
+                    return BadRequest("Not found ToListAsync method");
+                }
+                toListAsyncMethod = toListAsyncMethod.MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
 
-                var results = await (dynamic)toListAsyncMethod.Invoke(null, new object[] { dbSet, null });
+                var results = await (dynamic?)toListAsyncMethod.Invoke(null, [dbSet, null]);
                 return Json(results);
             }
 
@@ -76,11 +78,11 @@ namespace ShopProject.API.Controllers
         }
         private Type GetEntityType(string entityTypeName)
         {
-            Type? entityType = _context.GetType().GetProperties()
+            PropertyInfo? dbSet = _context.GetType().GetProperties()
                 .FirstOrDefault(p => p.PropertyType.IsGenericType &&
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
-                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName)
-                .PropertyType.GetGenericArguments()[0];
+                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName) ?? throw new Exception("Not found dbSet");
+            Type? entityType = dbSet.PropertyType.GetGenericArguments()[0];
             return entityType;
         }
         
@@ -127,12 +129,14 @@ namespace ShopProject.API.Controllers
                         break;
                 }
                 await _context.SaveChangesAsync();
+                return Json(entity);
+
             }
             catch(Exception e)
             {
-                return BadRequest(e.Message + entity.ToString());
+                return BadRequest(e);
             }
-            return Ok();
+            
 
         }
     }
