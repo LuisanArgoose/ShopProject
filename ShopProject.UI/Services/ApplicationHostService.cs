@@ -7,15 +7,9 @@ using System.Windows;
 
 namespace ShopProject.UI.Services
 {
-    public class ApplicationHostService : IHostedService
+    public class ApplicationHostService(IServiceProvider serviceProvider) : IHostedService
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public ApplicationHostService(IServiceProvider serviceProvider)
-        {
-            // If you want, you can do something with these services at the beginning of loading the application.
-            _serviceProvider = serviceProvider;
-        }
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         /// <summary>
         /// Triggered when the application host is ready to start the service.
