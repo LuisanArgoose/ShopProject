@@ -3,15 +3,20 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class ProductConsignmentProduct
+public partial class ProductConsignmentProduct : ObservableObject
 {
-    public int ProductId { get; set; }
+    [ObservableProperty]
+    private int _productId;
 
-    public int ProductConsignmentId { get; set; }
+    [ObservableProperty]
+    private int _productConsignmentId;
 
-    public int Count { get; set; }
+    [ObservableProperty]
+    private int _count;
 
-    public virtual Product Product { get; set; } = null!;
+    [ObservableProperty]
+	private Product _product = null!;
 
-    public virtual ProductConsignment ProductConsignment { get; set; } = null!;
+    [ObservableProperty]
+	private ProductConsignment _productConsignment = null!;
 }

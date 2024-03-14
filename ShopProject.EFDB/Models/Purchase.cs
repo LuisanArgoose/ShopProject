@@ -3,17 +3,23 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Purchase
+public partial class Purchase : ObservableObject
 {
-    public int PurchaseId { get; set; }
+    [ObservableProperty]
+    private int _purchaseId;
 
-    public DateTime DateTime { get; set; }
+    [ObservableProperty]
+    private DateTime _dateTime;
 
-    public int WorkerId { get; set; }
+    [ObservableProperty]
+    private int _workerId;
 
-    public virtual ICollection<PurchaseProductInStorage> PurchaseProductInStorages { get; set; } = new List<PurchaseProductInStorage>();
+    [ObservableProperty]
+	private ICollection<PurchaseProductInStorage> _purchaseProductInStorages = new List<PurchaseProductInStorage>();
 
-    public virtual ICollection<Refund> Refunds { get; set; } = new List<Refund>();
+    [ObservableProperty]
+	private ICollection<Refund> _refunds = new List<Refund>();
 
-    public virtual Worker Worker { get; set; } = null!;
+    [ObservableProperty]
+	private Worker _worker = null!;
 }

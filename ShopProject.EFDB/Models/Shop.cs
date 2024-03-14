@@ -3,25 +3,35 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Shop
+public partial class Shop : ObservableObject
 {
-    public int ShopId { get; set; }
+    [ObservableProperty]
+    private int _shopId;
 
-    public string Addres { get; set; } = null!;
+    [ObservableProperty]
+	private string _addres = null!;
 
-    public int ShopTypeId { get; set; }
+    [ObservableProperty]
+    private int _shopTypeId;
 
-    public int RegionId { get; set; }
+    [ObservableProperty]
+    private int _regionId;
 
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    [ObservableProperty]
+	private ICollection<Payment> _payments = new List<Payment>();
 
-    public virtual ICollection<ProductsInStorage> ProductsInStorages { get; set; } = new List<ProductsInStorage>();
+    [ObservableProperty]
+	private ICollection<ProductsInStorage> _productsInStorages = new List<ProductsInStorage>();
 
-    public virtual Region Region { get; set; } = null!;
+    [ObservableProperty]
+	private Region _region = null!;
 
-    public virtual ICollection<ShopPlan> ShopPlans { get; set; } = new List<ShopPlan>();
+    [ObservableProperty]
+	private ICollection<ShopPlan> _shopPlans = new List<ShopPlan>();
 
-    public virtual ICollection<ShopPosition> ShopPositions { get; set; } = new List<ShopPosition>();
+    [ObservableProperty]
+	private ICollection<ShopPosition> _shopPositions = new List<ShopPosition>();
 
-    public virtual ShopType ShopType { get; set; } = null!;
+    [ObservableProperty]
+	private ShopType _shopType = null!;
 }

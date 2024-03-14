@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class ShopType
+public partial class ShopType : ObservableObject
 {
-    public int ShopTypeId { get; set; }
+    [ObservableProperty]
+    private int _shopTypeId;
 
-    public string ShopTypeName { get; set; } = null!;
+    [ObservableProperty]
+	private string _shopTypeName = null!;
 
-    public virtual ICollection<Shop> Shops { get; set; } = new List<Shop>();
+    [ObservableProperty]
+	private ICollection<Shop> _shops = new List<Shop>();
 }

@@ -3,25 +3,35 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Payment
+public partial class Payment : ObservableObject
 {
-    public int PaymentId { get; set; }
+    [ObservableProperty]
+    private int _paymentId;
 
-    public int ShopId { get; set; }
+    [ObservableProperty]
+    private int _shopId;
 
-    public int? ApprovierWorkerId { get; set; }
+    [ObservableProperty]
+    private int? _approvierWorkerId;
 
-    public int RecipientWorkerId { get; set; }
+    [ObservableProperty]
+    private int _recipientWorkerId;
 
-    public decimal Amount { get; set; }
+    [ObservableProperty]
+    private decimal _amount;
 
-    public bool IsApproved { get; set; }
+    [ObservableProperty]
+    private bool _isApproved;
 
-    public string? Comment { get; set; }
+    [ObservableProperty]
+    private string? _comment;
 
-    public virtual Worker? ApprovierWorker { get; set; }
+    [ObservableProperty]
+    private Worker? _approvierWorker;
 
-    public virtual Worker RecipientWorker { get; set; } = null!;
+    [ObservableProperty]
+	private Worker _recipientWorker = null!;
 
-    public virtual Shop Shop { get; set; } = null!;
+    [ObservableProperty]
+	private Shop _shop = null!;
 }

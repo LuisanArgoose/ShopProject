@@ -3,19 +3,26 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Position
+public partial class Position : ObservableObject
 {
-    public int PositionId { get; set; }
+    [ObservableProperty]
+    private int _positionId;
 
-    public string PositionName { get; set; } = null!;
+    [ObservableProperty]
+	private  string _positionName  = null!;
 
-    public int SalaryTypeId { get; set; }
+    [ObservableProperty]
+    private int _salaryTypeId;
 
-    public int? RoleId { get; set; }
+    [ObservableProperty]
+    private int? _roleId;
 
-    public virtual Role? Role { get; set; }
+    [ObservableProperty]
+    private Role? _role;
 
-    public virtual SalaryType SalaryType { get; set; } = null!;
+    [ObservableProperty]
+	private SalaryType _salaryType  = null!;
 
-    public virtual ICollection<ShopPosition> ShopPositions { get; set; } = new List<ShopPosition>();
+    [ObservableProperty]
+	private ICollection<ShopPosition> _shopPositions  = new List<ShopPosition>();
 }

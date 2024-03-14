@@ -3,19 +3,26 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class ShopPlan
+public partial class ShopPlan : ObservableObject
 {
-    public int ShopPlanId { get; set; }
+    [ObservableProperty]
+    private int _shopPlanId;
 
-    public int ShopId { get; set; }
+    [ObservableProperty]
+    private int _shopId;
 
-    public int Turnovet { get; set; }
+    [ObservableProperty]
+    private int _turnovet;
 
-    public decimal Profit { get; set; }
+    [ObservableProperty]
+    private decimal _profit;
 
-    public DateOnly StartDate { get; set; }
+    [ObservableProperty]
+    private DateOnly _startDate;
 
-    public DateOnly EndDate { get; set; }
+    [ObservableProperty]
+    private DateOnly _endDate;
 
-    public virtual Shop Shop { get; set; } = null!;
+    [ObservableProperty]
+	private Shop _shop = null!;
 }

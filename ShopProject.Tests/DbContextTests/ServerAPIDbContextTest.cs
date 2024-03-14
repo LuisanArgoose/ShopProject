@@ -116,6 +116,11 @@ namespace ShopProject.Tests.DbContextTests
             var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
             Assert.IsTrue(!ifExistNow);
         }
-
+        [TestMethod]
+        public void CorrectUploadWithObservableTest()
+        {
+            var result = _serverExample.WorkerTypes.FirstOrDefault();
+            Assert.IsNotNull(result.Workers.Count > 0);
+        }
     }
 }

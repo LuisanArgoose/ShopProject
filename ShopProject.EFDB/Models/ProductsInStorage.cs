@@ -3,23 +3,32 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class ProductsInStorage
+public partial class ProductsInStorage : ObservableObject
 {
-    public int ProductInStorageId { get; set; }
+    [ObservableProperty]
+    private int _productInStorageId;
 
-    public int ShopId { get; set; }
+    [ObservableProperty]
+    private int _shopId;
 
-    public int ProductId { get; set; }
+    [ObservableProperty]
+    private int _productId;
 
-    public int ProductCount { get; set; }
+    [ObservableProperty]
+    private int _productCount;
 
-    public virtual Product Product { get; set; } = null!;
+    [ObservableProperty]
+	private Product _product = null!;
 
-    public virtual ICollection<ProductOrderProductInStorage> ProductOrderProductInStorages { get; set; } = new List<ProductOrderProductInStorage>();
+    [ObservableProperty]
+	private ICollection<ProductOrderProductInStorage> _productOrderProductInStorages = new List<ProductOrderProductInStorage>();
 
-    public virtual ICollection<PurchaseProductInStorage> PurchaseProductInStorages { get; set; } = new List<PurchaseProductInStorage>();
+    [ObservableProperty]
+	private ICollection<PurchaseProductInStorage> _purchaseProductInStorages = new List<PurchaseProductInStorage>();
 
-    public virtual ICollection<RefundProductInStorage> RefundProductInStorages { get; set; } = new List<RefundProductInStorage>();
+    [ObservableProperty]
+	private ICollection<RefundProductInStorage> _refundProductInStorages = new List<RefundProductInStorage>();
 
-    public virtual Shop Shop { get; set; } = null!;
+    [ObservableProperty]
+	private Shop _shop = null!;
 }

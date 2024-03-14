@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShopProject.EFDB.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.Configuration;
