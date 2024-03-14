@@ -28,6 +28,19 @@ namespace ShopProject.EFDB.Helpers
         {
             _httpClient.BaseAddress = new Uri(uri); 
         }
+
+        public static void TestConnect()
+        {
+
+        }
+
+        public static async Task<HttpResponseMessage> GetEntitiesNameAsync()
+        {
+            var url = "ServerDb/SelectEntitiesName";
+            var response = await _httpClient.GetAsync(url);
+            return response;
+
+        }
         public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)
         {
             var url = "ServerDb/Select?entityTypeName=" + entityType.Name;

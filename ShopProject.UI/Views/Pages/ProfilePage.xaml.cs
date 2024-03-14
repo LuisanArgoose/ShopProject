@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,20 @@ namespace ShopProject.UI.Views.Pages
     /// </summary>
     public partial class ProfilePage : Page
     {
-        public ProfilePage()
+        public ProfileVM ViewModel { get; }
+
+        public ProfilePage(
+            ProfileVM viewModel
+            )
         {
+            ViewModel = viewModel;
+            DataContext = this;
+
+            
+
             InitializeComponent();
+
+            
         }
     }
 }

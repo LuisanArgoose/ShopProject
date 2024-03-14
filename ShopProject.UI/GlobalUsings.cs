@@ -14,3 +14,6 @@ global using ShopProject.UI.DependencyModel;
 global using ShopProject.UI.Services;
 global using ShopProject.UI.Services.Contracts;
 global using ShopProject.UI.ViewModels.Pages;
+global using ShopProject.EFDB.Helpers;
+global using ShopProject.EFDB.Models;
+global using ShopProject.EFDB.Extentions;

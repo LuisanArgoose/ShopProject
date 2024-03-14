@@ -11,6 +11,8 @@
     Title="ShopProject"
     WindowCornerPreference="Default"
     WindowStartupLocation="CenterScreen"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Height="450" Width="800">
     <Grid>
         <ui:TitleBar
