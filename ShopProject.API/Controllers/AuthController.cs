@@ -18,7 +18,7 @@ namespace ShopProject.API.Controllers
         [HttpPost]
         public IActionResult RequestToken([FromBody] LoginViewModel login)
         {
-
+            //_context.Workers.
             if (login.Username == "user" && login.Password == "password")
             {
                 var claims = new[]

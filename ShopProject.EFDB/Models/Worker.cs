@@ -12,6 +12,12 @@ public partial class Worker : ObservableObject
     private string _fullname = null!;
 
     [ObservableProperty]
+    private string _login = null!;
+
+    [ObservableProperty]
+    private string _password = null!;
+
+    [ObservableProperty]
     private int _workerTypeId;
 
     [ObservableProperty]
