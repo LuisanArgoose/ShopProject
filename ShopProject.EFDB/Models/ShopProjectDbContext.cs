@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ShopProject.EFDB.Models;
 
@@ -65,6 +66,19 @@ public partial class ShopProjectDbContext : DbContext
 
     public virtual DbSet<WorkerType> WorkerTypes { get; set; }
 
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+
+        var configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json")
+               .Build();
+
+        var connectionString = configuration.GetConnectionString("ShopProjectDBCode");
+        optionsBuilder.UseNpgsql(connectionString);
+
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
