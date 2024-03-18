@@ -16,36 +16,38 @@ namespace ShopProject.API.Controllers
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
 
         [HttpPost]
-        public IActionResult RequestToken([FromBody] LoginViewModel login)
+        public IActionResult RequestToken([FromBody] string login, string password)
         {
-            _context.Workers.Select(x => new { x.Login, x.Password });
-            if (login.Username == "user" && login.Password == "password")
+            var tokenLogin = _context.TokenLogins.Where(x => x.Login == login);
+            if(!tokenLogin.Any())
             {
-                var claims = new[]
-                {
-                new Claim(ClaimTypes.Name, login.Username)
-            };
-
-                var token = new JwtSecurityToken(
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(30),
-                    signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
-                );
-
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
-                });
+                return BadRequest("Неправильные учетные данные");
+            }
+            if(tokenLogin.First().Password != password) 
+            {
+                return BadRequest("Неправильные учетные данные");
             }
 
-            return BadRequest("Неправильные учетные данные");
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, login)
+            };
+            
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo
+            });
+            
         }
     }
 
-    public class LoginViewModel
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
 }

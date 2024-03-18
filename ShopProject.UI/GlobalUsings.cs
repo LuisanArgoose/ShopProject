@@ -1,6 +1,7 @@
 ﻿
 
 global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
 global using Wpf.Ui;
 global using Wpf.Ui.Controls;
 global using System.Collections.ObjectModel;
