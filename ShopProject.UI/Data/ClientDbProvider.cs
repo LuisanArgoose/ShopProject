@@ -3,13 +3,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace ShopProject.EFDB.Helpers
+namespace ShopProject.UI.Data
 {
     public class ClientDbProvider
     {
@@ -29,9 +30,23 @@ namespace ShopProject.EFDB.Helpers
             _httpClient.BaseAddress = new Uri(uri); 
         }
 
-        public static void TestConnect()
+        public static async Task<HttpResponseMessage> TestConnect(string login, string password)
         {
+            try
+            {
+                var url = "ServerDb/Auth";
+                var response = await _httpClient.GetAsync(url);
+                return response;
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+            }
+            catch
+            {
+                var result = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                return result;
+            }
 
+
+           
         }
 
         public static async Task<HttpResponseMessage> GetEntitiesNameAsync()
@@ -54,10 +69,10 @@ namespace ShopProject.EFDB.Helpers
         {
             string jsonEntity = JsonSerializer.Serialize(entity);
             string entityTypeName = entity.GetType().Name;
-            var requestData = new
+            EntityModel requestData = new EntityModel
             {
-                jsonEntity,
-                entityTypeName
+                JsonEntity = jsonEntity,
+                EntityTypeName = entityTypeName
 
             };
             string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);

@@ -6,15 +6,16 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ShopProject.EFDB.Extentions;
 using System.Security.Principal;
+using ShopProject.UI.Data;
+using ShopProject.UI.Helpers;
 
 namespace ShopProject.UI.ViewModels.Pages
 {
     public partial class ProfileVM : ObservableObject
     {
-        [ObservableProperty]
-        private IEntityList _table;
+        //[ObservableProperty]
+        //private IEntityList _table;
 
         [ObservableProperty]
         private BindingList<string> _tablesName  = [];
@@ -60,8 +61,8 @@ namespace ShopProject.UI.ViewModels.Pages
         {
             if (SelectedTable == null)
                 return;
-            Table = new EntityList<TestTable>();
-            Table.Fill();
+            //Table = new EntityList<TestTable>();
+            //Table.Fill();
         }
     }
 }

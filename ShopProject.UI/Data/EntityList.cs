@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
-using ShopProject.EFDB.Helpers;
+using ShopProject.UI.Data;
 using ShopProject.EFDB.Models;
 using System;
 using System.Collections.Generic;
@@ -10,10 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ShopProject.UI.Helpers;
 
-namespace ShopProject.EFDB.Extentions
+namespace ShopProject.UI.Data
 {
-    public class EntityList<T> :  BindingList<T>, IEntityList
+    public class EntityList<T> :  BindingList<T>
     {
 
         public EntityList() { }

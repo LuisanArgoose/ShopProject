@@ -16,7 +16,7 @@ namespace ShopProject.API.Controllers
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
 
         [HttpPost]
-        public IActionResult RequestToken([FromBody] string login, string password)
+        public IActionResult RequestToken(string login, string password)
         {
             var tokenLogin = _context.TokenLogins.Where(x => x.Login == login);
             if(!tokenLogin.Any())
@@ -37,14 +37,12 @@ namespace ShopProject.API.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
             );
 
             return Ok(new
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
             });
             
         }

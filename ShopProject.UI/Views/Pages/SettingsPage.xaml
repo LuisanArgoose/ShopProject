@@ -6,11 +6,26 @@
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
+       d:DataContext="{d:DesignInstance local:SettingsPage,
+                                IsDesignTimeCreatable=False}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       d:DesignHeight="450" d:DesignWidth="1200"
       Title="SettingsPage">
 
     <Grid>
-        <ScrollViewer >
+        <Grid.RowDefinitions> 
+            <RowDefinition Height="46"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ui:Button Content="Сохранить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.SaveSettingsCommand}"/>
+            <ui:Button Content="Сбросить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.LoadSettingsCommand}" Margin="10,0,0,0"/>
+        </StackPanel>
+
+
+        <ScrollViewer Grid.Row="1">
             <StackPanel>
             <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon DatabasePlugConnected20}">
                 <ui:CardExpander.Header>
@@ -41,28 +56,30 @@
 
                             <StackPanel Orientation="Horizontal"   >
                                 <ui:TextBox
+                                    Text="{Binding ViewModel.Settings.APISettingsPart.APILoginSettings.Login, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
                                     Width="200"
-                                    IsEnabled="True"
-                                    PlaceholderText="Логин"/>
+                                    IsEnabled="True"/>
                                 <ui:PasswordBox
-                                    
+                                    Text="{Binding ViewModel.Settings.APISettingsPart.APILoginSettings.Password, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
                                     Width="200"
                                     PlaceholderText="Пароль"/>
                                 <ui:TextBox
+                                    Text="{Binding ViewModel.Settings.APISettingsPart.APILoginSettings.Url, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
                                     Width="200"
                                     IsEnabled="True"
-                                    PlaceholderText="Адрес Api"/>   
+                                    PlaceholderText="Адрес Api"/>
 
-                                <ui:Button Content="Проверить" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                                <ui:Button Content="Проверить" Command="{Binding  ViewModel.Settings.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                                
                                 <Grid/>
                             </StackPanel>
                         

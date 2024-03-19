@@ -13,15 +13,36 @@ namespace ShopProject.UI.ViewModels.Pages
     {
         public SettingsVM()
         {
-
+            SaveSettingsCommand = new AsyncRelayCommand(SaveSettings);
+            LoadSettingsCommand = new AsyncRelayCommand(LoadSettings);
+            LoadSettingsCommand.Execute(this);
         }
 
         [ObservableProperty]
+        private Settings _settings = Settings.LoadInstance();
 
-        // Вывод настроек API
-        private APISettings _apiSettings = null!;
+        public IAsyncRelayCommand SaveSettingsCommand { get; }
 
+        private async Task SaveSettings()
+        {
+            await Task.Run(() =>
+            {
+                Settings.SaveInstance();
+                OnPropertyChanged(nameof(Settings));
+            });
+            
+        }
+        public IAsyncRelayCommand LoadSettingsCommand { get; }
 
-        
+        private async Task LoadSettings()
+        {
+            await Task.Run(() =>
+            {
+                Settings.LoadInstance();
+                OnPropertyChanged(nameof(Settings));
+
+            });
+
+        }
     }
 }

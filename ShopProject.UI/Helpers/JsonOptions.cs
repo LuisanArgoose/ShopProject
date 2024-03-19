@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ShopProject.EFDB.Helpers
+namespace ShopProject.UI.Helpers
 {
     public static class JsonOptions
     {

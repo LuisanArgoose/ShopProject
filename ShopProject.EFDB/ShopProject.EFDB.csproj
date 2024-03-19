@@ -20,4 +20,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extentions\" />
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>
