@@ -3,13 +3,17 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Region
+public partial class Region : ObservableObject
 {
-    public int RegionId { get; set; }
+    [ObservableProperty]
+    private int _regionId;
 
-    public string RegionName { get; set; } = null!;
+    [ObservableProperty]
+	private  string _regionName = null!;
 
-    public virtual ICollection<RegionPlan> RegionPlans { get; set; } = new List<RegionPlan>();
+    [ObservableProperty]
+	private ICollection<RegionPlan> _regionPlans = new List<RegionPlan>();
 
-    public virtual ICollection<Shop> Shops { get; set; } = new List<Shop>();
+    [ObservableProperty]
+	private ICollection<Shop> _shops = new List<Shop>();
 }

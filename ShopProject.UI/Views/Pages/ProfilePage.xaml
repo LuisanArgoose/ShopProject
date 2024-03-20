@@ -6,18 +6,24 @@
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance local:ProfilePage,
+                                     IsDesignTimeCreatable=False}"
+      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
 
-    <Grid>
+    <Grid  >
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ui:DataGrid />
-        <StackPanel Grid.Row="1" Margin="10,2" Orientation="Horizontal">
-            <ui:Button Content="Загрузить" Margin="0,0,10,0"/>
-            <ComboBox Height="30" Width="200" />
+
+        <StackPanel Grid.Row="1" Margin="0,10" Orientation="Horizontal">
+            <ui:Button Height="36" Content="Загрузить" Margin="0,0,10,0" Command="{Binding ViewModel.LoadEntitiesNameCommand}" />
+            <ComboBox  Width="200" ItemsSource="{Binding ViewModel.TablesName}" SelectedItem="{Binding ViewModel.SelectedTable}"/>
 
         </StackPanel>
     </Grid>

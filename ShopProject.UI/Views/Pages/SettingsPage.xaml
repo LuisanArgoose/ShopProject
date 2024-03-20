@@ -6,11 +6,26 @@
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
+       d:DataContext="{d:DesignInstance local:SettingsPage,
+                                IsDesignTimeCreatable=False}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       d:DesignHeight="450" d:DesignWidth="1200"
       Title="SettingsPage">
 
     <Grid>
-        <ScrollViewer >
+        <Grid.RowDefinitions> 
+            <RowDefinition Height="46"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ui:Button Content="Сохранить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.SaveSettingsCommand}"/>
+            <ui:Button Content="Сбросить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.LoadSettingsCommand}" Margin="10,0,0,0"/>
+        </StackPanel>
+
+
+        <ScrollViewer Grid.Row="1">
             <StackPanel>
             <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon DatabasePlugConnected20}">
                 <ui:CardExpander.Header>
@@ -41,37 +56,110 @@
 
                             <StackPanel Orientation="Horizontal"   >
                                 <ui:TextBox
+                                    Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Login, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
                                     Width="200"
                                     IsEnabled="True"
                                     PlaceholderText="Логин"/>
-                                <ui:PasswordBox
-                                    
+                                <ui:TextBox
+                                    Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Password, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
                                     Width="200"
                                     PlaceholderText="Пароль"/>
                                 <ui:TextBox
+                                    Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Url, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,0,0,0"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    Width="200"
+                                    Width="300"
                                     IsEnabled="True"
-                                    PlaceholderText="Адрес Api"/>   
+                                    PlaceholderText="Адрес Api"/>
 
-                                <ui:Button Content="Проверить" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                                <ui:Button Content="Проверить" Command="{Binding  ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+
                                 <Grid/>
                             </StackPanel>
-                        
-                    
-                    </ui:CardControl>
-                    <ui:InfoBar IsOpen="False" Content="Статус подключения" />
-                        
-                </StackPanel>
+
+
+                        </ui:CardControl>
+
+                    </StackPanel>
             </ui:CardExpander>
+                <ui:CardExpander Grid.Column="0" Margin="0,10,0,0" Icon="{ui:SymbolIcon Alert20}">
+                    <ui:CardExpander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    FontSize="16"
+                    FontTypography="Body"
+                    Text="Настройки уведомлений" />
+                        </Grid>
+                    </ui:CardExpander.Header>
+                    <StackPanel>
+                        <ui:CardControl Padding="20,10,20,10" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                        FontSize="16"
+                        Text="Время показа уведомлений"
+                        TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider x:Name="AlertTimePicker" TickPlacement="Both" Width="200" Minimum="1" Value="{Binding ViewModel.Settings.SettingsModel.AlertSettingsPart.AlertLifeTime, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Label Content="{Binding ElementName=AlertTimePicker, Path=Value}" VerticalAlignment="Center" FontSize="16" Margin="10,0,0,0"/>
+                                <Label Content="Секунд" VerticalAlignment="Center" FontSize="16" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            
+
+
+                        </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0">
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                FontSize="16"
+                                Text="Системные уведомления"
+                                TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+                            <StackPanel Orientation="Horizontal" Width="80">
+                                <ui:ToggleSwitch OffContent="Выкл" OnContent="Вкл" IsChecked="{Binding ViewModel.Settings.SettingsModel.AlertSettingsPart.ShowSystemAlerts, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            </StackPanel>
+
+
+
+
+                        </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0">
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                    FontSize="16"
+                                    Text="Проверочное уведомление"
+                                    TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+                            <StackPanel Orientation="Horizontal" >
+                                <ui:Button Content="Вызвать" Command="{Binding ViewModel.Settings.SettingsModel.AlertSettingsPart.TestAlertCommand}"/>
+
+                            </StackPanel>
+
+
+
+
+                        </ui:CardControl>
+
+                    </StackPanel>
+                </ui:CardExpander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

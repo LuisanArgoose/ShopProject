@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopProject.EFDB.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection;
-//using System.Text.Json;
 using System.Xml.Linq;
 using System.Net.Http;
 using NuGet.Protocol;
@@ -19,6 +17,20 @@ namespace ShopProject.API.Controllers
     {
         private readonly ServerAPIDbContext _context = context;
 
+        // GET: api/<DbController>/SelectEntitiesName
+        [HttpGet("SelectEntitiesName")]
+        public async Task<IActionResult> SelectEntitiesName()
+        {
+            List<string> EntitiesName = [];
+            await Task.Run(() =>
+            {
+                EntitiesName = _context.GetType().GetProperties()
+                .Where(p => p.PropertyType.IsGenericType &&
+                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)).Select(v => v.PropertyType.GetGenericArguments()[0].Name).ToList();
+            });
+            
+            return Json(EntitiesName);
+        }
 
         // GET: api/<DbController>/Select/entityTypeName
         [HttpGet("Select")]

@@ -3,29 +3,47 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Worker
+public partial class Worker : ObservableObject
 {
-    public int WorkerId { get; set; }
+    [ObservableProperty]
+    private int _workerId;
 
-    public string Fullname { get; set; } = null!;
+    [ObservableProperty]
+    private string _fullname = null!;
 
-    public int WorkerTypeId { get; set; }
+    [ObservableProperty]
+    private string _login = null!;
 
-    public virtual ICollection<OrderConsignment> OrderConsignments { get; set; } = new List<OrderConsignment>();
+    [ObservableProperty]
+    private string _password = null!;
 
-    public virtual ICollection<Payment> PaymentApprovierWorkers { get; set; } = new List<Payment>();
+    [ObservableProperty]
+    private int _workerTypeId;
 
-    public virtual ICollection<Payment> PaymentRecipientWorkers { get; set; } = new List<Payment>();
+    [ObservableProperty]
+    private ICollection<OrderConsignment> _orderConsignments = new List<OrderConsignment>();
 
-    public virtual ICollection<ProductConsignment> ProductConsignments { get; set; } = new List<ProductConsignment>();
+    [ObservableProperty]
+    private ICollection<Payment> _paymentApprovierWorkers = new List<Payment>();
 
-    public virtual ICollection<ProductOrder> ProductOrders { get; set; } = new List<ProductOrder>();
+    [ObservableProperty]
+	private ICollection<Payment> _paymentRecipientWorkers = new List<Payment>();
 
-    public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+    [ObservableProperty]
+	private ICollection<ProductConsignment> _productConsignments = new List<ProductConsignment>();
 
-    public virtual ICollection<Refund> Refunds { get; set; } = new List<Refund>();
+    [ObservableProperty]
+	private ICollection<ProductOrder> _productOrders = new List<ProductOrder>();
 
-    public virtual ICollection<ShopPosition> ShopPositions { get; set; } = new List<ShopPosition>();
+    [ObservableProperty]
+	private ICollection<Purchase> _purchases = new List<Purchase>();
 
-    public virtual WorkerType WorkerType { get; set; } = null!;
+    [ObservableProperty]
+	private ICollection<Refund> _refunds = new List<Refund>();
+
+    [ObservableProperty]
+	private ICollection<ShopPosition> _shopPositions = new List<ShopPosition>();
+
+    [ObservableProperty]
+	private WorkerType _workerType = null!;
 }

@@ -3,19 +3,26 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class RegionPlan
+public partial class RegionPlan : ObservableObject
 {
-    public int RegionPlanId { get; set; }
+    [ObservableProperty]
+    private int _regionPlanId;
 
-    public int RegionId { get; set; }
+    [ObservableProperty]
+    private int _regionId;
 
-    public int Turnover { get; set; }
+    [ObservableProperty]
+    private int _turnover;
 
-    public decimal Profit { get; set; }
+    [ObservableProperty]
+    private decimal _profit;
 
-    public DateOnly StartDate { get; set; }
+    [ObservableProperty]
+    private DateOnly _startDate;
 
-    public DateOnly EndDate { get; set; }
+    [ObservableProperty]
+    private DateOnly _endDate;
 
-    public virtual Region Region { get; set; } = null!;
+    [ObservableProperty]
+	private Region _region = null!;
 }

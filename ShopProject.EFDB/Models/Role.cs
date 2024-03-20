@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Role
+public partial class Role : ObservableObject
 {
-    public int RoleId { get; set; }
+    [ObservableProperty]
+    private int _roleId;
 
-    public string RoleName { get; set; } = null!;
+    [ObservableProperty]
+	private  string _roleName = null!;
 
-    public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
+    [ObservableProperty]
+	private ICollection<Position> _positions = new List<Position>();
 }

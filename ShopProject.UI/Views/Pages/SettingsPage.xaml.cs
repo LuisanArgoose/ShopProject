@@ -20,9 +20,18 @@ namespace ShopProject.UI.Views.Pages
     /// </summary>
     public partial class SettingsPage : Page
     {
-        public SettingsPage()
+        public SettingsVM ViewModel { get; }
+        public SettingsPage(
+            
+            SettingsVM viewModel)
         {
+
+            ViewModel = viewModel;
+            DataContext = this;
+
             InitializeComponent();
+            
         }
+        
     }
 }

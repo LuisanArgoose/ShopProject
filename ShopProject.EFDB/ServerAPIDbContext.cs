@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShopProject.EFDB.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using System.Collections;
 using System.ComponentModel;
+using ShopProject.EFDB.Models;
 
 namespace ShopProject.EFDB;
 

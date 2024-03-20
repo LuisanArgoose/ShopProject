@@ -3,25 +3,35 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class Product
+public partial class Product : ObservableObject
 {
-    public int ProductId { get; set; }
+    [ObservableProperty]
+    private int _productId;
 
-    public int CategoryId { get; set; }
+    [ObservableProperty]
+    private int _categoryId;
 
-    public string ProductName { get; set; } = null!;
+    [ObservableProperty]
+	private string _productName = null!;
 
-    public string Code { get; set; } = null!;
+    [ObservableProperty]
+	private string _code = null!;
 
-    public decimal BuyCost { get; set; }
+    [ObservableProperty]
+    private decimal _buyCost;
 
-    public decimal SellCost { get; set; }
+    [ObservableProperty]
+    private decimal _sellCost;
 
-    public string Barcode { get; set; } = null!;
+    [ObservableProperty]
+	private string _barcode = null!;
 
-    public virtual Category Category { get; set; } = null!;
+    [ObservableProperty]
+	private Category _category = null!;
 
-    public virtual ICollection<ProductConsignmentProduct> ProductConsignmentProducts { get; set; } = new List<ProductConsignmentProduct>();
+    [ObservableProperty]
+	private ICollection<ProductConsignmentProduct> _productConsignmentProducts = new List<ProductConsignmentProduct>();
 
-    public virtual ICollection<ProductsInStorage> ProductsInStorages { get; set; } = new List<ProductsInStorage>();
+    [ObservableProperty]
+	private ICollection<ProductsInStorage> _productsInStorages = new List<ProductsInStorage>();
 }

@@ -6,11 +6,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
+    xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
+    xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     Title="ShopProject"
     WindowCornerPreference="Default"
     WindowStartupLocation="CenterScreen"
+    d:DataContext="{d:DesignInstance local:MainWindow,
+                         IsDesignTimeCreatable=False}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Height="450" Width="800">
     <Grid>
         <ui:TitleBar
@@ -32,7 +38,23 @@
 
             <ui:NavigationView.ContentOverlay>
                 <Grid>
-                    <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" />
+                    <Canvas Grid.Row="0">
+
+                        <ListView  ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
+                            <ListView.ItemTemplate>
+                                <DataTemplate DataType="{x:Type alert:AlertModel}">
+                                    <ui:InfoBar Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />
+                                </DataTemplate>
+
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                    </Canvas>
                 </Grid>
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>

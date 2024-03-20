@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class SalaryType
+public partial class SalaryType : ObservableObject
 {
-    public int SalaryTypeId { get; set; }
+    [ObservableProperty]
+    private int _salaryTypeId;
 
-    public string SalaryTypeName { get; set; } = null!;
+    [ObservableProperty]
+	private string _salaryTypeName = null!;
 
-    public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
+    [ObservableProperty]
+	private ICollection<Position> _positions = new List<Position>();
 }

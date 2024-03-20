@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
-using ShopProject.EFDB.Helpers;
+using ShopProject.UI.Data;
+using ShopProject.EFDB.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,15 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ShopProject.UI.Helpers;
 
-namespace ShopProject.EFDB.Extentions
+namespace ShopProject.UI.Data
 {
     public class EntityList<T> :  BindingList<T>
     {
-        private static readonly JsonSerializerOptions _options = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
 
         public EntityList() { }
         public async Task Fill()
@@ -29,7 +27,7 @@ namespace ShopProject.EFDB.Extentions
                 return;
             }
             var collectionJson = await response.Content.ReadAsStringAsync();
-            var collection = JsonSerializer.Deserialize<List<T>>(collectionJson, _options);
+            var collection = JsonSerializer.Deserialize<List<T>>(collectionJson, JsonOptions.GetOptions());
             if (collection != null)
             {
                 RaiseListChangedEvents = false;
@@ -63,7 +61,7 @@ namespace ShopProject.EFDB.Extentions
                         }
                         var newItemJson = await response.Content.ReadAsStringAsync();
                         RaiseListChangedEvents = false;
-                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, _options) ?? throw new Exception("Serialize fail");
+                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, JsonOptions.GetOptions()) ?? throw new Exception("Serialize fail");
                         this[e.NewIndex] = indexedEntity;
                         RaiseListChangedEvents = true;
                         ResetBindings();
@@ -102,7 +100,7 @@ namespace ShopProject.EFDB.Extentions
                         }
                         var newItemJson = await response.Content.ReadAsStringAsync();
                         RaiseListChangedEvents = false;
-                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, _options) ?? throw new Exception("Serialize fail");
+                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, JsonOptions.GetOptions()) ?? throw new Exception("Serialize fail");
                         this[e.NewIndex] = indexedEntity;
                         RaiseListChangedEvents = true;
                         ResetBindings();

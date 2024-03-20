@@ -3,17 +3,23 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class OrderConsignment
+public partial class OrderConsignment : ObservableObject
 {
-    public int OrderConsignmentId { get; set; }
+    [ObservableProperty]
+    private int _orderConsignmentId;
 
-    public int WorkerId { get; set; }
+    [ObservableProperty]
+    private int _workerId;
 
-    public DateTime DateTime { get; set; }
+    [ObservableProperty]
+    private DateTime _dateTime;
 
-    public virtual ICollection<ProductConsignment> ProductConsignments { get; set; } = new List<ProductConsignment>();
+    [ObservableProperty]
+	private ICollection<ProductConsignment> _productConsignments = new List<ProductConsignment>();
 
-    public virtual ICollection<ProductOrder> ProductOrders { get; set; } = new List<ProductOrder>();
+    [ObservableProperty]
+	private ICollection<ProductOrder> _productOrders = new List<ProductOrder>();
 
-    public virtual Worker Worker { get; set; } = null!;
+    [ObservableProperty]
+	private Worker _worker = null!;
 }

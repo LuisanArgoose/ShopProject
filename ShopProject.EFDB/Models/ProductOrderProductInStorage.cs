@@ -3,15 +3,20 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class ProductOrderProductInStorage
+public partial class ProductOrderProductInStorage : ObservableObject
 {
-    public int ProductOrderId { get; set; }
+    [ObservableProperty]
+    private int _productOrderId;
 
-    public int ProductInStorageId { get; set; }
+    [ObservableProperty]
+    private int _productInStorageId;
 
-    public int ProductCount { get; set; }
+    [ObservableProperty]
+    private int _productCount;
 
-    public virtual ProductsInStorage ProductInStorage { get; set; } = null!;
+    [ObservableProperty]
+	private ProductsInStorage _productInStorage = null!;
 
-    public virtual ProductOrder ProductOrder { get; set; } = null!;
+    [ObservableProperty]
+	private ProductOrder _productOrder = null!;
 }

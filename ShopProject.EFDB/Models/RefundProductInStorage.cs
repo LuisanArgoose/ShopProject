@@ -3,15 +3,20 @@ using System.Collections.Generic;
 
 namespace ShopProject.EFDB.Models;
 
-public partial class RefundProductInStorage
+public partial class RefundProductInStorage : ObservableObject
 {
-    public int RefundId { get; set; }
+    [ObservableProperty]
+    private int _refundId;
 
-    public int ProductInStorageId { get; set; }
+    [ObservableProperty]
+    private int _productInStorageId;
 
-    public int ProductCount { get; set; }
+    [ObservableProperty]
+    private int _productCount;
 
-    public virtual ProductsInStorage ProductInStorage { get; set; } = null!;
+    [ObservableProperty]
+	private ProductsInStorage _productInStorage = null!;
 
-    public virtual Refund Refund { get; set; } = null!;
+    [ObservableProperty]
+	private Refund _refund = null!;
 }

@@ -1,6 +1,7 @@
 ﻿
 
 global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
 global using Wpf.Ui;
 global using Wpf.Ui.Controls;
 global using System.Collections.ObjectModel;
@@ -14,3 +15,5 @@ global using ShopProject.UI.DependencyModel;
 global using ShopProject.UI.Services;
 global using ShopProject.UI.Services.Contracts;
 global using ShopProject.UI.ViewModels.Pages;
+global using ShopProject.UI.Data;
+
