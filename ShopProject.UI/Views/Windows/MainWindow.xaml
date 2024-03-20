@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
-    xmlns:alert="clr-namespace:ShopProject.UI.Models.AlertSystemComponents"
+    xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
@@ -43,7 +43,7 @@
                     </Grid.RowDefinitions>
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" />
                     <Canvas Grid.Row="0">
-                        <ListView ItemsSource="{Binding ViewModel.AlertSystem.AlertModels}" >
+                        <ListView ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" >
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type alert:AlertModel}">
                                     <ui:InfoBar Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />

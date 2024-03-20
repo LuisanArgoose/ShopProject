@@ -1,4 +1,5 @@
-﻿using ShopProject.UI.Models.SettingsComponents.APISettings;
+﻿using ShopProject.UI.Models.SettingsComponents.AlertSettings;
+using ShopProject.UI.Models.SettingsComponents.APISettings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,6 +48,11 @@ namespace ShopProject.UI.Models.SettingsComponents
             }
             return _instance;
         }
+        public static Settings GetInstance()
+        {
+            return _instance;
+        }
+
 
 
         private Settings() 
@@ -56,6 +62,9 @@ namespace ShopProject.UI.Models.SettingsComponents
 
         [ObservableProperty]
         private APISettingsPart _aPISettingsPart = new APISettingsPart();
+
+        [ObservableProperty]
+        private AlertSettingsPart _alertSettingsPart = new AlertSettingsPart();
 
         
     }

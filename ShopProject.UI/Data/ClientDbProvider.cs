@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using ShopProject.UI.AuxiliarySystems.AlertSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -51,16 +54,43 @@ namespace ShopProject.UI.Data
 
         public static async Task<HttpResponseMessage> GetEntitiesNameAsync()
         {
-            var url = "ServerDb/SelectEntitiesName";
-            var response = await _httpClient.GetAsync(url);
-            return response;
+            try
+            {
+                var url = "ServerDb/SelectEntitiesName";
+                var response = await _httpClient.GetAsync(url);
+                if(response.IsSuccessStatusCode)
+                    AlertPoster.PostSystemSucsessAlert("Получение имён Entity");
+                else
+                    AlertPoster.PostSystemErrorAlert("Получение имён Entity", response.StatusCode.ToString());
+                return response;
+            }
+            catch(Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение имён Entity", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+            
 
         }
         public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)
         {
-            var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
-            var response = await _httpClient.GetAsync(url);
-            return response;
+            
+            try
+            {
+                var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
+                var response = await _httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                    AlertPoster.PostSystemSucsessAlert("Получение Entity");
+                else
+                    AlertPoster.PostSystemErrorAlert("Получение Entity", response.StatusCode.ToString());
+                return response;
+            }
+            catch(Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение Entity", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+            
 
         }
 

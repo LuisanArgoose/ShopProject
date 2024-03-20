@@ -1,5 +1,6 @@
 ﻿
 
+using ShopProject.UI.AuxiliarySystems.AlertSystem;
 using ShopProject.UI.Models.AlertSystemComponents;
 using ShopProject.UI.Models.SettingsComponents;
 using System;
@@ -20,13 +21,12 @@ namespace ShopProject.UI.ViewModels.Windows
         public MainWindowVM()
         {
             _settings = Settings.LoadInstance();
-            _alertSystem = AlertSystem.GetInstance();
+            _alertPoster = AlertPoster.GetInstance();
             _settings.APISettingsPart.APILoginSettings.TestConnectionCommand.ExecuteAsync(this);
-            //AlertSystem.PostAlert("awd", "Awda", "Sucsess");
         }
 
         [ObservableProperty]
-        private AlertSystem _alertSystem;
+        private AlertPoster _alertPoster;
 
 
         [ObservableProperty]

@@ -89,6 +89,62 @@
                         
                 </StackPanel>
             </ui:CardExpander>
+                <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon Alert20}">
+                    <ui:CardExpander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    FontSize="16"
+                    FontTypography="Body"
+                    Text="Настройки уведомлений" />
+                        </Grid>
+                    </ui:CardExpander.Header>
+                    <StackPanel>
+                        <ui:CardControl Padding="20,10,20,10" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                        FontSize="16"
+                        Text="Время показа уведомлений"
+                        TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Slider x:Name="AlertTimePicker" TickPlacement="Both" Width="200" Minimum="1" Value="{Binding ViewModel.Settings.AlertSettingsPart.AlertLifeTime}"/>
+                                <Label Content="{Binding ElementName=AlertTimePicker, Path=Value}" VerticalAlignment="Center" FontSize="16" Margin="10,0,0,0"/>
+                                <Label Content="Секунд" VerticalAlignment="Center" FontSize="16" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            
+
+
+                        </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0">
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                FontSize="16"
+                                Text="Системные уведомления"
+                                TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:ToggleSwitch OffContent="Выкл" OnContent="Вкл" IsChecked="{Binding ViewModel.Settings.AlertSettingsPart.ShowSystemAlerts}"/>
+                                
+                            </StackPanel>
+
+
+
+
+                        </ui:CardControl>
+                        <ui:InfoBar IsOpen="False" Content="Статус подключения" />
+
+                    </StackPanel>
+                </ui:CardExpander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

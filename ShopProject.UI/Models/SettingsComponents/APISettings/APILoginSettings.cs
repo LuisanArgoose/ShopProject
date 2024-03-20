@@ -18,7 +18,7 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
             TestConnectionCommand = new AsyncRelayCommand(TestConnection);
             //var test = TestConnectionCommand.ExecuteAsync(this);
         }
-
+        
         [ObservableProperty]
         private string _login = null!;
 
@@ -29,13 +29,12 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
         private string _url = null!;
 
 
+
         public IAsyncRelayCommand TestConnectionCommand { get; }
 
-        private async Task<HttpResponseMessage> TestConnection()
+        private async Task TestConnection()
         {
-            var response = await ClientDbProvider.TestConnect(Login, Password);
-            AlertSystem.PostAlert(response);
-            return response;
+            await ClientDbProvider.TestConnect(Login, Password);
 
 
         }

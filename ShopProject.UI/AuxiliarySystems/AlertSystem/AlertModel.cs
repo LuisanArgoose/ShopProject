@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.UI.Models.AlertSystemComponents
+namespace ShopProject.UI.AuxiliarySystems.AlertSystem
 {
     public partial class AlertModel : ObservableObject
     {
