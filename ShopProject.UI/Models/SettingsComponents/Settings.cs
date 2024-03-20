@@ -13,18 +13,24 @@ namespace ShopProject.UI.Models.SettingsComponents
 {
     public partial class Settings : ObservableObject
     {
+        private Settings() { }
+        [ObservableProperty]
+        public SettingsModel _settingsModel = new SettingsModel();
 
-
-        private static Settings _instance = new Settings();
+        private static Settings _instance;
+        static Settings()
+        {
+            _instance = new Settings();
+        }
 
         public static bool SaveInstance()
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+                XmlSerializer serializer = new XmlSerializer(typeof(SettingsModel));
                 using (TextWriter writer = new StreamWriter("settings.xml"))
                 {
-                    serializer.Serialize(writer, _instance);
+                    serializer.Serialize(writer, _instance.SettingsModel);
                 }
                 return true;
             }
@@ -33,39 +39,25 @@ namespace ShopProject.UI.Models.SettingsComponents
                 return false;
             }
         }
-        public static Settings LoadInstance()
+        public static bool LoadInstance()
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+                XmlSerializer serializer = new XmlSerializer(typeof(SettingsModel));
                 using (TextReader reader = new StreamReader("settings.xml"))
                 {
-                    _instance = (Settings)serializer.Deserialize(reader);
+                    _instance.SettingsModel = (SettingsModel)serializer.Deserialize(reader);
                 }
+                return true;
             }
             catch
             {
+                return false;
             }
-            return _instance;
         }
         public static Settings GetInstance()
         {
             return _instance;
         }
-
-
-
-        private Settings() 
-        {
-
-        }
-
-        [ObservableProperty]
-        private APISettingsPart _aPISettingsPart = new APISettingsPart();
-
-        [ObservableProperty]
-        private AlertSettingsPart _alertSettingsPart = new AlertSettingsPart();
-
-        
     }
 }

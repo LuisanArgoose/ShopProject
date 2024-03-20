@@ -15,7 +15,7 @@ namespace ShopProject.API.Controllers
         private const string SecretKey = "mysupersecret_secretkey!123"; // секретный ключ для подписи токена
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult RequestToken(string login, string password)
         {
             var tokenLogin = _context.TokenLogins.Where(x => x.Login == login);

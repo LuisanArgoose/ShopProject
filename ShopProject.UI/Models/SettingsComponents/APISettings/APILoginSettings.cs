@@ -1,5 +1,5 @@
 ﻿using ShopProject.UI.Data;
-using ShopProject.UI.Models.AlertSystemComponents;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +16,6 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
         public APILoginSettings()
         {
             TestConnectionCommand = new AsyncRelayCommand(TestConnection);
-            //var test = TestConnectionCommand.ExecuteAsync(this);
         }
         
         [ObservableProperty]
@@ -25,11 +24,12 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
         [ObservableProperty]
         private string _password = null!;
 
+
         [ObservableProperty]
         private string _url = null!;
 
 
-
+        
         public IAsyncRelayCommand TestConnectionCommand { get; }
 
         private async Task TestConnection()

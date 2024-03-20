@@ -11,16 +11,19 @@ namespace ShopProject.UI.ViewModels.Pages
 {
     public partial class SettingsVM : ObservableObject
     {
+        [ObservableProperty]
+        private Settings _settings = Settings.GetInstance();
         public SettingsVM()
         {
             SaveSettingsCommand = new AsyncRelayCommand(SaveSettings);
             LoadSettingsCommand = new AsyncRelayCommand(LoadSettings);
             LoadSettingsCommand.Execute(this);
+            
         }
 
-        [ObservableProperty]
-        private Settings _settings = Settings.LoadInstance();
+        
 
+        
         public IAsyncRelayCommand SaveSettingsCommand { get; }
 
         private async Task SaveSettings()
@@ -28,7 +31,7 @@ namespace ShopProject.UI.ViewModels.Pages
             await Task.Run(() =>
             {
                 Settings.SaveInstance();
-                OnPropertyChanged(nameof(Settings));
+                //OnPropertyChanged(nameof(Settings));
             });
             
         }
@@ -39,7 +42,7 @@ namespace ShopProject.UI.ViewModels.Pages
             await Task.Run(() =>
             {
                 Settings.LoadInstance();
-                OnPropertyChanged(nameof(Settings));
+                //OnPropertyChanged(nameof(Settings));
 
             });
 

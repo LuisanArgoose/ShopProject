@@ -1,7 +1,6 @@
 ﻿
 
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
-using ShopProject.UI.Models.AlertSystemComponents;
 using ShopProject.UI.Models.SettingsComponents;
 using System;
 using System.Collections.Generic;
@@ -17,14 +16,15 @@ namespace ShopProject.UI.ViewModels.Windows
 {
     public partial class MainWindowVM : ObservableObject
     {
-        private Settings _settings;
+        public Settings Settings { get;}
         public MainWindowVM()
         {
-            _settings = Settings.LoadInstance();
+            Settings.LoadInstance();
+            Settings = Settings.GetInstance();
             _alertPoster = AlertPoster.GetInstance();
-            _settings.APISettingsPart.APILoginSettings.TestConnectionCommand.ExecuteAsync(this);
+            
         }
-
+        
         [ObservableProperty]
         private AlertPoster _alertPoster;
 
@@ -38,7 +38,7 @@ namespace ShopProject.UI.ViewModels.Windows
         [ObservableProperty]
         private ICollection<object> _footerMenuItems = new ObservableCollection<object>()
         {
-            new NavigationViewItem("Settings", SymbolRegular.Settings16, typeof(SettingsPage))
+            new NavigationViewItem("Настройки", SymbolRegular.Settings16, typeof(SettingsPage))
         };
     }
 }

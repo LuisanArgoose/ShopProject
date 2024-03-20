@@ -21,25 +21,25 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
         [ObservableProperty]
         private ExpiringList<AlertModel> _alertModels = new ExpiringList<AlertModel>();
 
-        public static void PostSystemSucsessAlert(string title, string message = "Успешно")
+        public static void PostSystemSuccessAlert(string title, string message = "Успешно")
         {
-            if(Settings.GetInstance().AlertSettingsPart.ShowSystemAlerts)
-                AddAlert(new AlertModel(title, message, "Sucsess"));
+            if(Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
+                AddAlert(new AlertModel(title, message, "Success"));
         }
         public static void PostSystemErrorAlert(string title, string message = "")
         {
-            if (Settings.GetInstance().AlertSettingsPart.ShowSystemAlerts)
+            if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
                 AddAlert(new AlertModel(title, message, "Error"));
         }
         public static void PostSystemInformationrAlert(string title, string message = "")
         {
-            if (Settings.GetInstance().AlertSettingsPart.ShowSystemAlerts)
+            if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
                 AddAlert(new AlertModel(title, message, "Information"));
         }
 
-        public static void PostSucsessAlert(string title, string message = "Успешно")
+        public static void PostSuccessAlert(string title, string message = "Успешно")
         {
-            AddAlert(new AlertModel(title, message, "Sucsess"));
+            AddAlert(new AlertModel(title, message, "Success"));
         }
         public static void PostErrorAlert(string title, string message = "")
         {
@@ -52,7 +52,7 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
 
         private static void AddAlert(AlertModel alertModel)
         {
-            var intLifeTime = Settings.GetInstance().AlertSettingsPart.AlertLifeTime;
+            var intLifeTime = Settings.GetInstance().SettingsModel.AlertSettingsPart.AlertLifeTime;
             var lifeTime = TimeSpan.FromSeconds(intLifeTime);
             _instance.AlertModels.AddItem(alertModel, lifeTime);
         }

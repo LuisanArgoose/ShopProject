@@ -4,10 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
 {
-    class ExpiringList<T> : BindingList<T>
+    public class ExpiringList<T> : BindingList<T>
     {
         public void AddItem(T value, TimeSpan expirationTime)
         {
@@ -17,7 +18,10 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 Thread.Sleep(expirationTime);
-                Remove(value);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Remove(value);
+                });
             });
         }
     }

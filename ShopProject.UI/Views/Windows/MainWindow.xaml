@@ -43,7 +43,8 @@
                     </Grid.RowDefinitions>
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" />
                     <Canvas Grid.Row="0">
-                        <ListView ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" >
+
+                        <ListView  ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type alert:AlertModel}">
                                     <ui:InfoBar Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />
@@ -52,7 +53,6 @@
                             </ListView.ItemTemplate>
 
                         </ListView>
-
 
                     </Canvas>
                 </Grid>
