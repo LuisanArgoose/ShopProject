@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -12,8 +11,7 @@ namespace ShopProject.API.Controllers
     public class AuthController(ServerAPIDbContext context) : Controller
     {
         private readonly ServerAPIDbContext _context = context;
-        private const string SecretKey = "mysupersecret_secretkey!123"; // секретный ключ для подписи токена
-        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+        private const string SecretKey = "MySuperSecretSecreKeyShopProjectSecretKey"; // секретный ключ для подписи токена
 
         [HttpGet]
         public IActionResult RequestToken(string login, string password)
@@ -29,22 +27,24 @@ namespace ShopProject.API.Controllers
             }
 
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, login)
-            };
-            
+            var secretKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(SecretKey));
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
+            var tokenOptions = new JwtSecurityToken(
+                issuer: "ShopProject",
+                audience: "ShopProject",
+                claims: new[] {
+                    new Claim(ClaimTypes.Role, "Terminal")
+                },
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: signinCredentials
             );
 
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-            });
-            
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+            return Ok(new { Token = tokenString });
+
+
         }
     }
 
