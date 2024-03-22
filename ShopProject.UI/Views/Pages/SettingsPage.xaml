@@ -54,32 +54,32 @@
                                     TextWrapping="WrapWithOverflow" />
                             </ui:CardControl.Header>
 
-                            <StackPanel Orientation="Horizontal"   >
+                            <StackPanel  Orientation="Horizontal"   >
                                 <ui:TextBox
                                     Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Login, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="10,0,0,0"
+                                    Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    Width="200"
+                                    MinWidth="200"
                                     IsEnabled="True"
                                     PlaceholderText="Логин"/>
                                 <ui:TextBox
                                     Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Password, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="10,0,0,0"
+                                    Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    Width="200"
+                                    MinWidth="200"
                                     PlaceholderText="Пароль"/>
                                 <ui:TextBox
                                     Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Url, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="10,0,0,0"
+                                    Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    Width="300"
+                                    MinWidth="300"
                                     IsEnabled="True"
                                     PlaceholderText="Адрес Api"/>
 
-                                <ui:Button Content="Проверить" Command="{Binding  ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                                <ui:Button Content="Проверить" Command="{Binding  ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,5,0,5" HorizontalAlignment="Stretch"/>
 
                                 <Grid/>
                             </StackPanel>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -12,8 +11,30 @@ namespace ShopProject.API.Controllers
     public class AuthController(ServerAPIDbContext context) : Controller
     {
         private readonly ServerAPIDbContext _context = context;
-        private const string SecretKey = "mysupersecret_secretkey!123"; // секретный ключ для подписи токена
-        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+        private const string SecretKey = "MySuperSecretSecretKeyShopProjectSecretKey"; // секретный ключ для подписи токена
+
+        private string GenerateToken(string name)
+        {
+            var claims = new[]
+{
+                new Claim(ClaimTypes.Name, "your_username"),
+                new Claim(ClaimTypes.Role, "your_role")
+};
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                "your_issuer",
+                "your_audience",
+                claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
 
         [HttpGet]
         public IActionResult RequestToken(string login, string password)
@@ -29,22 +50,11 @@ namespace ShopProject.API.Controllers
             }
 
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, login)
-            };
-            
+            var tokenString = GenerateToken(login);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
-            );
+            return Ok(new { Token = tokenString });
 
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-            });
-            
+
         }
     }
 

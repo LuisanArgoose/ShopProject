@@ -32,6 +32,6 @@ namespace ShopProject.UI.Views.Pages
             InitializeComponent();
             
         }
-        
+
     }
 }

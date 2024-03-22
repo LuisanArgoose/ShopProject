@@ -5,12 +5,14 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Net.Http;
 using NuGet.Protocol;
+using Microsoft.AspNetCore.Authorization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ShopProject.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController(ServerAPIDbContext context) : Controller

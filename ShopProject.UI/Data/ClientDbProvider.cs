@@ -1,17 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json.Linq;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
+using ShopProject.UI.Helpers;
 using ShopProject.UI.Models.SettingsComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ShopProject.UI.Data
@@ -19,40 +23,47 @@ namespace ShopProject.UI.Data
     public class ClientDbProvider
     {
         private static Settings _settings = Settings.GetInstance();
-
-        private static HttpClient _httpClient;
+        private static string _token = null!;
         static ClientDbProvider()
-        {
-            
-            string baseAddress = "https://localhost:7178/api/";
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(baseAddress)
-            };
+        {            
             
         }
 
-        public static void SetUrl(string uri)
+        public static HttpClient MyHttpClient()
         {
-            _httpClient = new HttpClient
+            var client = new HttpClient()
             {
-                BaseAddress = new Uri(uri)
+                BaseAddress = new Uri(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url)
             };
+            
+            if(_token != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            return client;
+            
         }
 
         public static async Task<HttpResponseMessage> TestConnect(string login, string password)
         {
             try
             {
-                SetUrl(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url);
-                var url = "Auth?login=" + login + "&password=" + password;
-                var response = await _httpClient.GetAsync(url);
-                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
-                if (response.IsSuccessStatusCode)
-                    AlertPoster.PostSystemSuccessAlert("Подключение к API");
-                else
-                    AlertPoster.PostSystemErrorAlert("Подключение к API", response.StatusCode.ToString());
-                return response;
+                using (var client = MyHttpClient())
+                {
+                    var url = "Auth?login=" + login + "&password=" + password;
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Подключение к API");
+                        var jsonToken = await response.Content.ReadAsStringAsync();
+                        
+                        var result = JsonSerializer.Deserialize<TokenModel>(jsonToken,JsonOptions.GetOptions());
+                        _token = result.Token;
+                    }
+                        
+
+                    else
+                        AlertPoster.PostSystemErrorAlert("Подключение к API", response.StatusCode.ToString());
+                    return response;
+                };
             }
             catch (Exception ex)
             {
@@ -68,14 +79,16 @@ namespace ShopProject.UI.Data
         {
             try
             {
-                SetUrl(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url);
-                var url = "ServerDb/SelectEntitiesName";
-                var response = await _httpClient.GetAsync(url);
-                if(response.IsSuccessStatusCode)
-                    AlertPoster.PostSystemSuccessAlert("Получение имён Entity");
-                else
-                    AlertPoster.PostSystemErrorAlert("Получение имён Entity", response.StatusCode.ToString());
-                return response;
+                using (var client = MyHttpClient())
+                {
+                    var url = "ServerDb/SelectEntitiesName";
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                        AlertPoster.PostSystemSuccessAlert("Получение имён Entity");
+                    else
+                        AlertPoster.PostSystemErrorAlert("Получение имён Entity", response.StatusCode.ToString());
+                    return response;
+                };
             }
             catch(Exception ex)
             {
@@ -90,14 +103,16 @@ namespace ShopProject.UI.Data
             
             try
             {
-                SetUrl(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url);
-                var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
-                var response = await _httpClient.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                    AlertPoster.PostSystemSuccessAlert("Получение Entity");
-                else
-                    AlertPoster.PostSystemErrorAlert("Получение Entity", response.StatusCode.ToString());
-                return response;
+                using (var client = MyHttpClient())
+                {
+                    var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                        AlertPoster.PostSystemSuccessAlert("Получение Entity");
+                    else
+                        AlertPoster.PostSystemErrorAlert("Получение Entity", response.StatusCode.ToString());
+                    return response;
+                };
             }
             catch(Exception ex)
             {
@@ -136,10 +151,12 @@ namespace ShopProject.UI.Data
             if (!operations.Contains(operationName))
                 throw new Exception("Bad operation name");
             var content = ComplectEntity(entity);
-            SetUrl(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url);
-            var url = "ServerDb/" + operationName;
-            var response = await _httpClient.PostAsync(url, content);
-            return response;
+            using (var client = MyHttpClient())
+            {
+                var url = "ServerDb/" + operationName;
+                var response = await client.PostAsync(url, content);
+                return response;
+            };
         }
     }
 }
