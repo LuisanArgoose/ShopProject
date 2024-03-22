@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using ShopProject.UI.Data;
 using ShopProject.UI.Helpers;
+using ShopProject.UI.Models.SettingsComponents;
 
 namespace ShopProject.UI.ViewModels.Pages
 {
@@ -18,51 +19,24 @@ namespace ShopProject.UI.ViewModels.Pages
         //private IEntityList _table;
 
         [ObservableProperty]
-        private BindingList<string> _tablesName  = [];
+        private string _login = null!;
 
         public ProfileVM()
         {
-            LoadEntitiesNameCommand = new AsyncRelayCommand(LoadEntitiesName);
+            SingInCommand = new AsyncRelayCommand(SingIn);
 
         }
 
-        public IAsyncRelayCommand LoadEntitiesNameCommand { get; }
-
-        private async Task LoadEntitiesName()
+        public IAsyncRelayCommand SingInCommand { get; }
+        private async Task SingIn()
         {
-            var response = await ClientDbProvider.GetEntitiesNameAsync();
-            if (response.IsSuccessStatusCode)
+
+            await Task.Run(() =>
             {
-                var collectionJson = await response.Content.ReadAsStringAsync();
-                var collection = JsonSerializer.Deserialize<List<string>>(collectionJson, JsonOptions.GetOptions());
-                if (collection == null)
-                    return;
-                TablesName.Clear();
-                foreach ( var item in collection)
-                {
-                    TablesName.Add(item);
-                }
-            }
-            
-        }
-        private string _selectedTable;
-        public string SelectedTable
-        {
-            get { return _selectedTable; }
-            set 
-            { 
-                SetProperty(ref _selectedTable, value);
-                LoadTable();
-            }
+
+            });
         }
 
-        //public IRelayCommand LoadTableCommand { get; }
-        private void LoadTable()
-        {
-            if (SelectedTable == null)
-                return;
-            //Table = new EntityList<TestTable>();
-            //Table.Fill();
-        }
+
     }
 }

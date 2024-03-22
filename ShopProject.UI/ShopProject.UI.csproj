@@ -20,4 +20,8 @@
     <ProjectReference Include="..\ShopProject.EFDB\ShopProject.EFDB.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\Pages\Manager\" />
+  </ItemGroup>
+
 </Project>

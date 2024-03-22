@@ -14,7 +14,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
 
-    <Grid  >
+    <Grid>
         
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

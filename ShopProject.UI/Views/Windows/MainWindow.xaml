@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
+    xmlns:pages="clr-namespace:ShopProject.UI.Views.Pages"
     xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     mc:Ignorable="d"
@@ -29,12 +30,24 @@
             x:Name="NavigationView"
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
-            MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
-            FooterMenuItemsSource="{Binding ViewModel.FooterMenuItems, Mode=OneWay}"
             SelectionChanged="OnNavigationSelectionChanged"
             Padding="10"
             >
-            
+            <!--MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
+            FooterMenuItemsSource="{Binding ViewModel.FooterMenuItems, Mode=OneWay}"-->
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem
+                    Content="Профиль"
+                    Icon="{ui:SymbolIcon People16}"
+                    TargetPageType="{x:Type pages:ProfilePage}" />
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem
+                        Content="Настройки"
+                        Icon="{ui:SymbolIcon Settings16}"
+                        TargetPageType="{x:Type pages:SettingsPage}" />
+            </ui:NavigationView.FooterMenuItems>
+
 
             <ui:NavigationView.ContentOverlay>
                 <Grid>
