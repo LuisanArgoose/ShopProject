@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json.Linq;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
 using ShopProject.UI.Helpers;
 using ShopProject.UI.Models.SettingsComponents;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
@@ -35,7 +37,7 @@ namespace ShopProject.UI.Data
             };
             
             if(_token != null)
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + _token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             return client;
             
         }

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ShopProject.API.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController(ServerAPIDbContext context) : Controller

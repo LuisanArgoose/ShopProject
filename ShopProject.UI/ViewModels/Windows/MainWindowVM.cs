@@ -22,7 +22,8 @@ namespace ShopProject.UI.ViewModels.Windows
             Settings.LoadInstance();
             Settings = Settings.GetInstance();
             _alertPoster = AlertPoster.GetInstance();
-            
+
+            Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand.Execute(this);
         }
         
         [ObservableProperty]
