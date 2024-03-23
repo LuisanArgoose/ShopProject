@@ -12,5 +12,14 @@ public partial class Role : ObservableObject
 	private  string _roleName = null!;
 
     [ObservableProperty]
+    private bool _isManager;
+
+    [ObservableProperty]
+    private bool _isRegionManager;
+
+    [ObservableProperty]
+    private bool _isAdmin;
+
+    [ObservableProperty]
 	private ICollection<Position> _positions = new List<Position>();
 }

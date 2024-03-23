@@ -407,6 +407,9 @@ public partial class ShopProjectDbContext : DbContext
 
             entity.Property(e => e.RoleId).HasColumnName("Role_id");
             entity.Property(e => e.RoleName).HasColumnName("Role_name");
+            entity.Property(e => e.IsManager).HasColumnName("Is_manager");
+            entity.Property(e => e.IsRegionManager).HasColumnName("Is_region_manager");
+            entity.Property(e => e.IsAdmin).HasColumnName("Is_admin");
         });
 
         modelBuilder.Entity<SalaryType>(entity =>
