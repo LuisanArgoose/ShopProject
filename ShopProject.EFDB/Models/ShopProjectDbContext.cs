@@ -39,7 +39,7 @@ public partial class ShopProjectDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        /*
+        
         modelBuilder.Entity<TokenLogin>(entity =>
         {
             entity.HasKey(e => e.TokenLoginId).HasName("TokenLogins_pkey");
@@ -71,7 +71,7 @@ public partial class ShopProjectDbContext : DbContext
                 .IsRequired();
         });
 
-        */
+        
 
             OnModelCreatingPartial(modelBuilder);
     }

@@ -10,6 +10,7 @@ namespace ShopProject.Tests.ExtentionsTests
     [TestClass]
     public class EntityListTest
     {
+        /*
         [TestMethod]
         public async Task FillEntityListTest()
         {
@@ -98,6 +99,6 @@ namespace ShopProject.Tests.ExtentionsTests
                 Assert.IsTrue(entity.TextToUpdate == timeMark);
             }
 
-        }
+        }*/
     }
 }

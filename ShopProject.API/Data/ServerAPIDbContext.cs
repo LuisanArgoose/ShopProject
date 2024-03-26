@@ -9,7 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 using ShopProject.EFDB.Models;
 
-namespace ShopProject.EFDB;
+namespace ShopProject.API.Data;
 
 public partial class ServerAPIDbContext : ShopProjectDbContext
 {
