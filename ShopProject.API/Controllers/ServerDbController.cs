@@ -21,11 +21,11 @@ namespace ShopProject.API.Controllers
 
         public async Task<IActionResult> SingIn(string login, string password)
         {
-            var user = _context.Workers.FirstOrDefault(x => x.Login == login && x.Password == password);
+            /*var user = _context.Workers.FirstOrDefault(x => x.Login == login && x.Password == password);
             if(user == null) { return BadRequest(); }
             var position = user.ShopPositions.FirstOrDefault();
             if (position == null) { return BadRequest(); }
-            var settings = position.Position.Role.
+            */
             return Json("wda");
         }
 

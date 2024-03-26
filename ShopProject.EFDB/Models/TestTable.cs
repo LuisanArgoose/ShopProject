@@ -14,8 +14,4 @@ public partial class TestTable : ObservableObject
     [ObservableProperty]
     private string? _textToUpdate;
 
-    public override string ToString()
-    {
-        return TestId.ToString() + TestText + TextToUpdate;
-    }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.Models;
 
@@ -9,29 +12,13 @@ public partial class Shop : ObservableObject
     private int _shopId;
 
     [ObservableProperty]
-	private string _addres = null!;
+    private string _address = null!;
 
     [ObservableProperty]
-    private int _shopTypeId;
+    private int _userId;
 
     [ObservableProperty]
-    private int _regionId;
+    private User _user = new();
 
-    [ObservableProperty]
-	private ICollection<Payment> _payments = new List<Payment>();
-
-    [ObservableProperty]
-	private ICollection<ProductsInStorage> _productsInStorages = new List<ProductsInStorage>();
-
-    [ObservableProperty]
-	private Region _region = null!;
-
-    [ObservableProperty]
-	private ICollection<ShopPlan> _shopPlans = new List<ShopPlan>();
-
-    [ObservableProperty]
-	private ICollection<ShopPosition> _shopPositions = new List<ShopPosition>();
-
-    [ObservableProperty]
-	private ShopType _shopType = null!;
 }
+
