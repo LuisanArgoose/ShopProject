@@ -22,7 +22,7 @@ public partial class User : ObservableObject
     private int _roleId;
 
     [ObservableProperty]
-    private Role _role = new();
+    private Role _role = null!;
 
     [ObservableProperty]
     private ICollection<Shop> _shops = new List<Shop>();

@@ -12,21 +12,24 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ShopProject.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController(ServerAPIDbContext context) : Controller
     {
+        
         private readonly ServerAPIDbContext _context = context;
 
-        public async Task<IActionResult> SingIn(string login, string password)
+        [HttpGet("SingIn")]
+        public IActionResult SingIn(string login, string password)
         {
-            /*var user = _context.Workers.FirstOrDefault(x => x.Login == login && x.Password == password);
-            if(user == null) { return BadRequest(); }
-            var position = user.ShopPositions.FirstOrDefault();
-            if (position == null) { return BadRequest(); }
-            */
-            return Json("wda");
+            _context.Roles.Load();
+            _context.Users.Load();            
+            //_context.Shops.Load();
+            var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
+            var entityJson = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+            if (user == null) { return BadRequest(); }          
+            return Json(user.Role);
         }
 
         // GET: api/<DbController>/SelectEntitiesName

@@ -50,25 +50,26 @@ public partial class ShopProjectDbContext : DbContext
         modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(e => e.RoleId).HasName("Roles_pkey");
-            entity.HasMany(e => e.Users)
-                .WithOne(e => e.Role)
-                .HasForeignKey(e => e.RoleId)
-                .IsRequired();
+
         });
 
         modelBuilder.Entity<Shop>(entity =>
         {
             entity.HasKey(e => e.ShopId).HasName("Shops_pkey");
-
+            //entity.HasOne(e => e.User)
+             //   .WithMany(e => e.Shops)
+              //  .HasForeignKey(e => e.UserId);
         });
 
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("Users_pkey"); ;
-            entity.HasMany(e => e.Shops)
-                .WithOne(e => e.User)
-                .HasForeignKey(e => e.UserId)
-                .IsRequired();
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Users_Role_id_fkey");
+
         });
 
         

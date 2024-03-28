@@ -9,6 +9,9 @@ public partial class Role : ObservableObject
     private int _roleId;
 
     [ObservableProperty]
+    private string _roleName = null!;
+
+    [ObservableProperty]
     private bool _isShopManager;
 
     [ObservableProperty]

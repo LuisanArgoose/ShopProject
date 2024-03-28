@@ -21,6 +21,9 @@ namespace ShopProject.UI.ViewModels.Pages
         [ObservableProperty]
         private string _login = null!;
 
+        [ObservableProperty]
+        private string _password = null!;
+
         public ProfileVM()
         {
             SingInCommand = new AsyncRelayCommand(SingIn);

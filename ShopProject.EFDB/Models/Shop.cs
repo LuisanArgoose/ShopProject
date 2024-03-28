@@ -18,7 +18,7 @@ public partial class Shop : ObservableObject
     private int _userId;
 
     [ObservableProperty]
-    private User _user = new();
+    private User _user = null!;
 
 }
 
