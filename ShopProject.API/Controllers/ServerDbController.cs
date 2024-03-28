@@ -23,13 +23,9 @@ namespace ShopProject.API.Controllers
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
-            _context.Roles.Load();
-            _context.Users.Load();            
-            //_context.Shops.Load();
             var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
-            var entityJson = Newtonsoft.Json.JsonConvert.SerializeObject(user);
             if (user == null) { return BadRequest(); }          
-            return Json(user.Role);
+            return Json(user);
         }
 
         // GET: api/<DbController>/SelectEntitiesName

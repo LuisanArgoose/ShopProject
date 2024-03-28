@@ -19,6 +19,9 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Height="450" Width="800">
+    <ui:FluentWindow.Resources>
+        <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
+    </ui:FluentWindow.Resources>
     <Grid>
         <ui:TitleBar
             x:Name="TitleBar"
@@ -40,6 +43,10 @@
                     Content="Профиль"
                     Icon="{ui:SymbolIcon People16}"
                     TargetPageType="{x:Type pages:ProfilePage}" />
+                <ui:NavigationViewItem
+                    Content="Админимтратор магазина"
+                    Icon="{ui:SymbolIcon People16}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"/>  
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem

@@ -24,10 +24,10 @@
         <StackPanel HorizontalAlignment="Center">
             <Label Content="Вход в систему" HorizontalAlignment="Center" Margin="0,10,0,20"/>
             <Label Content="Имя пользователя" Margin="0,10,0,0"/>
-            <ui:TextBox Width="300"/>
+            <ui:TextBox Text="{Binding ViewModel.Login, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
             <Label Content="Пароль" Margin="0,10,0,0"/>
-            <ui:PasswordBox/>
-            <ui:Button Height="36" Content="Загрузить" Command="{Binding ViewModel.SingInCommand}"  Margin="0,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <ui:PasswordBox x:Name="PB" Password="{Binding ViewModel.Password, UpdateSourceTrigger=PropertyChanged}"/>
+            <ui:Button Height="36" Content="Войти" Command="{Binding ViewModel.SingInCommand}" CommandParameter="{Binding ElementName=PB}"  Margin="0,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
         </StackPanel>
     </Grid>
