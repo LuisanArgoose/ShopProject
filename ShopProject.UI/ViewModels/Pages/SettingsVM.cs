@@ -20,10 +20,6 @@ namespace ShopProject.UI.ViewModels.Pages
             LoadSettingsCommand.Execute(this);
             
         }
-
-        
-
-        
         public IAsyncRelayCommand SaveSettingsCommand { get; }
 
         private async Task SaveSettings()
@@ -31,7 +27,6 @@ namespace ShopProject.UI.ViewModels.Pages
             await Task.Run(() =>
             {
                 Settings.SaveInstance();
-                //OnPropertyChanged(nameof(Settings));
             });
             
         }
@@ -42,8 +37,6 @@ namespace ShopProject.UI.ViewModels.Pages
             await Task.Run(() =>
             {
                 Settings.LoadInstance();
-                //OnPropertyChanged(nameof(Settings));
-
             });
 
         }

@@ -1,5 +1,6 @@
 ﻿using ShopProject.UI.Models.SettingsComponents.AlertSettings;
 using ShopProject.UI.Models.SettingsComponents.APISettings;
+using ShopProject.UI.Models.SettingsComponents.DevelopmentSettings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,5 +25,8 @@ namespace ShopProject.UI.Models.SettingsComponents
 
         [ObservableProperty]
         private AlertSettingsPart _alertSettingsPart = new AlertSettingsPart();
+
+        [ObservableProperty]
+        private DevelopmentSettingsPart _developmentSettingsPart = new DevelopmentSettingsPart();
     }
 }

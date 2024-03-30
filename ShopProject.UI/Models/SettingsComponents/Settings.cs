@@ -18,6 +18,7 @@ namespace ShopProject.UI.Models.SettingsComponents
         static Settings()
         {
             _instance = new Settings();
+
         }
 
         public static bool SaveInstance()
@@ -56,6 +57,10 @@ namespace ShopProject.UI.Models.SettingsComponents
         {
             return _instance;
         }
+        public static User GetActiveUser()
+        {
+            return _instance.ActiveUser;
+        }
         public static void SetActiveUser(User user)
         {
             _instance.ActiveUser = user;
@@ -63,6 +68,7 @@ namespace ShopProject.UI.Models.SettingsComponents
         public static void Exit()
         {
             _instance.ActiveUser = GetEmptyUser();
+            
         }
         private static User GetEmptyUser()
         {
@@ -81,9 +87,32 @@ namespace ShopProject.UI.Models.SettingsComponents
         [ObservableProperty]
         private SettingsModel _settingsModel = new SettingsModel();
 
-        [ObservableProperty]
-        private User _activeUser = GetEmptyUser();
+        private User _activeUser;
 
+        public User ActiveUser
+        {
+            get => _activeUser;
+            set
+            {
+                SetProperty(ref _activeUser, value);
+                OnPropertyChanged(nameof(ProfilePageType));
+            }
+        }
+
+        public Type ProfilePageType
+        {
+            get
+            {
+                if(ActiveUser.Fullname == "UnLogin")
+                {
+                    return typeof(ProfilePage);
+                }
+                else
+                {
+                    return typeof(ActiveProfilePage);
+                }
+            }
+        }
         
     }
 }

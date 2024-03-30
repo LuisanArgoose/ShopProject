@@ -12,28 +12,42 @@ using ShopProject.UI.Helpers;
 using ShopProject.UI.Models.SettingsComponents;
 using ShopProject.EFDB.Models;
 using System.Security;
+using ShopProject.UI.AuxiliarySystems.AlertSystem;
 
 namespace ShopProject.UI.ViewModels.Pages
 {
     public partial class ProfileVM : ObservableObject
     {
+        private INavigationService _navigationService;
 
         [ObservableProperty]
         private string _login = "";
 
-        [ObservableProperty]
-        private string _password = "";
-
-        public ProfileVM()
+        public ProfileVM(INavigationService navigationService)
         {
+            _navigationService = navigationService;
             SingInCommand = new AsyncRelayCommand<object>((param) => SingIn(param));
-
+            AutoLogin();
         }
+        private void AutoLogin()
+        {
+            var autoLoginSettings = Settings.GetInstance().SettingsModel.DevelopmentSettingsPart.AutoLoginSettings;
+            if (autoLoginSettings.IsActive)
+            {
+                Login = autoLoginSettings.Login;
+                var passwordBox = new PasswordBox();
+                passwordBox.Password = autoLoginSettings.Password;
+                SingInCommand.Execute(passwordBox);
+                AlertPoster.PostSystemSuccessAlert("Автоматический вход");
+            }
+            AlertPoster.PostSystemErrorAlert("Автоматический вход", "Ошибка входа");
+        }
+
 
         public IAsyncRelayCommand SingInCommand { get; }
         private async Task SingIn(object passwordBoxObj)
         {
-            if(passwordBoxObj == null || passwordBoxObj as PasswordBox == null)
+            if (passwordBoxObj == null || passwordBoxObj as PasswordBox == null)
             {
                 return;
             }
@@ -48,7 +62,9 @@ namespace ShopProject.UI.ViewModels.Pages
             await roles.Fill();
             result.Role = roles.FirstOrDefault(x => x.RoleId == result.RoleId);
             Settings.SetActiveUser(result);
+            _navigationService.Navigate(typeof(ActiveProfilePage));
         }
+
 
 
     }

@@ -36,13 +36,11 @@
             SelectionChanged="OnNavigationSelectionChanged"
             Padding="10"
             >
-            <!--MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
-            FooterMenuItemsSource="{Binding ViewModel.FooterMenuItems, Mode=OneWay}"-->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     Content="Профиль"
                     Icon="{ui:SymbolIcon People16}"
-                    TargetPageType="{x:Type pages:ProfilePage}" />
+                    TargetPageType="{Binding ViewModel.Settings.ProfilePageType, UpdateSourceTrigger=PropertyChanged}" />
                 <ui:NavigationViewItem
                     Content="Админимтратор магазина"
                     Icon="{ui:SymbolIcon People16}"
@@ -64,7 +62,7 @@
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" />
                     <Canvas Grid.Row="0">
 
-                        <ListView  ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
+                        <ListView ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type alert:AlertModel}">
                                     <ui:InfoBar Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />

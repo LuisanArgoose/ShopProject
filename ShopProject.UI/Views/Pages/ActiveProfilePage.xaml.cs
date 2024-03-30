@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,20 +16,20 @@ using System.Windows.Shapes;
 namespace ShopProject.UI.Views.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для SingInPage.xaml
+    /// Логика взаимодействия для ActiveProfilePage.xaml
     /// </summary>
-    public partial class ProfilePage : Page
+    public partial class ActiveProfilePage : Page
     {
-        public ProfileVM ViewModel { get; }
+        public ActiveProfileVM ViewModel { get; }
 
-        public ProfilePage(
-            ProfileVM viewModel
+        public ActiveProfilePage(
+            ActiveProfileVM viewModel
             )
         {
             ViewModel = viewModel;
             DataContext = this;
 
-            InitializeComponent();        
+            InitializeComponent();
         }
     }
 }

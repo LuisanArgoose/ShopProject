@@ -22,24 +22,12 @@ namespace ShopProject.UI.ViewModels.Windows
             Settings.LoadInstance();
             Settings = Settings.GetInstance();
             _alertPoster = AlertPoster.GetInstance();
-
+            Settings.Exit();
             Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand.Execute(this);
         }
         
         [ObservableProperty]
         private AlertPoster _alertPoster;
 
-
-        [ObservableProperty]
-        private ICollection<object> _menuItems = new ObservableCollection<object>
-        {
-            new NavigationViewItem("Профиль", SymbolRegular.People16, typeof(ProfilePage))
-        };
-
-        [ObservableProperty]
-        private ICollection<object> _footerMenuItems = new ObservableCollection<object>()
-        {
-            new NavigationViewItem("Настройки", SymbolRegular.Settings16, typeof(SettingsPage))
-        };
     }
 }
