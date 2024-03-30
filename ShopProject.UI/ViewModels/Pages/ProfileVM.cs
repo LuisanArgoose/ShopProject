@@ -38,9 +38,9 @@ namespace ShopProject.UI.ViewModels.Pages
                 var passwordBox = new PasswordBox();
                 passwordBox.Password = autoLoginSettings.Password;
                 SingInCommand.Execute(passwordBox);
-                AlertPoster.PostSystemSuccessAlert("Автоматический вход");
+                
             }
-            AlertPoster.PostSystemErrorAlert("Автоматический вход", "Ошибка входа");
+            
         }
 
 
@@ -54,6 +54,7 @@ namespace ShopProject.UI.ViewModels.Pages
             var response = await ClientDbProvider.SingIn(Login, (passwordBoxObj as PasswordBox).Password);
             if( response.IsSuccessStatusCode == false)
             {
+                AlertPoster.PostErrorAlert("Вход в систему", "Ошибка входа");
                 return;
             }
             var jsonUser = response.Content.ReadAsStream();
@@ -63,6 +64,7 @@ namespace ShopProject.UI.ViewModels.Pages
             result.Role = roles.FirstOrDefault(x => x.RoleId == result.RoleId);
             Settings.SetActiveUser(result);
             _navigationService.Navigate(typeof(ActiveProfilePage));
+            AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");
         }
 
 

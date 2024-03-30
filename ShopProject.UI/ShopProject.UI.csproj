@@ -22,6 +22,9 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\Pages\Manager\" />
+    <Folder Include="ViewModels\Pages\SalesManager\" />
+    <Folder Include="Views\Pages\Manager\" />
+    <Folder Include="Views\Pages\SalesManager\" />
   </ItemGroup>
 
 </Project>

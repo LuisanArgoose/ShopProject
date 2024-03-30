@@ -24,17 +24,17 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
         public static void PostSystemSuccessAlert(string title, string message = "Успешно")
         {
             if(Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
-                AddAlert(new AlertModel(title, message, "Success"));
+                AddAlert(new AlertModel(title, "(Системное) " + message, "Success"));
         }
         public static void PostSystemErrorAlert(string title, string message = "")
         {
             if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
-                AddAlert(new AlertModel(title, message, "Error"));
+                AddAlert(new AlertModel(title, "(Системное) " + message, "Error"));
         }
         public static void PostSystemInformationrAlert(string title, string message = "")
         {
             if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
-                AddAlert(new AlertModel(title, message, "Information"));
+                AddAlert(new AlertModel(title, "(Системное) " + message, "Information"));
         }
 
         public static void PostSuccessAlert(string title, string message = "Успешно")

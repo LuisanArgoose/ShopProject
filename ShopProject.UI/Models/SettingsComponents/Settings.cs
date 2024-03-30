@@ -83,7 +83,10 @@ namespace ShopProject.UI.Models.SettingsComponents
                 },
             };
         }
-        private Settings() { }
+        private Settings() 
+        {
+            ActiveUser = GetEmptyUser();
+        }
         [ObservableProperty]
         private SettingsModel _settingsModel = new SettingsModel();
 

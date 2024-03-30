@@ -18,6 +18,7 @@
                          IsDesignTimeCreatable=False}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    SizeChanged="MainWindow_OnSizeChanged"
     Height="450" Width="800">
     <ui:FluentWindow.Resources>
         <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
@@ -34,6 +35,8 @@
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
             SelectionChanged="OnNavigationSelectionChanged"
+            PaneClosed="NavigationView_OnPaneClosed"
+            PaneOpened="NavigationView_OnPaneOpened"
             Padding="10"
             >
             <ui:NavigationView.MenuItems>
@@ -42,9 +45,13 @@
                     Icon="{ui:SymbolIcon People16}"
                     TargetPageType="{Binding ViewModel.Settings.ProfilePageType, UpdateSourceTrigger=PropertyChanged}" />
                 <ui:NavigationViewItem
-                    Content="Админимтратор магазина"
-                    Icon="{ui:SymbolIcon People16}"
-                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"/>  
+                    Content="Менеджер магазина"
+                    Icon="{ui:SymbolIcon BuildingBank20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"/>
+                <ui:NavigationViewItem
+                    Content="Менеджер по продажам"
+                    Icon="{ui:SymbolIcon ArrowTrendingLines20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
