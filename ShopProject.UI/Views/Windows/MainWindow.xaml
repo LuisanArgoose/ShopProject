@@ -7,6 +7,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
     xmlns:pages="clr-namespace:ShopProject.UI.Views.Pages"
+    xmlns:manager="clr-namespace:ShopProject.UI.Views.Pages.Manager"
     xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     mc:Ignorable="d"
@@ -47,10 +48,11 @@
                 <ui:NavigationViewItem
                     Content="Менеджер магазина"
                     Icon="{ui:SymbolIcon BuildingBank20}"
-                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"/>
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
+                    TargetPageType="{x:Type manager:ManagerPage}" />
                 <ui:NavigationViewItem
                     Content="Менеджер по продажам"
-                    Icon="{ui:SymbolIcon ArrowTrendingLines20}"
+                    Icon="{ui:SymbolIcon PersonMoney20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>

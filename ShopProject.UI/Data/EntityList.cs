@@ -27,7 +27,7 @@ namespace ShopProject.UI.Data
                 return;
             }
             var collectionJson = await response.Content.ReadAsStringAsync();
-            var collection = JsonSerializer.Deserialize<List<T>>(collectionJson, JsonOptions.GetOptions());
+            var collection = JsonSerializer.Deserialize<List<T>>(collectionJson);
             if (collection != null)
             {
                 RaiseListChangedEvents = false;
@@ -61,7 +61,7 @@ namespace ShopProject.UI.Data
                         }
                         var newItemJson = await response.Content.ReadAsStringAsync();
                         RaiseListChangedEvents = false;
-                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, JsonOptions.GetOptions()) ?? throw new Exception("Serialize fail");
+                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson) ?? throw new Exception("Serialize fail");
                         this[e.NewIndex] = indexedEntity;
                         RaiseListChangedEvents = true;
                         ResetBindings();
@@ -100,7 +100,7 @@ namespace ShopProject.UI.Data
                         }
                         var newItemJson = await response.Content.ReadAsStringAsync();
                         RaiseListChangedEvents = false;
-                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson, JsonOptions.GetOptions()) ?? throw new Exception("Serialize fail");
+                        var indexedEntity = JsonSerializer.Deserialize<T>(newItemJson) ?? throw new Exception("Serialize fail");
                         this[e.NewIndex] = indexedEntity;
                         RaiseListChangedEvents = true;
                         ResetBindings();

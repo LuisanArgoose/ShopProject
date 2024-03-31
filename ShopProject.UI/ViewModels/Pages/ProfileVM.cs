@@ -57,11 +57,8 @@ namespace ShopProject.UI.ViewModels.Pages
                 AlertPoster.PostErrorAlert("Вход в систему", "Ошибка входа");
                 return;
             }
-            var jsonUser = response.Content.ReadAsStream();
-            var result = JsonSerializer.Deserialize<User>(jsonUser, JsonOptions.GetOptions());
-            EntityList<Role> roles = new EntityList<Role>();
-            await roles.Fill();
-            result.Role = roles.FirstOrDefault(x => x.RoleId == result.RoleId);
+            var jsonUser = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<User>(jsonUser);
             Settings.SetActiveUser(result);
             _navigationService.Navigate(typeof(ActiveProfilePage));
             AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");

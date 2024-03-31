@@ -10,6 +10,7 @@ public partial class ShopProjectDbContext : DbContext
 {
     public ShopProjectDbContext()
     {
+
     }
 
     public ShopProjectDbContext(DbContextOptions<ShopProjectDbContext> options)
@@ -56,9 +57,9 @@ public partial class ShopProjectDbContext : DbContext
         modelBuilder.Entity<Shop>(entity =>
         {
             entity.HasKey(e => e.ShopId).HasName("Shops_pkey");
-            //entity.HasOne(e => e.User)
-             //   .WithMany(e => e.Shops)
-              //  .HasForeignKey(e => e.UserId);
+            entity.HasOne(e => e.User)
+                .WithMany(e => e.Shops)
+                .HasForeignKey(e => e.UserId);
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -69,6 +70,11 @@ public partial class ShopProjectDbContext : DbContext
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Users_Role_id_fkey");
+
+
+            entity.Navigation(e => e.Role).AutoInclude();
+            entity.Navigation(e => e.Shops).AutoInclude();
+
 
         });
 
