@@ -9,60 +9,62 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using ShopProject.UI.Data;
 using ShopProject.UI.Helpers;
+using ShopProject.UI.Models.SettingsComponents;
+using ShopProject.EFDB.Models;
+using System.Security;
+using ShopProject.UI.AuxiliarySystems.AlertSystem;
 
 namespace ShopProject.UI.ViewModels.Pages
 {
     public partial class ProfileVM : ObservableObject
     {
-        //[ObservableProperty]
-        //private IEntityList _table;
+        private INavigationService _navigationService;
 
         [ObservableProperty]
-        private BindingList<string> _tablesName  = [];
+        private string _login = "";
 
-        public ProfileVM()
+        public ProfileVM(INavigationService navigationService)
         {
-            LoadEntitiesNameCommand = new AsyncRelayCommand(LoadEntitiesName);
-
+            _navigationService = navigationService;
+            SingInCommand = new AsyncRelayCommand<object>((param) => SingIn(param));
+            AutoLogin();
         }
-
-        public IAsyncRelayCommand LoadEntitiesNameCommand { get; }
-
-        private async Task LoadEntitiesName()
+        private void AutoLogin()
         {
-            var response = await ClientDbProvider.GetEntitiesNameAsync();
-            if (response.IsSuccessStatusCode)
+            var autoLoginSettings = Settings.GetInstance().SettingsModel.DevelopmentSettingsPart.AutoLoginSettings;
+            if (autoLoginSettings.IsActive)
             {
-                var collectionJson = await response.Content.ReadAsStringAsync();
-                var collection = JsonSerializer.Deserialize<List<string>>(collectionJson, JsonOptions.GetOptions());
-                if (collection == null)
-                    return;
-                TablesName.Clear();
-                foreach ( var item in collection)
-                {
-                    TablesName.Add(item);
-                }
+                Login = autoLoginSettings.Login;
+                var passwordBox = new PasswordBox();
+                passwordBox.Password = autoLoginSettings.Password;
+                SingInCommand.Execute(passwordBox);
+                
             }
             
         }
-        private string _selectedTable;
-        public string SelectedTable
+
+
+        public IAsyncRelayCommand SingInCommand { get; }
+        private async Task SingIn(object passwordBoxObj)
         {
-            get { return _selectedTable; }
-            set 
-            { 
-                SetProperty(ref _selectedTable, value);
-                LoadTable();
+            if (passwordBoxObj == null || passwordBoxObj as PasswordBox == null)
+            {
+                return;
             }
+            var response = await ClientDbProvider.SingIn(Login, (passwordBoxObj as PasswordBox).Password);
+            if( response.IsSuccessStatusCode == false)
+            {
+                AlertPoster.PostErrorAlert("Вход в систему", "Ошибка входа");
+                return;
+            }
+            var jsonUser = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<User>(jsonUser);
+            Settings.SetActiveUser(result);
+            _navigationService.Navigate(typeof(ActiveProfilePage));
+            AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");
         }
 
-        //public IRelayCommand LoadTableCommand { get; }
-        private void LoadTable()
-        {
-            if (SelectedTable == null)
-                return;
-            //Table = new EntityList<TestTable>();
-            //Table.Fill();
-        }
+
+
     }
 }

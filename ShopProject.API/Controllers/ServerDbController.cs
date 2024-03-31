@@ -6,33 +6,35 @@ using System.Xml.Linq;
 using System.Net.Http;
 using NuGet.Protocol;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.Json.Serialization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ShopProject.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
-    public class ServerDbController(ServerAPIDbContext context) : Controller
+    public class ServerDbController : Controller
     {
-        private readonly ServerAPIDbContext _context = context;
 
-        // GET: api/<DbController>/SelectEntitiesName
-        [HttpGet("SelectEntitiesName")]
-        public async Task<IActionResult> SelectEntitiesName()
+        private readonly ServerAPIDbContext _context;
+
+        public ServerDbController(ServerAPIDbContext context)
         {
-            List<string> EntitiesName = [];
-            await Task.Run(() =>
-            {
-                EntitiesName = _context.GetType().GetProperties()
-                .Where(p => p.PropertyType.IsGenericType &&
-                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)).Select(v => v.PropertyType.GetGenericArguments()[0].Name).ToList();
-            });
-            
-            return Json(EntitiesName);
+            _context = context;
         }
+
+
+        [HttpGet("SingIn")]
+        public IActionResult SingIn(string login, string password)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
+            if (user == null) { return BadRequest(); }          
+            return Json(user);
+        }
+
 
         // GET: api/<DbController>/Select/entityTypeName
         [HttpGet("Select")]

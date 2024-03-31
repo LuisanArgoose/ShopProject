@@ -6,6 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
+    xmlns:pages="clr-namespace:ShopProject.UI.Views.Pages"
+    xmlns:manager="clr-namespace:ShopProject.UI.Views.Pages.Manager"
     xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     mc:Ignorable="d"
@@ -17,7 +19,11 @@
                          IsDesignTimeCreatable=False}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    SizeChanged="MainWindow_OnSizeChanged"
     Height="450" Width="800">
+    <ui:FluentWindow.Resources>
+        <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
+    </ui:FluentWindow.Resources>
     <Grid>
         <ui:TitleBar
             x:Name="TitleBar"
@@ -29,12 +35,33 @@
             x:Name="NavigationView"
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
-            MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
-            FooterMenuItemsSource="{Binding ViewModel.FooterMenuItems, Mode=OneWay}"
             SelectionChanged="OnNavigationSelectionChanged"
+            PaneClosed="NavigationView_OnPaneClosed"
+            PaneOpened="NavigationView_OnPaneOpened"
             Padding="10"
             >
-            
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem
+                    Content="Профиль"
+                    Icon="{ui:SymbolIcon People16}"
+                    TargetPageType="{Binding ViewModel.Settings.ProfilePageType, UpdateSourceTrigger=PropertyChanged}" />
+                <ui:NavigationViewItem
+                    Content="Менеджер магазина"
+                    Icon="{ui:SymbolIcon BuildingBank20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
+                    TargetPageType="{x:Type manager:ManagerPage}" />
+                <ui:NavigationViewItem
+                    Content="Менеджер по продажам"
+                    Icon="{ui:SymbolIcon PersonMoney20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem
+                        Content="Настройки"
+                        Icon="{ui:SymbolIcon Settings16}"
+                        TargetPageType="{x:Type pages:SettingsPage}" />
+            </ui:NavigationView.FooterMenuItems>
+
 
             <ui:NavigationView.ContentOverlay>
                 <Grid>
@@ -44,7 +71,7 @@
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" />
                     <Canvas Grid.Row="0">
 
-                        <ListView  ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
+                        <ListView ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type alert:AlertModel}">
                                     <ui:InfoBar Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />

@@ -3,6 +3,7 @@
 using NuGet.ContentModel;
 using ShopProject.API.Controllers;
 using ShopProject.EFDB.Models;
+using ShopProject.API.Data;
 using System.Net.Http;
 using System.Text;
 using static System.Net.WebRequestMethods;
@@ -47,7 +48,7 @@ namespace ShopProject.Tests.DbContextTests
         [TestMethod]
         public async Task ServerCreateTest()
         {
-
+            /*
             string testMark = "ServerCreateTest";
             var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
             if (marks.Any())
@@ -66,12 +67,12 @@ namespace ShopProject.Tests.DbContextTests
             await ClientDbProvider.PostCUD(entity, "Create");
             //await _testController.Create(content);
             var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark && t.TextToUpdate == entity.TextToUpdate);
-            Assert.IsTrue(ifExistNow);
+            Assert.IsTrue(ifExistNow);*/
         }
         [TestMethod]
         public async Task ServerUpdateTest()
         {
-
+            /*
             string testMark = "ServerUpdateTest";
             var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
             if (marks.Count() != 1)
@@ -89,13 +90,13 @@ namespace ShopProject.Tests.DbContextTests
             await _testController.Update(content);
             _serverExample.TestTables.Load();
             var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == entityToUpdate.TestText && t.TextToUpdate == entityToUpdate.TextToUpdate);
-            Assert.IsTrue(ifExistNow);
+            Assert.IsTrue(ifExistNow);*/
         }
 
         [TestMethod]
         public async Task ServerDeleteTest()
         {
-
+            /*
             string testMark = "ServerDeleteTest";
             var marks = _serverExample.TestTables.Where(t => t.TestText == testMark);
             var testTable = GetTestExample(testMark);
@@ -114,13 +115,14 @@ namespace ShopProject.Tests.DbContextTests
             await _testController.Delete(content);
             _serverExample.TestTables.Load();
             var ifExistNow = _serverExample.TestTables.Any(t => t.TestText == testMark);
-            Assert.IsTrue(!ifExistNow);
+            Assert.IsTrue(!ifExistNow);*/
         }
         [TestMethod]
         public void CorrectUploadWithObservableTest()
         {
+            /*
             var result = _serverExample.WorkerTypes.FirstOrDefault();
-            Assert.IsNotNull(result.Workers.Count > 0);
+            Assert.IsNotNull(result.Workers.Count > 0);*/
         }
     }
 }

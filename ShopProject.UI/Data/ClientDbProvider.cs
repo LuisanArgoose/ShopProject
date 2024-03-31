@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json.Linq;
+using ShopProject.EFDB.Models;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
 using ShopProject.UI.Helpers;
 using ShopProject.UI.Models.SettingsComponents;
@@ -42,6 +43,33 @@ namespace ShopProject.UI.Data
             
         }
 
+        public static async Task<HttpResponseMessage> SingIn(string login, string password)
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+                    var url = "ServerDb/SingIn?login=" + login + "&password=" + password;
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Вход в систему");
+                    }
+
+
+                    else
+                        AlertPoster.PostSystemErrorAlert("Вход в систему", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Вход в систему", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+
+        }
+
         public static async Task<HttpResponseMessage> TestConnect(string login, string password)
         {
             try
@@ -72,30 +100,6 @@ namespace ShopProject.UI.Data
             }
 
 
-
-        }
-
-        public static async Task<HttpResponseMessage> GetEntitiesNameAsync()
-        {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/SelectEntitiesName";
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                        AlertPoster.PostSystemSuccessAlert("Получение имён Entity");
-                    else
-                        AlertPoster.PostSystemErrorAlert("Получение имён Entity", response.StatusCode.ToString());
-                    return response;
-                };
-            }
-            catch(Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Получение имён Entity", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
-            
 
         }
         public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)

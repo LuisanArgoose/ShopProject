@@ -9,8 +9,17 @@ public partial class Role : ObservableObject
     private int _roleId;
 
     [ObservableProperty]
-	private  string _roleName = null!;
+    private string _roleName = null!;
 
     [ObservableProperty]
-	private ICollection<Position> _positions = new List<Position>();
+    private bool _isShopManager;
+
+    [ObservableProperty]
+    private bool _isSalesManager;
+
+    [ObservableProperty]
+    private bool _isAdmin;
+
+    [ObservableProperty]
+    private ICollection<User> _users  = new List<User>();
 }

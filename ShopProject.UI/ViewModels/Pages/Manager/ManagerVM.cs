@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.EFDB.Models
+namespace ShopProject.UI.ViewModels.Pages.Manager
 {
-    internal class Purchase
+    public partial class ManagerVM : ObservableObject
     {
     }
 }

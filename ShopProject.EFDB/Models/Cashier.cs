@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.Models
 {
-    internal class Purchase
+    internal class Cashier
     {
     }
 }

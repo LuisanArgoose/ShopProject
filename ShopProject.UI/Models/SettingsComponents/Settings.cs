@@ -1,4 +1,5 @@
-﻿using ShopProject.UI.Models.SettingsComponents.AlertSettings;
+﻿using ShopProject.EFDB.Models;
+using ShopProject.UI.Models.SettingsComponents.AlertSettings;
 using ShopProject.UI.Models.SettingsComponents.APISettings;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,11 @@ namespace ShopProject.UI.Models.SettingsComponents
 {
     public partial class Settings : ObservableObject
     {
-        private Settings() { }
-        [ObservableProperty]
-        public SettingsModel _settingsModel = new SettingsModel();
-
         private static Settings _instance;
         static Settings()
         {
             _instance = new Settings();
+
         }
 
         public static bool SaveInstance()
@@ -59,5 +57,65 @@ namespace ShopProject.UI.Models.SettingsComponents
         {
             return _instance;
         }
+        public static User GetActiveUser()
+        {
+            return _instance.ActiveUser;
+        }
+        public static void SetActiveUser(User user)
+        {
+            _instance.ActiveUser = user;
+        }
+        public static void Exit()
+        {
+            _instance.ActiveUser = GetEmptyUser();
+            
+        }
+        private static User GetEmptyUser()
+        {
+            return new()
+            {
+                Fullname = "UnLogin",
+                Role = new()
+                {
+                    IsAdmin = false,
+                    IsSalesManager = false,
+                    IsShopManager = false
+                },
+            };
+        }
+        private Settings() 
+        {
+            ActiveUser = GetEmptyUser();
+        }
+        [ObservableProperty]
+        private SettingsModel _settingsModel = new SettingsModel();
+
+        private User _activeUser;
+
+        public User ActiveUser
+        {
+            get => _activeUser;
+            set
+            {
+                SetProperty(ref _activeUser, value);
+                OnPropertyChanged(nameof(ProfilePageType));
+            }
+        }
+
+        public Type ProfilePageType
+        {
+            get
+            {
+                if(ActiveUser.Fullname == "UnLogin")
+                {
+                    return typeof(ProfilePage);
+                }
+                else
+                {
+                    return typeof(ActiveProfilePage);
+                }
+            }
+        }
+        
     }
 }

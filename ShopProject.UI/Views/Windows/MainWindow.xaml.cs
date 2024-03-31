@@ -48,5 +48,39 @@ namespace ShopProject.UI.Views.Windows
                     ? Visibility.Visible
                     : Visibility.Collapsed;
         }
+        private bool _isUserClosedPane;
+
+        private bool _isPaneOpenedOrClosedFromCode;
+        private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_isUserClosedPane)
+            {
+                return;
+            }
+
+            _isPaneOpenedOrClosedFromCode = true;
+            NavigationView.IsPaneOpen = !(e.NewSize.Width <= 1200);
+            _isPaneOpenedOrClosedFromCode = false;
+        }
+
+        private void NavigationView_OnPaneOpened(NavigationView sender, RoutedEventArgs args)
+        {
+            if (_isPaneOpenedOrClosedFromCode)
+            {
+                return;
+            }
+
+            _isUserClosedPane = false;
+        }
+
+        private void NavigationView_OnPaneClosed(NavigationView sender, RoutedEventArgs args)
+        {
+            if (_isPaneOpenedOrClosedFromCode)
+            {
+                return;
+            }
+
+            _isUserClosedPane = true;
+        }
     }
 }
