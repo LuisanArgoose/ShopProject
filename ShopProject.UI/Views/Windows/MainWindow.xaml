@@ -49,7 +49,7 @@
                     Content="Менеджер магазина"
                     Icon="{ui:SymbolIcon BuildingBank20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
-                    TargetPageType="{x:Type manager:ManagerPage}" />
+                    MenuItemsSource="{Binding ViewModel.ManagerMenuItems }"/>
                 <ui:NavigationViewItem
                     Content="Менеджер по продажам"
                     Icon="{ui:SymbolIcon PersonMoney20}"

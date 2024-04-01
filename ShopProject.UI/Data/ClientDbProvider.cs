@@ -83,7 +83,7 @@ namespace ShopProject.UI.Data
                         AlertPoster.PostSystemSuccessAlert("Подключение к API");
                         var jsonToken = await response.Content.ReadAsStringAsync();
                         
-                        var result = JsonSerializer.Deserialize<TokenModel>(jsonToken,JsonOptions.GetOptions());
+                        var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
                         _token = result.Token;
                     }
                         

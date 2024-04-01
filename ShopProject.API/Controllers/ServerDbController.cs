@@ -7,6 +7,7 @@ using System.Net.Http;
 using NuGet.Protocol;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Options;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,6 +19,11 @@ namespace ShopProject.API.Controllers
     [ApiController]
     public class ServerDbController : Controller
     {
+        JsonSerializerOptions _options = new JsonSerializerOptions()
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        };
+
 
         private readonly ServerAPIDbContext _context;
 
@@ -32,7 +38,7 @@ namespace ShopProject.API.Controllers
         {
             var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
             if (user == null) { return BadRequest(); }          
-            return Json(user);
+            return Json(user, _options);
         }
 
 
@@ -62,7 +68,7 @@ namespace ShopProject.API.Controllers
                 toListAsyncMethod = toListAsyncMethod.MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
 
                 var results = await (dynamic?)toListAsyncMethod.Invoke(null, [dbSet, null]);
-                return Json(results);
+                return Json(results, _context);
             }
 
             return BadRequest("Invalid entity type name");
@@ -145,7 +151,7 @@ namespace ShopProject.API.Controllers
                         break;
                 }
                 await _context.SaveChangesAsync();
-                return Json(entity);
+                return Json(entity, _context);
 
             }
             catch(Exception e)
