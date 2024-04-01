@@ -18,12 +18,6 @@ public partial class Shop : ObservableObject
     private string _address = null!;
 
     [ObservableProperty]
-    private int _userId;
-
-    [ObservableProperty]
-    private User _user = null!;
-
-    [ObservableProperty]
     private ICollection<User> _users = new List<User>();
 
     [ObservableProperty]

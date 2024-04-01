@@ -6,7 +6,27 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.Models
 {
-    internal class ProductPlan
+    public partial class ProductPlan : ObservableObject
     {
+        [ObservableProperty]
+        private int _productPlanId;
+
+        [ObservableProperty]
+        private int _productId;
+
+        [ObservableProperty]
+        private int _expectedQuantity;
+
+        [ObservableProperty]
+        private DateTime _updatedTime;
+
+        [ObservableProperty]
+        private Product _product = null!;
+
+        [ObservableProperty]
+        private int _shopId;
+
+        [ObservableProperty]
+        private Shop _shop = null!;
     }
 }

@@ -6,7 +6,19 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.Models
 {
-    internal class Purchase
+    public partial class Purchase : ObservableObject
     {
+        [ObservableProperty]
+        private int _purchaseId;
+
+        [ObservableProperty]
+        private int _cashierId;
+
+        [ObservableProperty]
+        private Cashier _cashier = null!;
+
+        [ObservableProperty]
+        private ICollection<PurchaseProduct> _purchaseProducts = new List<PurchaseProduct>();
+
     }
 }
