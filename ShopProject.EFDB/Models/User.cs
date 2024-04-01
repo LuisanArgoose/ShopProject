@@ -27,6 +27,4 @@ public partial class User : ObservableObject
     [ObservableProperty]
     private ICollection<Shop> _shops = new List<Shop>();
 
-
-
 }
