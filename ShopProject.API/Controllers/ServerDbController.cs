@@ -68,7 +68,7 @@ namespace ShopProject.API.Controllers
                 toListAsyncMethod = toListAsyncMethod.MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
 
                 var results = await (dynamic?)toListAsyncMethod.Invoke(null, [dbSet, null]);
-                return Json(results, _context);
+                return Json(results, _options);
             }
 
             return BadRequest("Invalid entity type name");
@@ -151,7 +151,7 @@ namespace ShopProject.API.Controllers
                         break;
                 }
                 await _context.SaveChangesAsync();
-                return Json(entity, _context);
+                return Json(entity, _options);
 
             }
             catch(Exception e)
