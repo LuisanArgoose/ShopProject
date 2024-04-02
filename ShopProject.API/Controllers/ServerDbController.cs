@@ -8,6 +8,10 @@ using NuGet.Protocol;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
+using NuGet.Packaging;
+using ShopProject.EFDB.Models;
+using System.Drawing;
+using System.Collections;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -30,15 +34,44 @@ namespace ShopProject.API.Controllers
         public ServerDbController(ServerAPIDbContext context)
         {
             _context = context;
+
+            LoadAll();
         }
 
+        private void LoadAll()
+        {
+            _context.Cashiers.Load();
+            _context.Products.Load();
+            _context.ProductPlans.Load();
+            _context.Purchases.Load();
+            _context.PurchaseProducts.Load();
+            _context.Roles.Load();
+            _context.ShopPlans.Load();
+            _context.Users.Load();
+            _context.WorkerPlans.Load();
+            _context.Shops.Load();
+
+        }
 
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
+            
+            var user = _context.Users.Local.FirstOrDefault(x => x.Login == login && x.Password == password);
+            
             if (user == null) { return BadRequest(); }          
             return Json(user, _options);
+        }
+
+
+        [HttpPost("InitializeDataBase")]
+        public IActionResult InitializeDataBase()
+        {
+
+            //DbFiller.InitDb(_context);
+            var sdaw = (_context.Users as IQueryable<object>).Include("Shops");
+
+            return Json(sdaw, _options);
         }
 
 
@@ -52,9 +85,12 @@ namespace ShopProject.API.Controllers
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
                 p.PropertyType.GetGenericArguments()[0].Name == entityTypeName);
 
+            var entityType = _context.GetType().GetProperties().FirstOrDefault(p => p.PropertyType.GetGenericArguments()[0].Name == entityTypeName).PropertyType.GetGenericArguments()[0];
+
             if (dbSetProperty != null)
             {
                 var dbSet = dbSetProperty.GetValue(_context);
+
                 if (dbSet == null)
                 {
                     return BadRequest("Not found property in dbContext");

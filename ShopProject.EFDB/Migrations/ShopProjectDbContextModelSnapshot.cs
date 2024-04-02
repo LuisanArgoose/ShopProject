@@ -49,8 +49,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("CashierId")
-                        .HasName("Cashiers_pkey");
+                    b.HasKey("CashierId");
 
                     b.ToTable("Cashiers");
                 });
@@ -73,8 +72,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<decimal>("SellPrice")
                         .HasColumnType("numeric");
 
-                    b.HasKey("ProductId")
-                        .HasName("Products_pkey");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
                 });
@@ -99,8 +97,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("ProductPlanId")
-                        .HasName("ProductPlans_pkey");
+                    b.HasKey("ProductPlanId");
 
                     b.HasIndex("ProductId");
 
@@ -120,8 +117,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("CashierId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PurchaseId")
-                        .HasName("Purchases_pkey");
+                    b.HasKey("PurchaseId");
 
                     b.HasIndex("CashierId");
 
@@ -145,8 +141,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("PurchaseId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PurchaseProductId")
-                        .HasName("PurchaseProducts_pkey");
+                    b.HasKey("PurchaseProductId");
 
                     b.HasIndex("ProductId");
 
@@ -176,8 +171,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("RoleId")
-                        .HasName("Roles_pkey");
+                    b.HasKey("RoleId");
 
                     b.ToTable("Roles");
                 });
@@ -198,8 +192,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("ShopId")
-                        .HasName("Shops_pkey");
+                    b.HasKey("ShopId");
 
                     b.ToTable("Shops");
                 });
@@ -227,8 +220,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("ShopPlanId")
-                        .HasName("ShopPlans_pkey");
+                    b.HasKey("ShopPlanId");
 
                     b.HasIndex("ShopId");
 
@@ -251,8 +243,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("TokenLoginId")
-                        .HasName("TokenLogins_pkey");
+                    b.HasKey("TokenLoginId");
 
                     b.ToTable("TokenLogins");
                 });
@@ -280,8 +271,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId")
-                        .HasName("Users_pkey");
+                    b.HasKey("UserId");
 
                     b.HasIndex("RoleId");
 
@@ -311,8 +301,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("WorkerPlanId")
-                        .HasName("WorkerPlans_pkey");
+                    b.HasKey("WorkerPlanId");
 
                     b.HasIndex("ShopId");
 

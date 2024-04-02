@@ -7,30 +7,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShopProject.EFDB.Migrations
 {
     /// <inheritdoc />
-    public partial class NewInitialize : Migration
+    public partial class wdkwfawfsa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Shops_Users_UserId",
-                table: "Shops");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Shops_UserId",
-                table: "Shops");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Shops");
-
-            migrationBuilder.AddColumn<string>(
-                name: "ShopName",
-                table: "Shops",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.CreateTable(
                 name: "Cashiers",
                 columns: table => new
@@ -41,7 +22,7 @@ namespace ShopProject.EFDB.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("Cashiers_pkey", x => x.CashierId);
+                    table.PrimaryKey("PK_Cashiers", x => x.CashierId);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,76 +37,91 @@ namespace ShopProject.EFDB.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("Products_pkey", x => x.ProductId);
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ShopPlans",
+                name: "Roles",
                 columns: table => new
                 {
-                    ShopPlanId = table.Column<int>(type: "integer", nullable: false)
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TradeTurnover = table.Column<int>(type: "integer", nullable: false),
-                    MoneyTurnover = table.Column<int>(type: "integer", nullable: false),
-                    AverageBill = table.Column<decimal>(type: "numeric", nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RoleName = table.Column<string>(type: "text", nullable: false),
+                    IsShopManager = table.Column<bool>(type: "boolean", nullable: false),
+                    IsSalesManager = table.Column<bool>(type: "boolean", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.RoleId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shops",
+                columns: table => new
+                {
                     ShopId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("ShopPlans_pkey", x => x.ShopPlanId);
-                    table.ForeignKey(
-                        name: "FK_ShopPlans_Shops_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shops",
-                        principalColumn: "ShopId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShopUser",
-                columns: table => new
-                {
-                    ShopsShopId = table.Column<int>(type: "integer", nullable: false),
-                    UsersUserId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShopUser", x => new { x.ShopsShopId, x.UsersUserId });
-                    table.ForeignKey(
-                        name: "FK_ShopUser_Shops_ShopsShopId",
-                        column: x => x.ShopsShopId,
-                        principalTable: "Shops",
-                        principalColumn: "ShopId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ShopUser_Users_UsersUserId",
-                        column: x => x.UsersUserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WorkerPlans",
-                columns: table => new
-                {
-                    WorkerPlanId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PurchasesCount = table.Column<int>(type: "integer", nullable: false),
-                    ProductsCount = table.Column<int>(type: "integer", nullable: false),
-                    AverageBill = table.Column<decimal>(type: "numeric", nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false)
+                    ShopName = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("WorkerPlans_pkey", x => x.WorkerPlanId);
+                    table.PrimaryKey("PK_Shops", x => x.ShopId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TokenLogins",
+                columns: table => new
+                {
+                    TokenLoginId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TokenLogins", x => x.TokenLoginId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Purchases",
+                columns: table => new
+                {
+                    PurchaseId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CashierId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Purchases", x => x.PurchaseId);
                     table.ForeignKey(
-                        name: "FK_WorkerPlans_Shops_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shops",
-                        principalColumn: "ShopId",
+                        name: "FK_Purchases_Cashiers_CashierId",
+                        column: x => x.CashierId,
+                        principalTable: "Cashiers",
+                        principalColumn: "CashierId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Fullname = table.Column<string>(type: "text", nullable: false),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -154,25 +150,6 @@ namespace ShopProject.EFDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Purchases",
-                columns: table => new
-                {
-                    PurchaseId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CashierId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("Purchases_pkey", x => x.PurchaseId);
-                    table.ForeignKey(
-                        name: "FK_Purchases_Cashiers_CashierId",
-                        column: x => x.CashierId,
-                        principalTable: "Cashiers",
-                        principalColumn: "CashierId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProductPlans",
                 columns: table => new
                 {
@@ -185,7 +162,7 @@ namespace ShopProject.EFDB.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("ProductPlans_pkey", x => x.ProductPlanId);
+                    table.PrimaryKey("PK_ProductPlans", x => x.ProductPlanId);
                     table.ForeignKey(
                         name: "FK_ProductPlans_Products_ProductId",
                         column: x => x.ProductId,
@@ -194,6 +171,52 @@ namespace ShopProject.EFDB.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductPlans_Shops_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shops",
+                        principalColumn: "ShopId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopPlans",
+                columns: table => new
+                {
+                    ShopPlanId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TradeTurnover = table.Column<int>(type: "integer", nullable: false),
+                    MoneyTurnover = table.Column<int>(type: "integer", nullable: false),
+                    AverageBill = table.Column<decimal>(type: "numeric", nullable: false),
+                    UpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ShopId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopPlans", x => x.ShopPlanId);
+                    table.ForeignKey(
+                        name: "FK_ShopPlans_Shops_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shops",
+                        principalColumn: "ShopId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkerPlans",
+                columns: table => new
+                {
+                    WorkerPlanId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PurchasesCount = table.Column<int>(type: "integer", nullable: false),
+                    ProductsCount = table.Column<int>(type: "integer", nullable: false),
+                    AverageBill = table.Column<decimal>(type: "numeric", nullable: false),
+                    UpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ShopId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkerPlans", x => x.WorkerPlanId);
+                    table.ForeignKey(
+                        name: "FK_WorkerPlans_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "ShopId",
@@ -212,7 +235,7 @@ namespace ShopProject.EFDB.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PurchaseProducts_pkey", x => x.PurchaseProductId);
+                    table.PrimaryKey("PK_PurchaseProducts", x => x.PurchaseProductId);
                     table.ForeignKey(
                         name: "FK_PurchaseProducts_Products_ProductId",
                         column: x => x.ProductId,
@@ -224,6 +247,30 @@ namespace ShopProject.EFDB.Migrations
                         column: x => x.PurchaseId,
                         principalTable: "Purchases",
                         principalColumn: "PurchaseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopUser",
+                columns: table => new
+                {
+                    ShopsShopId = table.Column<int>(type: "integer", nullable: false),
+                    UsersUserId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopUser", x => new { x.ShopsShopId, x.UsersUserId });
+                    table.ForeignKey(
+                        name: "FK_ShopUser_Shops_ShopsShopId",
+                        column: x => x.ShopsShopId,
+                        principalTable: "Shops",
+                        principalColumn: "ShopId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShopUser_Users_UsersUserId",
+                        column: x => x.UsersUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -268,6 +315,11 @@ namespace ShopProject.EFDB.Migrations
                 column: "UsersUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WorkerPlans_ShopId",
                 table: "WorkerPlans",
                 column: "ShopId");
@@ -292,6 +344,9 @@ namespace ShopProject.EFDB.Migrations
                 name: "ShopUser");
 
             migrationBuilder.DropTable(
+                name: "TokenLogins");
+
+            migrationBuilder.DropTable(
                 name: "WorkerPlans");
 
             migrationBuilder.DropTable(
@@ -301,31 +356,16 @@ namespace ShopProject.EFDB.Migrations
                 name: "Purchases");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Shops");
+
+            migrationBuilder.DropTable(
                 name: "Cashiers");
 
-            migrationBuilder.DropColumn(
-                name: "ShopName",
-                table: "Shops");
-
-            migrationBuilder.AddColumn<int>(
-                name: "UserId",
-                table: "Shops",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Shops_UserId",
-                table: "Shops",
-                column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Shops_Users_UserId",
-                table: "Shops",
-                column: "UserId",
-                principalTable: "Users",
-                principalColumn: "UserId",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }
