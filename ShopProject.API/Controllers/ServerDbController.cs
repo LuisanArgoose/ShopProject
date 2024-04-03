@@ -47,8 +47,8 @@ namespace ShopProject.API.Controllers
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
-            _context.Users.Include(x => x.Role);
-            var user = _context.Users.Local.FirstOrDefault(x => x.Login == login && x.Password == password);
+            _context.Roles.Load();
+            var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
             
             if (user == null) { return BadRequest(); }          
             
@@ -60,10 +60,9 @@ namespace ShopProject.API.Controllers
         public IActionResult InitializeDataBase()
         {
 
-            //DbFiller.InitDb(_context);
-            var sdaw = (_context.Users as IQueryable<object>).Include("Shops");
+            DbFiller.InitDb(_context);
 
-            return Json(sdaw, _options);
+            return Ok();
         }
 
 

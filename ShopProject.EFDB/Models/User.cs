@@ -25,7 +25,7 @@ public partial class User : ObservableObject
     private Role _role = null!;
 
     [ObservableProperty]
-    private int _shopId;
+    private int? _shopId;
 
     [ObservableProperty]
     private Shop? _shop = null!;

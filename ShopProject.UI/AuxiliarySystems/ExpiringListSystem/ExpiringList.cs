@@ -18,9 +18,11 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 Thread.Sleep(expirationTime);
+                
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Remove(value);
+                    if (Application.Current.MainWindow != null)
+                        Remove(value);
                 });
             });
         }

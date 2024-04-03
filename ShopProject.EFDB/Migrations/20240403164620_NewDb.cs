@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShopProject.EFDB.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDB : Migration
+    public partial class NewDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -152,7 +152,7 @@ namespace ShopProject.EFDB.Migrations
                     Login = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false)
+                    ShopId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -167,8 +167,7 @@ namespace ShopProject.EFDB.Migrations
                         name: "FK_Users_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
-                        principalColumn: "ShopId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ShopId");
                 });
 
             migrationBuilder.CreateTable(

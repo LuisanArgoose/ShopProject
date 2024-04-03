@@ -261,7 +261,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShopId")
+                    b.Property<int?>("ShopId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserId");
@@ -384,9 +384,7 @@ namespace ShopProject.EFDB.Migrations
 
                     b.HasOne("ShopProject.EFDB.Models.Shop", "Shop")
                         .WithMany("Users")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShopId");
 
                     b.Navigation("Role");
 
