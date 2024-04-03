@@ -45,15 +45,33 @@
                     Content="Профиль"
                     Icon="{ui:SymbolIcon People16}"
                     TargetPageType="{Binding ViewModel.Settings.ProfilePageType, UpdateSourceTrigger=PropertyChanged}" />
+                
+                
+                
+                <ui:NavigationViewItemSeparator
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"/>
                 <ui:NavigationViewItem
-                    Content="Менеджер магазина"
+                    Content="План магазина"
                     Icon="{ui:SymbolIcon BuildingBank20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
-                    MenuItemsSource="{Binding ViewModel.ManagerMenuItems }"/>
+                    TargetPageType="{x:Type manager:ManagerPage}"/>
+                <ui:NavigationViewItem
+                    Content="Работники"
+                    Icon="{ui:SymbolIcon BuildingBank20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
+                    TargetPageType="{x:Type manager:MCashiersPage}"/> 
+
+
+
+
+                <ui:NavigationViewItemSeparator
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
                 <ui:NavigationViewItem
                     Content="Менеджер по продажам"
                     Icon="{ui:SymbolIcon PersonMoney20}"
-                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"
+                    TargetPageType="{x:Type manager:ManagerPage}"
+                    />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem

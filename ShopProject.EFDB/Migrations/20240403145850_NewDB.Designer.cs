@@ -12,8 +12,8 @@ using ShopProject.EFDB.Models;
 namespace ShopProject.EFDB.Migrations
 {
     [DbContext(typeof(ShopProjectDbContext))]
-    [Migration("20240402164105_wdkwfawfsa")]
-    partial class wdkwfawfsa
+    [Migration("20240403145850_NewDB")]
+    partial class NewDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace ShopProject.EFDB.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CashierShop", b =>
-                {
-                    b.Property<int>("CashiersCashierId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopsShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CashiersCashierId", "ShopsShopId");
-
-                    b.HasIndex("ShopsShopId");
-
-                    b.ToTable("CashierShop");
-                });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
                 {
@@ -52,7 +37,12 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
                     b.HasKey("CashierId");
+
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Cashiers");
                 });
@@ -274,9 +264,14 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Users");
                 });
@@ -311,34 +306,15 @@ namespace ShopProject.EFDB.Migrations
                     b.ToTable("WorkerPlans");
                 });
 
-            modelBuilder.Entity("ShopUser", b =>
+            modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
                 {
-                    b.Property<int>("ShopsShopId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ShopsShopId", "UsersUserId");
-
-                    b.HasIndex("UsersUserId");
-
-                    b.ToTable("ShopUser");
-                });
-
-            modelBuilder.Entity("CashierShop", b =>
-                {
-                    b.HasOne("ShopProject.EFDB.Models.Cashier", null)
-                        .WithMany()
-                        .HasForeignKey("CashiersCashierId")
+                    b.HasOne("ShopProject.EFDB.Models.Shop", "Shop")
+                        .WithMany("Cashiers")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopProject.EFDB.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopsShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.ProductPlan", b =>
@@ -409,7 +385,15 @@ namespace ShopProject.EFDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ShopProject.EFDB.Models.Shop", "Shop")
+                        .WithMany("Users")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Role");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.WorkerPlan", b =>
@@ -421,21 +405,6 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("ShopUser", b =>
-                {
-                    b.HasOne("ShopProject.EFDB.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopsShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShopProject.EFDB.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
@@ -462,9 +431,13 @@ namespace ShopProject.EFDB.Migrations
 
             modelBuilder.Entity("ShopProject.EFDB.Models.Shop", b =>
                 {
+                    b.Navigation("Cashiers");
+
                     b.Navigation("ProductPlans");
 
                     b.Navigation("ShopPlans");
+
+                    b.Navigation("Users");
 
                     b.Navigation("WorkerPlans");
                 });

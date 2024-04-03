@@ -25,6 +25,9 @@ public partial class User : ObservableObject
     private Role _role = null!;
 
     [ObservableProperty]
-    private ICollection<Shop> _shops = new List<Shop>();
+    private int _shopId;
+
+    [ObservableProperty]
+    private Shop? _shop = null!;
 
 }

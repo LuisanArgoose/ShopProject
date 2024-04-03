@@ -356,7 +356,7 @@ namespace ShopProject.API.Data
                     Login = "Manager1",
                     Password = "Pass1",
                     Role = roles.First(x => x.RoleName == "Менеджер"),
-                    Shops = new List<Shop>(shops.Where(x => x.ShopName == "Магазин 1"))
+                    Shop = shops.First(x => x.ShopName == "Магазин 1")
                 },
                 new User()
                 {
@@ -364,7 +364,7 @@ namespace ShopProject.API.Data
                     Login = "Manager2",
                     Password = "Pass2",
                     Role = roles.First(x => x.RoleName == "Менеджер"),
-                    Shops = new List<Shop>(shops.Where(x => x.ShopName == "Магазин 2"))
+                    Shop = shops.First(x => x.ShopName == "Магазин 2")
                 },
                 new User()
                 {
@@ -372,7 +372,7 @@ namespace ShopProject.API.Data
                     Login = "Manager3",
                     Password = "Pass3",
                     Role = roles.First(x => x.RoleName == "Менеджер"),
-                    Shops = new List<Shop>(shops.Where(x => x.ShopName == "Магазин 3"))
+                    Shop = shops.First(x => x.ShopName == "Магазин 3")
                 },
                 new User()
                 {
@@ -380,7 +380,7 @@ namespace ShopProject.API.Data
                     Login = "Manager4",
                     Password = "Pass4",
                     Role = roles.First(x => x.RoleName == "Менеджер"),
-                    Shops = new List<Shop>(shops.Where(x => x.ShopName == "Магазин 4"))
+                    Shop = shops.First(x => x.ShopName == "Магазин 4")
                 },
                 new User()
                 {
@@ -388,7 +388,7 @@ namespace ShopProject.API.Data
                     Login = "Manager5",
                     Password = "Pass5",
                     Role = roles.First(x => x.RoleName == "Менеджер"),
-                    Shops = new List<Shop>(shops.Where(x => x.ShopName == "Магазин 5"))
+                    Shop = shops.First(x => x.ShopName == "Магазин 1")
                 },
                 new User()
                 {
@@ -396,7 +396,6 @@ namespace ShopProject.API.Data
                     Login = "SalesManager1",
                     Password = "SalesPass1",
                     Role = roles.First(x => x.RoleName == "Менеджер по продажам"),
-                    Shops = new List<Shop>(shops)
                 },
                 new User()
                 {
@@ -404,7 +403,6 @@ namespace ShopProject.API.Data
                     Login = "Admin1",
                     Password = "AdminPass1",
                     Role = roles.First(x => x.RoleName == "Админ"),
-                    Shops = new List<Shop>(shops)
                 }
             };
 

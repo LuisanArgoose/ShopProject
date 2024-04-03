@@ -15,7 +15,10 @@ namespace ShopProject.EFDB.Models
         private string _fullName = null!;
 
         [ObservableProperty]
-        private ICollection<Shop> _shops = new List<Shop>();
+        private int _shopId;
+
+        [ObservableProperty]
+        private Shop _shop = null!;
 
         [ObservableProperty]
         private ICollection<Purchase> _purchases = new List<Purchase>();

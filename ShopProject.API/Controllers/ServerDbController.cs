@@ -40,26 +40,18 @@ namespace ShopProject.API.Controllers
 
         private void LoadAll()
         {
-            _context.Cashiers.Load();
-            _context.Products.Load();
-            _context.ProductPlans.Load();
-            _context.Purchases.Load();
-            _context.PurchaseProducts.Load();
-            _context.Roles.Load();
-            _context.ShopPlans.Load();
-            _context.Users.Load();
-            _context.WorkerPlans.Load();
-            _context.Shops.Load();
+            
 
         }
 
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
-            
+            _context.Users.Include(x => x.Role);
             var user = _context.Users.Local.FirstOrDefault(x => x.Login == login && x.Password == password);
             
             if (user == null) { return BadRequest(); }          
+            
             return Json(user, _options);
         }
 

@@ -23,10 +23,14 @@
                         <TextBlock Text="План магазина" />
                     </StackPanel>
                 </TabItem.Header>
-                <Grid>
-                    <TextBlock  Text="World" />
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="53*"/>
+                        <ColumnDefinition Width="103*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock  Text="World" Grid.ColumnSpan="2" />
                 </Grid>
-            </TabItem>
+            </TabItem >
             <TabItem>
                 <TabItem.Header >
                     <StackPanel Orientation="Horizontal">
