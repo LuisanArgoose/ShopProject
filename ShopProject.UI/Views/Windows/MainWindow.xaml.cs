@@ -1,5 +1,6 @@
 ﻿using ShopProject.UI.Services.Contracts;
 using ShopProject.UI.ViewModels.Windows;
+using ShopProject.UI.Views.Pages.Examples;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,13 +20,18 @@ namespace ShopProject.UI.Views.Windows
     /// </summary>
     public partial class MainWindow : IWindow
     {
+        private INavigationService _navigationService;
+
+        private CacheStorageService _cacheStorageService;
         public MainWindowVM ViewModel { get; }
         public MainWindow(
             MainWindowVM viewModel,
+            CacheStorageService cacheStorageService,
             INavigationService navigationService,
             IServiceProvider serviceProvider
             )
         {
+            _cacheStorageService = cacheStorageService;
             ViewModel = viewModel;
             DataContext = this;
 
@@ -34,6 +40,8 @@ namespace ShopProject.UI.Views.Windows
             navigationService.SetNavigationControl(NavigationView);
 
             NavigationView.SetServiceProvider(serviceProvider);
+
+            _navigationService = navigationService;
         }
 
         private void OnNavigationSelectionChanged(object sender, RoutedEventArgs e)
@@ -81,6 +89,12 @@ namespace ShopProject.UI.Views.Windows
             }
 
             _isUserClosedPane = true;
+        }
+
+        private void SelectShop(object sender, RoutedEventArgs e)
+        {
+            _cacheStorageService.SelectedShop = Settings.GetActiveUser().Shop;
+            _navigationService.Navigate(typeof(ShopPage));
         }
     }
 }

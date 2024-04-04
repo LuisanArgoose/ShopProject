@@ -28,25 +28,44 @@ namespace ShopProject.UI.ViewModels.Pages
             _navigationService = navigationService;
             SingInCommand = new AsyncRelayCommand<object>((param) => SingIn(param));
             AutoLogin();
+
+
         }
         private void AutoLogin()
         {
+            
             var autoLoginSettings = Settings.GetInstance().SettingsModel.DevelopmentSettingsPart.AutoLoginSettings;
-            if (autoLoginSettings.IsActive)
+            if (autoLoginSettings.IsActive && autoLoginSettings.IsFirst)
             {
+
                 Login = autoLoginSettings.Login;
                 var passwordBox = new PasswordBox();
                 passwordBox.Password = autoLoginSettings.Password;
                 SingInCommand.Execute(passwordBox);
+                autoLoginSettings.IsFirst = false;
+                
                 
             }
             
         }
 
-
+        [ObservableProperty]
+        private bool _isLoading;
         public IAsyncRelayCommand SingInCommand { get; }
         private async Task SingIn(object passwordBoxObj)
         {
+            try
+            {
+                IsLoading = true;
+                await Settings.GetInstance().SettingsModel.APISettingsPart.APILoginSettings.TestConnection().WaitAsync(CancellationToken.None);
+                IsLoading = false;
+            }
+            catch
+            {
+                IsLoading = false;
+                AlertPoster.PostErrorAlert("Ошибка подключения");
+                return;
+            }
             if (passwordBoxObj == null || passwordBoxObj as PasswordBox == null)
             {
                 return;
@@ -60,6 +79,7 @@ namespace ShopProject.UI.ViewModels.Pages
             var jsonUser = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<User>(jsonUser);
             Settings.SetActiveUser(result);
+
             _navigationService.Navigate(typeof(ActiveProfilePage));
             AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");
         }

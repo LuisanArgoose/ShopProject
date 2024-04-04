@@ -26,9 +26,9 @@
             <Label Content="Имя пользователя" Margin="0,10,0,0"/>
             <ui:TextBox Text="{Binding ViewModel.Login, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
             <Label Content="Пароль" Margin="0,10,0,0"/>
-            <ui:PasswordBox x:Name="PB" Password="{Binding ViewModel.Password, UpdateSourceTrigger=PropertyChanged}"/>
+            <ui:PasswordBox x:Name="PB"/>
             <ui:Button Height="36" Content="Войти" Command="{Binding ViewModel.SingInCommand}" CommandParameter="{Binding ElementName=PB}"  Margin="0,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-
+            <ProgressBar IsIndeterminate="{Binding ViewModel.IsLoading}"/>
         </StackPanel>
     </Grid>
 </Page>

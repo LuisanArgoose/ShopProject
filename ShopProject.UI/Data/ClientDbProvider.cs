@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace ShopProject.UI.Data
 {
-    public class ClientDbProvider
+    public static class ClientDbProvider
     {
         private static Settings _settings = Settings.GetInstance();
         private static string _token = null!;
@@ -45,6 +45,7 @@ namespace ShopProject.UI.Data
 
         public static async Task<HttpResponseMessage> SingIn(string login, string password)
         {
+
             try
             {
                 using (var client = MyHttpClient())
@@ -55,7 +56,6 @@ namespace ShopProject.UI.Data
                     {
                         AlertPoster.PostSystemSuccessAlert("Вход в систему");
                     }
-
 
                     else
                         AlertPoster.PostSystemErrorAlert("Вход в систему", response.StatusCode.ToString());
@@ -86,22 +86,72 @@ namespace ShopProject.UI.Data
                         var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
                         _token = result.Token;
                     }
-                        
-
                     else
+                    {
                         AlertPoster.PostSystemErrorAlert("Подключение к API", response.StatusCode.ToString());
+                    }
+                        
                     return response;
                 };
             }
             catch (Exception ex)
             {
                 AlertPoster.PostSystemErrorAlert("Подключение к API", ex.Message);
+                _token = "Bad";
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
 
 
 
         }
+        public static async Task<HttpResponseMessage> InitDb()
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+                    var url = "InitializeDataBase";
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Создание стартовых данных");
+                    }
+                    else
+                        AlertPoster.PostSystemErrorAlert("Создание стартовых данных", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Создание стартовых данных", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+                    var url = "FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Создание тестовых данных");
+                    }
+                    else
+                        AlertPoster.PostSystemErrorAlert("Создание тестовых данных", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Создание тестовых данных", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
         public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)
         {
             

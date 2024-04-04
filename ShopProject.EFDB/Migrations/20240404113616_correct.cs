@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ShopProject.EFDB.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDb : Migration
+    public partial class correct : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -199,7 +199,8 @@ namespace ShopProject.EFDB.Migrations
                 {
                     PurchaseId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CashierId = table.Column<int>(type: "integer", nullable: false)
+                    CashierId = table.Column<int>(type: "integer", nullable: false),
+                    OperationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {

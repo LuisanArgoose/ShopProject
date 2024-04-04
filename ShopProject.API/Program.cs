@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 
 
 
+
 var connectionString = builder.Configuration.GetConnectionString("ShopProjectAPIContext");
 builder.Services.AddDbContext<ServerAPIDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString), 
     ServiceLifetime.Scoped, 

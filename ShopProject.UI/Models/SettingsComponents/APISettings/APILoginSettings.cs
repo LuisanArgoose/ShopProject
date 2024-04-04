@@ -32,10 +32,10 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
         
         public IAsyncRelayCommand TestConnectionCommand { get; }
 
-        private async Task TestConnection()
+        public async Task TestConnection()
         {
             await ClientDbProvider.TestConnect(Login, Password);
-
+            return;
 
         }
     }

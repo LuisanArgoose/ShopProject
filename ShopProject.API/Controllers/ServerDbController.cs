@@ -12,13 +12,14 @@ using NuGet.Packaging;
 using ShopProject.EFDB.Models;
 using System.Drawing;
 using System.Collections;
+using System.Globalization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ShopProject.API.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController : Controller
@@ -36,17 +37,18 @@ namespace ShopProject.API.Controllers
             _context = context;
 
             LoadAll();
+            
         }
 
         private void LoadAll()
         {
-            
 
         }
 
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
+            _context.Users.Load();
             _context.Roles.Load();
             var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
             
@@ -62,6 +64,16 @@ namespace ShopProject.API.Controllers
 
             DbFiller.InitDb(_context);
 
+            return Ok();
+        }
+
+        [HttpPost("FillDataBase")]
+        public IActionResult FillDataBase(string startDate, string endDate)
+        {   
+            DbFiller.FillDb(_context,
+                DateTime.Parse(startDate),
+                DateTime.Parse(endDate));
+            
             return Ok();
         }
 
@@ -102,7 +114,18 @@ namespace ShopProject.API.Controllers
 
         }
 
-        
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            var shop = _context.Shops.First();
+            var prorductsCount = _context.PurchaseProducts
+                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
+                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
+                .GroupBy(x => x.ProductName, x => x.Count)
+                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
+            return Json(prorductsCount, _options);
+        }
+
         // POST api/<DbController>/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] dynamic stringContent)

@@ -1,5 +1,4 @@
-﻿using ShopProject.UI.ViewModels.Pages.Examples;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,25 +16,13 @@ using System.Windows.Shapes;
 namespace ShopProject.UI.Views.Pages.Examples
 {
     /// <summary>
-    /// Логика взаимодействия для ShopPage.xaml
+    /// Логика взаимодействия для CashierListPage.xaml
     /// </summary>
-    public partial class ShopPage : Page
+    public partial class CashierListPage : Page
     {
-        public ShopVM ViewModel { get; }
-
-        public ShopPage(
-            ShopVM viewModel,
-            CacheStorageService storage
-            )
-        { 
-
-            ViewModel = viewModel;          
-            DataContext = this;
-
+        public CashierListPage()
+        {
             InitializeComponent();
-
-            
-
         }
     }
 }

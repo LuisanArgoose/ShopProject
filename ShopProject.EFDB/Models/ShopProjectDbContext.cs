@@ -51,6 +51,10 @@ public partial class ShopProjectDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Purchase>(entity =>
+        {
+            entity.Property(p => p.OperationTime).HasColumnType("timestamp without time zone");
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }

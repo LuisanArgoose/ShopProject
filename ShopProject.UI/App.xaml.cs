@@ -1,5 +1,4 @@
-﻿
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data;
 using System.Windows;
 using System.Windows.Threading;
@@ -22,6 +21,8 @@ namespace ShopProject.UI
             {
                 // App Host
                 services.AddHostedService<ApplicationHostService>();
+
+                services.AddSingleton<CacheStorageService>();
 
                 // Main window container with navigation
                 services.AddSingleton<IWindow, MainWindow>();

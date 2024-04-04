@@ -15,6 +15,9 @@ namespace ShopProject.EFDB.Models
         private int _cashierId;
 
         [ObservableProperty]
+        private DateTime _operationTime;
+
+        [ObservableProperty]
         private Cashier _cashier = null!;
 
         [ObservableProperty]

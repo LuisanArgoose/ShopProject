@@ -2,6 +2,7 @@
 
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
 using ShopProject.UI.Models.SettingsComponents;
+using ShopProject.UI.Models.SettingsComponents.DevelopmentSettings;
 using ShopProject.UI.Views.Pages.Manager;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,8 @@ namespace ShopProject.UI.ViewModels.Windows
             Settings.LoadInstance();
             Settings = Settings.GetInstance();
             _alertPoster = AlertPoster.GetInstance();
-            Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand.Execute(this);
+            //Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand.Execute(this);
+            Settings.SettingsModel.DevelopmentSettingsPart.AutoLoginSettings.IsFirst = true;
         }
         
         [ObservableProperty]

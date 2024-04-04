@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopProject.API.Data
 {
@@ -419,6 +420,53 @@ namespace ShopProject.API.Data
             context.AddRange(users);
             context.AddRange(tokenLogin);
 
+            context.SaveChanges();
+        }
+
+        private static Random _rnd = new();
+        public static void FillDb(ServerAPIDbContext context, DateTime startDate, DateTime endDate)
+        {
+            void Swap<T>(ref T a, ref T b)
+            {
+                T temp = a;
+                a = b;
+                b = temp;
+            }
+            if (startDate > endDate)
+            {
+                Swap(ref startDate, ref endDate);
+            }
+
+            context.Purchases.RemoveRange(context.Purchases);
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                var cashiers = context.Cashiers.ToList();
+
+                foreach (var cashier in cashiers)
+                {
+                    for (int i = 0; i < _rnd.Next(15, 25); i++)
+                    {
+                        var purchase = new Purchase()
+                        {
+                            Cashier = cashier,
+                            OperationTime = date.AddHours(8).AddMinutes(_rnd.Next(0, 720)),
+                        };
+
+                        var purchaseProductList = new List<PurchaseProduct>();
+                        var products = context.Products.Distinct().Take(_rnd.Next(1, 5)).ToList();
+                        foreach (var product in products)
+                        {
+                            purchaseProductList.Add(new PurchaseProduct()
+                            {
+                                Product = product,
+                                Purchase = purchase,
+                                Count = _rnd.Next(1, 5)
+                            });
+                        }
+                        context.AddRange(purchaseProductList);
+                    }
+                }
+            }
             context.SaveChanges();
         }
     }

@@ -107,6 +107,9 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("CashierId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("OperationTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.HasKey("PurchaseId");
 
                     b.HasIndex("CashierId");

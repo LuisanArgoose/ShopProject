@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShopProject.UI.Services;
 
 namespace ShopProject.UI.ViewModels.Pages.Examples
 {
     public partial class ShopVM : ObservableObject
     {
-        private INavigationService _navigationService;
-        public ShopVM(INavigationService navigationService)
+        private CacheStorageService _cacheStorageService;
+        public ShopVM(CacheStorageService cacheStorageService)
         {
-            _navigationService = navigationService;
+            _cacheStorageService = cacheStorageService;
+            SelectedShop = cacheStorageService.SelectedShop;
         }
+
+        [ObservableProperty]
+        private Shop _selectedShop;
     }
 }

@@ -15,6 +15,19 @@
       Title="ShopPage">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock
+                 Margin="12,6,0,0"
+                 FontWeight="Bold"
+                 Text="{Binding ViewModel.SelectedShop.ShopName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock
+                 Margin="12,0,0,6"
+                 Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                 Text="{Binding ViewModel.SelectedShop.Address, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
     </Grid>
 </Page>

@@ -12,8 +12,8 @@ using ShopProject.EFDB.Models;
 namespace ShopProject.EFDB.Migrations
 {
     [DbContext(typeof(ShopProjectDbContext))]
-    [Migration("20240403164620_NewDb")]
-    partial class NewDb
+    [Migration("20240404113616_correct")]
+    partial class correct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,6 +109,9 @@ namespace ShopProject.EFDB.Migrations
 
                     b.Property<int>("CashierId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("OperationTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("PurchaseId");
 
