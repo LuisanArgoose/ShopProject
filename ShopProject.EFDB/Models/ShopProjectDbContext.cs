@@ -54,6 +54,13 @@ public partial class ShopProjectDbContext : DbContext
         modelBuilder.Entity<Purchase>(entity =>
         {
             entity.Property(p => p.OperationTime).HasColumnType("timestamp without time zone");
+
+           
+        });
+
+        modelBuilder.Entity<Shop>(entity =>
+        {
+
         });
 
         OnModelCreatingPartial(modelBuilder);

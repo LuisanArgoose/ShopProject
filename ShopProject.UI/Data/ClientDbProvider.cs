@@ -110,7 +110,7 @@ namespace ShopProject.UI.Data
             {
                 using (var client = MyHttpClient())
                 {
-                    var url = "InitializeDataBase";
+                    var url = "ServerDb/InitializeDataBase";
                     var response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
                     {
@@ -134,7 +134,7 @@ namespace ShopProject.UI.Data
             {
                 using (var client = MyHttpClient())
                 {
-                    var url = "FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
+                    var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
                     var response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
                     {

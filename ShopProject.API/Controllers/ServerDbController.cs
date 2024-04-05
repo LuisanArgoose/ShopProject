@@ -19,7 +19,7 @@ using System.Globalization;
 
 namespace ShopProject.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController : Controller
@@ -58,7 +58,7 @@ namespace ShopProject.API.Controllers
         }
 
 
-        [HttpPost("InitializeDataBase")]
+        [HttpGet("InitializeDataBase")]
         public IActionResult InitializeDataBase()
         {
 
@@ -67,7 +67,7 @@ namespace ShopProject.API.Controllers
             return Ok();
         }
 
-        [HttpPost("FillDataBase")]
+        [HttpGet("FillDataBase")]
         public IActionResult FillDataBase(string startDate, string endDate)
         {   
             DbFiller.FillDb(_context,
