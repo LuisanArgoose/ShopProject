@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShopProject.EFDB.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopProject.API.Data
@@ -453,15 +454,23 @@ namespace ShopProject.API.Data
                         };
 
                         var purchaseProductList = new List<PurchaseProduct>();
-                        var products = context.Products.Distinct().Take(_rnd.Next(1, 5)).ToList();
-                        foreach (var product in products)
+
+                        var products = new List<Product>();
+
+                        while (purchaseProductList.Select(x => x.Product).Count() < _rnd.Next(1, 5))
                         {
-                            purchaseProductList.Add(new PurchaseProduct()
+                            int randomIndex = _rnd.Next(context.Products.Count());
+                            var randomProduct = context.Products.Find(randomIndex);
+
+                            if (!purchaseProductList.Select(x => x.Product).Contains(randomProduct))
                             {
-                                Product = product,
-                                Purchase = purchase,
-                                Count = _rnd.Next(1, 5)
-                            });
+                                purchaseProductList.Add(new PurchaseProduct()
+                                {
+                                    Product = randomProduct,
+                                    Purchase = purchase,
+                                    Count = _rnd.Next(1, 5)
+                                });
+                            }
                         }
                         context.AddRange(purchaseProductList);
                     }

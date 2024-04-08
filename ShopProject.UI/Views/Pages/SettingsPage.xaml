@@ -240,14 +240,7 @@
                                  TextWrapping="WrapWithOverflow" /> 
                             </ui:CardControl.Header>
 
-                            <StackPanel  Orientation="Horizontal"   >
-                                <ui:CalendarDatePicker
-                                    Margin="10,0,0,0"
-                                    Date="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.FillDbSettings.StartDate, UpdateSourceTrigger=PropertyChanged}"/>
-                                <ui:CalendarDatePicker
-                                    Margin="10,0,0,0"
-                                    Date="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.FillDbSettings.EndDate, UpdateSourceTrigger=PropertyChanged}"/>
-
+                            <StackPanel  Orientation="Horizontal">
                                 <ui:Button 
                                     Margin="10,0,0,0"
                                     Content="Заполнить" 

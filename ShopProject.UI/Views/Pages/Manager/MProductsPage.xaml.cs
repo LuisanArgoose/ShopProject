@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ShopProject.UI.Views.Pages.Examples
+namespace ShopProject.UI.Views.Pages.Manager
 {
     /// <summary>
-    /// Логика взаимодействия для CashierListPage.xaml
+    /// Логика взаимодействия для ProductPage.xaml
     /// </summary>
-    public partial class CashierListPage : Page
+    public partial class MProductsPage : Page
     {
-        public CashierListPage()
+        public MProductsPage()
         {
             InitializeComponent();
         }

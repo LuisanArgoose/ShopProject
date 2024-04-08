@@ -114,6 +114,23 @@ namespace ShopProject.API.Controllers
 
         }
 
+        [HttpGet("GetShopPlan")]
+        public IActionResult GetShopPlan(int shopId)
+        {
+
+            var shop = _context.Shops.Find(shopId);
+            if (shop == null) BadRequest("Shop is not found");
+
+            shop.ShopPlans.Where(x => x.UpdatedTime > DateTime.Now.AddDays(-30));
+            var prorductsCount = _context.PurchaseProducts
+                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
+                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
+                .GroupBy(x => x.ProductName, x => x.Count)
+                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
+            return Json(prorductsCount, _options);
+        }
+
+
         [HttpGet("test")]
         public IActionResult Test()
         {
@@ -126,6 +143,8 @@ namespace ShopProject.API.Controllers
             return Json(prorductsCount, _options);
         }
 
+
+        /*
         // POST api/<DbController>/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] dynamic stringContent)
@@ -210,6 +229,6 @@ namespace ShopProject.API.Controllers
             }
             
 
-        }
+        }*/
     }
 }

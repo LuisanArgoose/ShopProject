@@ -22,8 +22,6 @@ namespace ShopProject.UI
                 // App Host
                 services.AddHostedService<ApplicationHostService>();
 
-                services.AddSingleton<CacheStorageService>();
-
                 // Main window container with navigation
                 services.AddSingleton<IWindow, MainWindow>();
                 services.AddSingleton<MainWindowVM>();

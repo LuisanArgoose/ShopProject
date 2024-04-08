@@ -8,11 +8,6 @@ namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
 {
     public partial class FillDbSettings : ObservableObject
     {
-        [ObservableProperty]
-        private DateTime _startDate;
-
-        [ObservableProperty]
-        private DateTime _endDate;
 
         public FillDbSettings()
         {
@@ -21,7 +16,7 @@ namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
         public IAsyncRelayCommand FillDbCommand { get; }
         private async Task FillDb()
         {
-            await ClientDbProvider.FillDb(StartDate, EndDate);
+            await ClientDbProvider.FillDb(DateTime.Now.AddDays(-30), DateTime.Now);
         }
     }
 }

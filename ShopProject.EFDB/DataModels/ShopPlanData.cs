@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.UI.ViewModels.Pages.Examples
+namespace ShopProject.EFDB.DataModels
 {
-    internal class ProductVM
+    public partial class ShopPlanData : ObservableObject
     {
+
     }
 }
