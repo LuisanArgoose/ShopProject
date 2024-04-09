@@ -21,7 +21,7 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
         [ObservableProperty]
         private ExpiringList<AlertModel> _alertModels = new ExpiringList<AlertModel>();
 
-        public static void PostSystemSuccessAlert(string title, string message = "Успешно")
+        public static void PostSystemSuccessAlert(string title, string message = "")
         {
             if(Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
                 AddAlert(new AlertModel(title, "(Системное) " + message, "Success"));
@@ -31,13 +31,13 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
             if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
                 AddAlert(new AlertModel(title, "(Системное) " + message, "Error"));
         }
-        public static void PostSystemInformationrAlert(string title, string message = "")
+        public static void PostSystemInformationAlert(string title, string message = "")
         {
             if (Settings.GetInstance().SettingsModel.AlertSettingsPart.ShowSystemAlerts)
                 AddAlert(new AlertModel(title, "(Системное) " + message, "Information"));
         }
 
-        public static void PostSuccessAlert(string title, string message = "Успешно")
+        public static void PostSuccessAlert(string title, string message = "")
         {
             AddAlert(new AlertModel(title, message, "Success"));
         }
@@ -45,7 +45,7 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
         {
             AddAlert(new AlertModel(title, message, "Error"));
         }
-        public static void PostInformationrAlert(string title, string message = "")
+        public static void PostInformationAlert(string title, string message = "")
         {
             AddAlert(new AlertModel(title, message, "Information"));
         }

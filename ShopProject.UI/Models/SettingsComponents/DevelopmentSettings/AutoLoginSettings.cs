@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
 {
@@ -19,6 +21,15 @@ namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
         [ObservableProperty]
         private string _password = null!;
 
-        
+
+        private bool _isFirst;
+
+        [SoapIgnore]
+        public bool IsFirst
+        {
+            get => _isFirst;
+            set => SetProperty(ref _isFirst, value);
+        } 
+
     }
 }

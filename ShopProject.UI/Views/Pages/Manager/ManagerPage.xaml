@@ -15,40 +15,55 @@
       Title="ManagerPage">
 
     <Grid>
-        <TabControl>
-            <TabItem IsSelected="True">
-                <TabItem.Header >
-                    <StackPanel Orientation="Horizontal">
-                        <ui:SymbolIcon Margin="0,0,6,0" Symbol="ArrowTrendingLines20" />
-                        <TextBlock Text="План магазина" />
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid>
-                    <TextBlock  Text="World" />
-                </Grid>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header >
-                    <StackPanel Orientation="Horizontal">
-                        <ui:SymbolIcon Margin="0,0,6,0" Symbol="People20" />
-                        <TextBlock Text="Работники" />
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid>
-                    <TextBlock Margin="12" Text="World" />
-                </Grid>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <ui:SymbolIcon Margin="0,0,6,0" Symbol="StoreMicrosoft16" />
-                        <TextBlock Text="Товары" />
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid>
-                    <TextBlock Margin="12" Text="Is a lie." />
-                </Grid>
-            </TabItem>
-        </TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ui:TextBlock FontTypography="Title" Text="Кабинет менеджера" Padding="20,5"/>
+        <Border
+            Grid.Row="1"
+            Padding="16"
+            Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1,1,1,0"
+            CornerRadius="8"
+            Margin="10,0,10,10">
+            <TabControl>
+                <TabItem IsSelected="True">
+                    <TabItem.Header >
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="ArrowTrendingLines20" />
+                            <TextBlock Text="План магазина" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid>
+                        
+                        
+                    </Grid>
+                </TabItem >
+                <TabItem>
+                    <TabItem.Header >
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="People20" />
+                            <TextBlock Text="Работники" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid>
+                        <TextBlock Margin="12" Text="World" />
+                    </Grid>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="StoreMicrosoft16" />
+                            <TextBlock Text="Товары" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid>
+                        <TextBlock Margin="12" Text="Is a lie." />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Border>
     </Grid>
 </Page>

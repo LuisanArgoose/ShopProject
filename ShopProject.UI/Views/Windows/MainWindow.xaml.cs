@@ -19,6 +19,8 @@ namespace ShopProject.UI.Views.Windows
     /// </summary>
     public partial class MainWindow : IWindow
     {
+        private INavigationService _navigationService;
+
         public MainWindowVM ViewModel { get; }
         public MainWindow(
             MainWindowVM viewModel,
@@ -34,20 +36,12 @@ namespace ShopProject.UI.Views.Windows
             navigationService.SetNavigationControl(NavigationView);
 
             NavigationView.SetServiceProvider(serviceProvider);
+
+            _navigationService = navigationService;
+            
+            
         }
 
-        private void OnNavigationSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is not NavigationView navigationView)
-            {
-                return;
-            }
-
-            NavigationView.HeaderVisibility =
-                navigationView.SelectedItem?.TargetPageType != typeof(ProfilePage)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-        }
         private bool _isUserClosedPane;
 
         private bool _isPaneOpenedOrClosedFromCode;
@@ -82,5 +76,6 @@ namespace ShopProject.UI.Views.Windows
 
             _isUserClosedPane = true;
         }
+
     }
 }

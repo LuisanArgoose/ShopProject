@@ -8,6 +8,11 @@ using NuGet.Protocol;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
+using NuGet.Packaging;
+using ShopProject.EFDB.Models;
+using System.Drawing;
+using System.Collections;
+using System.Globalization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -30,15 +35,46 @@ namespace ShopProject.API.Controllers
         public ServerDbController(ServerAPIDbContext context)
         {
             _context = context;
+
+            LoadAll();
+            
         }
 
+        private void LoadAll()
+        {
+
+        }
 
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
         {
+            _context.Users.Load();
+            _context.Roles.Load();
             var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
+            
             if (user == null) { return BadRequest(); }          
+            
             return Json(user, _options);
+        }
+
+
+        [HttpGet("InitializeDataBase")]
+        public IActionResult InitializeDataBase()
+        {
+
+            DbFiller.InitDb(_context);
+
+            return Ok();
+        }
+
+        [HttpGet("FillDataBase")]
+        public IActionResult FillDataBase(string startDate, string endDate)
+        {   
+            DbFiller.FillDb(_context,
+                DateTime.Parse(startDate),
+                DateTime.Parse(endDate));
+            
+            return Ok();
         }
 
 
@@ -52,9 +88,12 @@ namespace ShopProject.API.Controllers
                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
                 p.PropertyType.GetGenericArguments()[0].Name == entityTypeName);
 
+            var entityType = _context.GetType().GetProperties().FirstOrDefault(p => p.PropertyType.GetGenericArguments()[0].Name == entityTypeName).PropertyType.GetGenericArguments()[0];
+
             if (dbSetProperty != null)
             {
                 var dbSet = dbSetProperty.GetValue(_context);
+
                 if (dbSet == null)
                 {
                     return BadRequest("Not found property in dbContext");
@@ -75,7 +114,37 @@ namespace ShopProject.API.Controllers
 
         }
 
-        
+        [HttpGet("GetShopPlan")]
+        public IActionResult GetShopPlan(int shopId)
+        {
+
+            var shop = _context.Shops.Find(shopId);
+            if (shop == null) BadRequest("Shop is not found");
+
+            shop.ShopPlans.Where(x => x.UpdatedTime > DateTime.Now.AddDays(-30));
+            var prorductsCount = _context.PurchaseProducts
+                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
+                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
+                .GroupBy(x => x.ProductName, x => x.Count)
+                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
+            return Json(prorductsCount, _options);
+        }
+
+
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            var shop = _context.Shops.First();
+            var prorductsCount = _context.PurchaseProducts
+                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
+                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
+                .GroupBy(x => x.ProductName, x => x.Count)
+                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
+            return Json(prorductsCount, _options);
+        }
+
+
+        /*
         // POST api/<DbController>/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] dynamic stringContent)
@@ -160,6 +229,6 @@ namespace ShopProject.API.Controllers
             }
             
 
-        }
+        }*/
     }
 }

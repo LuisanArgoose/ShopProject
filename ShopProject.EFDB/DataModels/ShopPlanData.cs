@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.UI.ViewModels.Pages.Manager
+namespace ShopProject.EFDB.DataModels
 {
-    public partial class ManagerVM : ObservableObject
+    public partial class ShopPlanData : ObservableObject
     {
 
     }

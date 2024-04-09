@@ -12,45 +12,49 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      d:DesignHeight="450" d:DesignWidth="1200"
+      d:DesignHeight="450"  d:DesignWidth="850"
       Title="SettingsPage">
     <Page.Resources>
         <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions> 
+        <Grid.RowDefinitions>
             <RowDefinition Height="46"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <ui:Button Content="Сохранить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.SaveSettingsCommand}"/>
-            <ui:Button Content="Сбросить изменения" Height="36" VerticalAlignment="Top" Command="{Binding ViewModel.LoadSettingsCommand}" Margin="10,0,0,0"/>
+            <ui:Button Content="Сохранить изменения" Height="36" VerticalAlignment="Top" Appearance="Success"
+                       IsEnabled="{Binding ViewModel.IsSomeChange, UpdateSourceTrigger=PropertyChanged}"
+                       Command="{Binding ViewModel.SaveSettingsCommand}"/>
+            <ui:Button Content="Сбросить изменения" Height="36" VerticalAlignment="Top" Appearance="Danger"
+                       IsEnabled="{Binding ViewModel.IsSomeChange, UpdateSourceTrigger=PropertyChanged}"
+                       Command="{Binding ViewModel.LoadSettingsCommand}" Margin="10,0,0,0"/>
         </StackPanel>
 
 
         <ScrollViewer Grid.Row="1">
             <StackPanel>
-            <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon DatabasePlugConnected20}">
-                <ui:CardExpander.Header>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBlock
+                <ui:CardExpander Grid.Column="0" Icon="{ui:SymbolIcon DatabasePlugConnected20}">
+                    <ui:CardExpander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 FontSize="16"
                                 FontTypography="Body"
                                 Text="Настройки сети" />
-                    </Grid>
-                </ui:CardExpander.Header>
-                <StackPanel>
-                        <ui:CardControl Padding="20,10,20,10" >
+                        </Grid>
+                    </ui:CardExpander.Header>
+                    <StackPanel>
+                        <ui:CardControl SizeChanged="ApiCardControl_SizeChanged" Padding="20,10,20,10" >
                             <ui:CardControl.Header>
                                 <ui:TextBlock
                                     FontSize="16"
@@ -58,13 +62,14 @@
                                     TextWrapping="WrapWithOverflow" />
                             </ui:CardControl.Header>
 
-                            <StackPanel  Orientation="Horizontal"   >
+                            <WrapPanel x:Name="APIConnectWrap" Cursor=""   >
+                                
                                 <ui:TextBox
                                     Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Login, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    MinWidth="200"
+                                    MinWidth="240"
                                     IsEnabled="True"
                                     PlaceholderText="Логин"/>
                                 <ui:TextBox
@@ -72,27 +77,27 @@
                                     Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    MinWidth="200"
+                                    MinWidth="240"
                                     PlaceholderText="Пароль"/>
                                 <ui:TextBox
                                     Text="{Binding ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.Url, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="10,5,0,5"
                                     FontSize="16"
                                     HorizontalContentAlignment="Stretch"
-                                    MinWidth="300"
+                                    MinWidth="240"
                                     IsEnabled="True"
                                     PlaceholderText="Адрес Api"/>
 
-                                <ui:Button Content="Проверить" Command="{Binding  ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,5,0,5" HorizontalAlignment="Stretch"/>
+                                <ui:Button  Content="Проверить" Command="{Binding  ViewModel.Settings.SettingsModel.APISettingsPart.APILoginSettings.TestConnectionCommand}" Height="36" VerticalAlignment="Top" Margin="10,5,0,5" HorizontalAlignment="Stretch"/>
 
                                 <Grid/>
-                            </StackPanel>
+                            </WrapPanel>
 
 
                         </ui:CardControl>
 
                     </StackPanel>
-            </ui:CardExpander>
+                </ui:CardExpander>
                 <ui:CardExpander Grid.Column="0" Margin="0,10,0,0" Icon="{ui:SymbolIcon Alert20}">
                     <ui:CardExpander.Header>
                         <Grid>
@@ -125,7 +130,7 @@
                                 <Label Content="Секунд" VerticalAlignment="Center" FontSize="16" Margin="10,0,0,0"/>
                             </StackPanel>
 
-                            
+
 
 
                         </ui:CardControl>
@@ -156,9 +161,6 @@
                                 <ui:Button Content="Вызвать" Command="{Binding ViewModel.Settings.SettingsModel.AlertSettingsPart.TestAlertCommand}"/>
 
                             </StackPanel>
-
-
-
 
                         </ui:CardControl>
 
@@ -207,7 +209,7 @@
                         HorizontalContentAlignment="Stretch"
                         MinWidth="200"
                         PlaceholderText="Пароль"/>
-                                
+
 
                                 <ui:ToggleSwitch Margin="10,0,0,0" IsChecked="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.AutoLoginSettings.IsActive, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -216,7 +218,44 @@
 
 
                         </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                    FontSize="16"
+                                    Text="Создание стартовых данных"
+                                    TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
 
+                            <StackPanel  Orientation="Horizontal"   >
+
+                                <ui:Button 
+                                    Content="Заполнить"
+                                    Command="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.InitDbCommand}"/>
+
+
+                            </StackPanel>
+
+
+                        </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
+                                 FontSize="16"
+                                 Text="Создание тестовых данных"
+                                 TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+
+                            <StackPanel  Orientation="Horizontal">
+                                <ui:Button 
+                                    Margin="10,0,0,0"
+                                    Content="Заполнить" 
+                                    Command="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.FillDbSettings.FillDbCommand}"/>
+
+
+                            </StackPanel>
+
+
+                        </ui:CardControl>
                     </StackPanel>
                 </ui:CardExpander>
             </StackPanel>

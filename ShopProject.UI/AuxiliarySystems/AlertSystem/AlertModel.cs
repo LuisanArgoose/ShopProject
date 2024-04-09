@@ -8,6 +8,10 @@ namespace ShopProject.UI.AuxiliarySystems.AlertSystem
 {
     public partial class AlertModel : ObservableObject
     {
+        public AlertModel()
+        {
+
+        }
         public AlertModel(string title, string message, string type)
         {
             Title = title;

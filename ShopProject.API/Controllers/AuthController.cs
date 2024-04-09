@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace ShopProject.API.Controllers
 {
@@ -12,6 +13,10 @@ namespace ShopProject.API.Controllers
     {
         private readonly ServerAPIDbContext _context = context;
         private const string SecretKey = "MySuperSecretSecretKeyShopProjectSecretKey"; // секретный ключ для подписи токена
+        JsonSerializerOptions _options = new JsonSerializerOptions()
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        };
 
         private string GenerateToken(string name)
         {
@@ -52,7 +57,7 @@ namespace ShopProject.API.Controllers
 
             var tokenString = GenerateToken(login);
 
-            return Ok(new { Token = tokenString });
+            return Json(new { Token = tokenString }, _options);
 
 
         }

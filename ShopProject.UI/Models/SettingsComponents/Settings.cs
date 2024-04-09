@@ -86,9 +86,26 @@ namespace ShopProject.UI.Models.SettingsComponents
         private Settings() 
         {
             ActiveUser = GetEmptyUser();
+            SettingsModel = new SettingsModel();
         }
-        [ObservableProperty]
-        private SettingsModel _settingsModel = new SettingsModel();
+
+
+        private SettingsModel _settingsModel;
+
+        public SettingsModel SettingsModel
+        {
+            get => _settingsModel;
+            set
+            {
+                SetProperty(ref _settingsModel, value);
+                _settingsModel.PropertyChanged += SettingsChanged;
+            }
+        }
+
+        private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(sender)));
+        }
 
         private User _activeUser;
 

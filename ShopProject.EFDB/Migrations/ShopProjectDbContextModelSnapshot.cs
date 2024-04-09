@@ -22,21 +22,6 @@ namespace ShopProject.EFDB.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CashierShop", b =>
-                {
-                    b.Property<int>("CashiersCashierId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopsShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CashiersCashierId", "ShopsShopId");
-
-                    b.HasIndex("ShopsShopId");
-
-                    b.ToTable("CashierShop");
-                });
-
             modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
                 {
                     b.Property<int>("CashierId")
@@ -49,8 +34,12 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("CashierId")
-                        .HasName("Cashiers_pkey");
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CashierId");
+
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Cashiers");
                 });
@@ -73,8 +62,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<decimal>("SellPrice")
                         .HasColumnType("numeric");
 
-                    b.HasKey("ProductId")
-                        .HasName("Products_pkey");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
                 });
@@ -99,8 +87,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("ProductPlanId")
-                        .HasName("ProductPlans_pkey");
+                    b.HasKey("ProductPlanId");
 
                     b.HasIndex("ProductId");
 
@@ -120,8 +107,10 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("CashierId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PurchaseId")
-                        .HasName("Purchases_pkey");
+                    b.Property<DateTime>("OperationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("PurchaseId");
 
                     b.HasIndex("CashierId");
 
@@ -145,8 +134,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("PurchaseId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PurchaseProductId")
-                        .HasName("PurchaseProducts_pkey");
+                    b.HasKey("PurchaseProductId");
 
                     b.HasIndex("ProductId");
 
@@ -176,8 +164,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("RoleId")
-                        .HasName("Roles_pkey");
+                    b.HasKey("RoleId");
 
                     b.ToTable("Roles");
                 });
@@ -198,8 +185,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("ShopId")
-                        .HasName("Shops_pkey");
+                    b.HasKey("ShopId");
 
                     b.ToTable("Shops");
                 });
@@ -227,8 +213,7 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("ShopPlanId")
-                        .HasName("ShopPlans_pkey");
+                    b.HasKey("ShopPlanId");
 
                     b.HasIndex("ShopId");
 
@@ -251,8 +236,7 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("TokenLoginId")
-                        .HasName("TokenLogins_pkey");
+                    b.HasKey("TokenLoginId");
 
                     b.ToTable("TokenLogins");
                 });
@@ -280,10 +264,14 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId")
-                        .HasName("Users_pkey");
+                    b.Property<int?>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("ShopId");
 
                     b.ToTable("Users");
                 });
@@ -311,42 +299,22 @@ namespace ShopProject.EFDB.Migrations
                     b.Property<DateTime>("UpdatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("WorkerPlanId")
-                        .HasName("WorkerPlans_pkey");
+                    b.HasKey("WorkerPlanId");
 
                     b.HasIndex("ShopId");
 
                     b.ToTable("WorkerPlans");
                 });
 
-            modelBuilder.Entity("ShopUser", b =>
+            modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
                 {
-                    b.Property<int>("ShopsShopId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ShopsShopId", "UsersUserId");
-
-                    b.HasIndex("UsersUserId");
-
-                    b.ToTable("ShopUser");
-                });
-
-            modelBuilder.Entity("CashierShop", b =>
-                {
-                    b.HasOne("ShopProject.EFDB.Models.Cashier", null)
-                        .WithMany()
-                        .HasForeignKey("CashiersCashierId")
+                    b.HasOne("ShopProject.EFDB.Models.Shop", "Shop")
+                        .WithMany("Cashiers")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopProject.EFDB.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopsShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.ProductPlan", b =>
@@ -417,7 +385,13 @@ namespace ShopProject.EFDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ShopProject.EFDB.Models.Shop", "Shop")
+                        .WithMany("Users")
+                        .HasForeignKey("ShopId");
+
                     b.Navigation("Role");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.WorkerPlan", b =>
@@ -429,21 +403,6 @@ namespace ShopProject.EFDB.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("ShopUser", b =>
-                {
-                    b.HasOne("ShopProject.EFDB.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopsShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShopProject.EFDB.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ShopProject.EFDB.Models.Cashier", b =>
@@ -470,9 +429,13 @@ namespace ShopProject.EFDB.Migrations
 
             modelBuilder.Entity("ShopProject.EFDB.Models.Shop", b =>
                 {
+                    b.Navigation("Cashiers");
+
                     b.Navigation("ProductPlans");
 
                     b.Navigation("ShopPlans");
+
+                    b.Navigation("Users");
 
                     b.Navigation("WorkerPlans");
                 });

@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ProfilePage,
                                      IsDesignTimeCreatable=False}"
@@ -13,7 +14,9 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ProfilePage">
-
+    <Page.Resources>
+        <helpers:InverseBoolConverter x:Key="inverseBoolConverter"/>
+    </Page.Resources>
     <Grid>
         
         <Grid.RowDefinitions>
@@ -24,11 +27,11 @@
         <StackPanel HorizontalAlignment="Center">
             <Label Content="Вход в систему" HorizontalAlignment="Center" Margin="0,10,0,20"/>
             <Label Content="Имя пользователя" Margin="0,10,0,0"/>
-            <ui:TextBox Text="{Binding ViewModel.Login, UpdateSourceTrigger=PropertyChanged}" Width="300"/>
+            <ui:TextBox Text="{Binding ViewModel.Login, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ViewModel.IsLoading, Converter={StaticResource inverseBoolConverter}}" Width="300"/>
             <Label Content="Пароль" Margin="0,10,0,0"/>
-            <ui:PasswordBox x:Name="PB" Password="{Binding ViewModel.Password, UpdateSourceTrigger=PropertyChanged}"/>
+            <ui:PasswordBox x:Name="PB" IsEnabled="{Binding ViewModel.IsLoading, Converter={StaticResource inverseBoolConverter}}"/>
             <ui:Button Height="36" Content="Войти" Command="{Binding ViewModel.SingInCommand}" CommandParameter="{Binding ElementName=PB}"  Margin="0,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-
+            <ProgressBar IsIndeterminate="{Binding ViewModel.IsLoading}"/>
         </StackPanel>
     </Grid>
 </Page>
