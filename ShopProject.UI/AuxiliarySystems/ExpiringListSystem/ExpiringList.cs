@@ -12,8 +12,12 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
     {
         public void AddItem(T value, TimeSpan expirationTime)
         {
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Add(value);
+            });
             
-            Add(value);
 
             ThreadPool.QueueUserWorkItem((state) =>
             {

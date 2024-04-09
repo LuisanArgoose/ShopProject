@@ -24,19 +24,20 @@ namespace ShopProject.UI.Data
     public static class ClientDbProvider
     {
         private static Settings _settings = Settings.GetInstance();
-        private static string _token = null!;
+        private static string? _token = null!;
         static ClientDbProvider()
         {            
             
         }
 
-        public static HttpClient MyHttpClient()
+        public static HttpClient MyHttpClient(bool authorize = true)
         {
             var client = new HttpClient()
             {
                 BaseAddress = new Uri(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url)
             };
-            
+            if (authorize && _token == null)
+                AlertPoster.PostSystemInformationAlert("Авторизация отключена");
             if(_token != null)
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             return client;
@@ -56,14 +57,18 @@ namespace ShopProject.UI.Data
                     {
                         AlertPoster.PostSystemSuccessAlert("Вход в систему");
                     }
-
                     else
+                    {
+                        _token = null;
                         AlertPoster.PostSystemErrorAlert("Вход в систему", response.StatusCode.ToString());
+                    }
+                        
                     return response;
                 };
             }
             catch (Exception ex)
             {
+                _token = null;
                 AlertPoster.PostSystemErrorAlert("Вход в систему", ex.Message);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
@@ -74,7 +79,7 @@ namespace ShopProject.UI.Data
         {
             try
             {
-                using (var client = MyHttpClient())
+                using (var client = MyHttpClient(false))
                 {
                     var url = "Auth?login=" + login + "&password=" + password;
                     var response = await client.GetAsync(url);

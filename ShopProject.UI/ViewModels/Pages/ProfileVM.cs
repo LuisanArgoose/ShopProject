@@ -79,7 +79,7 @@ namespace ShopProject.UI.ViewModels.Pages
             var jsonUser = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<User>(jsonUser);
             Settings.SetActiveUser(result);
-
+            var res = _navigationService.GetNavigationControl();
             _navigationService.Navigate(typeof(ActiveProfilePage));
             AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");
         }

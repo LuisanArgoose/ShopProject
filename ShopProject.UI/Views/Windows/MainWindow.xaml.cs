@@ -38,20 +38,10 @@ namespace ShopProject.UI.Views.Windows
             NavigationView.SetServiceProvider(serviceProvider);
 
             _navigationService = navigationService;
+            
+            
         }
 
-        private void OnNavigationSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is not NavigationView navigationView)
-            {
-                return;
-            }
-
-            NavigationView.HeaderVisibility =
-                navigationView.SelectedItem?.TargetPageType != typeof(ProfilePage)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-        }
         private bool _isUserClosedPane;
 
         private bool _isPaneOpenedOrClosedFromCode;

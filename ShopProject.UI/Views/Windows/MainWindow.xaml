@@ -10,6 +10,7 @@
     xmlns:manager="clr-namespace:ShopProject.UI.Views.Pages.Manager"
     xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
+    xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
     mc:Ignorable="d"
     ExtendsContentIntoTitleBar="True"
     Title="ShopProject"
@@ -32,16 +33,17 @@
             
         </ui:TitleBar>
         <ui:NavigationView 
+            
             x:Name="NavigationView"
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
-            SelectionChanged="OnNavigationSelectionChanged"
             PaneClosed="NavigationView_OnPaneClosed"
             PaneOpened="NavigationView_OnPaneOpened"
             Padding="10"
             >
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
+                    
                     Content="Профиль"
                     Icon="{ui:SymbolIcon People16}"
                     TargetPageType="{Binding ViewModel.Settings.ProfilePageType, UpdateSourceTrigger=PropertyChanged}" />
@@ -54,13 +56,11 @@
                     Content="План магазина"
                     Icon="{ui:SymbolIcon BuildingBank20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
-                    
-                    
-                    
+                    TargetPageType="{x:Type manager:ManagerPage}"
                     />
                 <ui:NavigationViewItem
                     Content="Работники"
-                    Icon="{ui:SymbolIcon BuildingBank20}"
+                    Icon="{ui:SymbolIcon BuildingPeople20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
                     TargetPageType="{x:Type manager:MCashiersPage}"/> 
 
@@ -85,27 +85,42 @@
 
 
             <ui:NavigationView.ContentOverlay>
-                <Grid>
+                <Grid x:Name="PresenterGrid">
                     <Grid.RowDefinitions>
                         
                     </Grid.RowDefinitions>
 
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" ContentSource="wad" />
-                    <Canvas x:Name="cnvs" Grid.Row="0" ClipToBounds="True">
                     
-                        <ListView ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}" Canvas.Right="10" Canvas.Bottom="0" >
-                            <ListView.ItemTemplate>
-                                <DataTemplate DataType="{x:Type alert:AlertModel}">
-                                    <ui:InfoBar MaxWidth="400" Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" />
-                                </DataTemplate>
-
-                            </ListView.ItemTemplate>
-
-                        </ListView>
-
-                    </Canvas>
                 </Grid>
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>
+        <Canvas Width="{Binding ElementName=PresenterGrid, Path=ActualWidth}"
+                Height="{Binding ElementName=PresenterGrid, Path=ActualHeight}" 
+                
+                x:Name="AlertCanvas"  HorizontalAlignment="Right" VerticalAlignment="Bottom">
+
+            <ItemsControl Canvas.Right="0" Canvas.Bottom="0" x:Name="tStack"  
+                          ItemsSource="{Binding ViewModel.AlertPoster.AlertModels}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Width="{Binding ElementName=PresenterGrid, Path=ActualWidth}"
+                                    MaxHeight="{Binding ElementName=PresenterGrid, Path=ActualHeight}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type alert:AlertModel}" >
+                        <ui:InfoBar Margin="10,5,10,5" Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Type}" IsOpen="True" HorizontalAlignment="Right" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <!--<ItemsControl.Resources>
+                    <col:ArrayList x:Key="alerts">
+                        <alert:AlertModel Title="Сообщение" Message="Динное сообщение" Type="Success"/>
+                        <alert:AlertModel Title="Сообщение" Message="Динное сооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооооообщение" Type="Success"/>
+                    </col:ArrayList>
+                </ItemsControl.Resources>-->
+            </ItemsControl>
+
+        </Canvas>
     </Grid>
 </ui:FluentWindow>

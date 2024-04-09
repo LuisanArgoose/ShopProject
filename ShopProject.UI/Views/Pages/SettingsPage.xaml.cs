@@ -33,5 +33,9 @@ namespace ShopProject.UI.Views.Pages
             
         }
 
+        private void ApiCardControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            APIConnectWrap.MaxWidth = e.NewSize.Width - 200;
+        }
     }
 }

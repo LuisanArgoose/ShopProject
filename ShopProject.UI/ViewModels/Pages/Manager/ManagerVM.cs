@@ -8,5 +8,6 @@ namespace ShopProject.UI.ViewModels.Pages.Manager
 {
     public partial class ManagerVM : ObservableObject
     {
+
     }
 }
