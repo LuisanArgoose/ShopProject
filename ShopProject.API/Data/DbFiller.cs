@@ -456,11 +456,11 @@ namespace ShopProject.API.Data
                         var purchaseProductList = new List<PurchaseProduct>();
 
                         var products = new List<Product>();
-
-                        while (purchaseProductList.Select(x => x.Product).Count() < _rnd.Next(1, 5))
+                        int count = _rnd.Next(1, 5);
+                        while (purchaseProductList.Select(x => x.Product).Count() < count)
                         {
                             int randomIndex = _rnd.Next(context.Products.Count());
-                            var randomProduct = context.Products.Find(randomIndex);
+                            var randomProduct = context.Products.ToList()[randomIndex];
 
                             if (!purchaseProductList.Select(x => x.Product).Contains(randomProduct))
                             {

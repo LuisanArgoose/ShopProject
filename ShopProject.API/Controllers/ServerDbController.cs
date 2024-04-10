@@ -119,7 +119,7 @@ namespace ShopProject.API.Controllers
         {
 
             var shop = _context.Shops.Find(shopId);
-            if (shop == null) BadRequest("Shop is not found");
+            if (shop == null) return BadRequest("Shop is not found");
 
             shop.ShopPlans.Where(x => x.UpdatedTime > DateTime.Now.AddDays(-30));
             var prorductsCount = _context.PurchaseProducts
@@ -134,13 +134,22 @@ namespace ShopProject.API.Controllers
         [HttpGet("test")]
         public IActionResult Test()
         {
-            var shop = _context.Shops.First();
-            var prorductsCount = _context.PurchaseProducts
-                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
+            //var shop = _context.Shops.First();
+            // var cashier = shop.Cashiers.First();
+            //var purchases = cashier.Purchases.Where()
+            var product = _context.Products.Include(g => g.PurchaseProducts).Select(x => new { x.ProductName});
+            var result = _context.PurchaseProducts.Select(x => x);
+            var result1 = _context.PurchaseProducts
                 .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
                 .GroupBy(x => x.ProductName, x => x.Count)
                 .Select(x => new { ProductName = x.Key, Count = x.Sum() });
-            return Json(prorductsCount, _options);
+                //.Where(purchaseProducts => purchaseProducts.Purchase.Cashier.Shop == shop)
+                //.Select(x => x.Purchase.Cashier.Shop)
+                //.GroupBy(x => x.ShopId);
+                //.Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
+                //.GroupBy(x => x.ProductName, x => x.Count)
+                //.Select(x => new { ProductName = x.Key, Count = x.Sum() });
+            return Json(result, _options);
         }
 
 

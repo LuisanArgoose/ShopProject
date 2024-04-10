@@ -12,8 +12,6 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Syncfusion.Xamarin.SfChart" Version="25.1.39" />
-    <PackageReference Include="Syncfusion.Xamarin.SfChart.WPF" Version="25.1.39" />
     <PackageReference Include="WPF-UI" Version="3.0.3" />
   </ItemGroup>
 
@@ -24,7 +22,6 @@
   <ItemGroup>
     <Folder Include="ViewModels\Pages\SalesManager\" />
     <Folder Include="Views\Pages\SalesManager\" />
-    <Folder Include="Lib\" />
   </ItemGroup>
 
 </Project>
