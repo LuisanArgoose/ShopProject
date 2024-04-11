@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.DataModels
 {
-    public partial class ShopPlanData : ObservableObject
+    public partial class ShopAverageBill : ObservableObject
     {
-
+        [ObservableProperty]
+        private DateTime _day;
+        [ObservableProperty]
+        private decimal _averageBill;
     }
 }

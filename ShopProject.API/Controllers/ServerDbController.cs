@@ -114,8 +114,8 @@ namespace ShopProject.API.Controllers
 
         }
 
-        [HttpGet("GetShopPlan")]
-        public IActionResult GetShopPlan(int shopId)
+        [HttpGet("GetShopAverageBill")]
+        public IActionResult GetShopAverageBill(int shopId)
         {
 
             var shop = _context.Shops.Find(shopId);
