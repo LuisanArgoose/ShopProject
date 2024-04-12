@@ -120,7 +120,7 @@ namespace ShopProject.API.Controllers
 
             var shop = _context.Shops.Find(shopId);
             if (shop == null) return BadRequest("Shop is not found");
-
+            //asdasdf
             shop.ShopPlans.Where(x => x.UpdatedTime > DateTime.Now.AddDays(-30));
             var prorductsCount = _context.PurchaseProducts
                 .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
