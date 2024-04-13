@@ -12,5 +12,9 @@ namespace ShopProject.EFDB.DataModels
         private DateTime _day;
         [ObservableProperty]
         private decimal _averageBill;
+        [ObservableProperty]
+        private decimal _profit;
+        [ObservableProperty]
+        private int _purchasesCount;
     }
 }

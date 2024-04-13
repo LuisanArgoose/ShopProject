@@ -13,6 +13,7 @@ using ShopProject.EFDB.Models;
 using System.Drawing;
 using System.Collections;
 using System.Globalization;
+using ShopProject.EFDB.DataModels;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -69,7 +70,8 @@ namespace ShopProject.API.Controllers
 
         [HttpGet("FillDataBase")]
         public IActionResult FillDataBase(string startDate, string endDate)
-        {   
+        {
+            var test = DateTime.Parse(startDate);
             DbFiller.FillDb(_context,
                 DateTime.Parse(startDate),
                 DateTime.Parse(endDate));
@@ -134,22 +136,33 @@ namespace ShopProject.API.Controllers
         [HttpGet("test")]
         public IActionResult Test()
         {
-            //var shop = _context.Shops.First();
-            // var cashier = shop.Cashiers.First();
-            //var purchases = cashier.Purchases.Where()
-            var product = _context.Products.Include(g => g.PurchaseProducts).Select(x => new { x.ProductName});
-            var result = _context.PurchaseProducts.Select(x => x);
-            var result1 = _context.PurchaseProducts
-                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
-                .GroupBy(x => x.ProductName, x => x.Count)
-                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
-                //.Where(purchaseProducts => purchaseProducts.Purchase.Cashier.Shop == shop)
-                //.Select(x => x.Purchase.Cashier.Shop)
-                //.GroupBy(x => x.ShopId);
-                //.Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
-                //.GroupBy(x => x.ProductName, x => x.Count)
-                //.Select(x => new { ProductName = x.Key, Count = x.Sum() });
-            return Json(result, _options);
+            var shop = _context.Shops.First();
+            List<ShopAverageBill> averageBillList = new List<ShopAverageBill>();
+            var allPurchasesInShop = _context.Purchases
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId && 
+                    x.OperationTime.Date > DateTime.Today.AddDays(-31).Date);
+            for(int i = 0; i <= 30; i++)
+            {
+                var selectedDay = DateTime.Today.AddDays(-i).Date;
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAverageBill = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                var daysProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
+
+                averageBillList.Add(new ShopAverageBill()
+                {
+                    AverageBill = daysAverageBill / daysPurchasesCount,
+                    PurchasesCount = daysPurchasesCount,
+                    Profit = daysProfit,
+                    Day = selectedDay
+                });
+            }
+
+            return Json(averageBillList, _options);
         }
 
 
