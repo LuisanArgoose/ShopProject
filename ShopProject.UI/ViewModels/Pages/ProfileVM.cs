@@ -58,7 +58,7 @@ namespace ShopProject.UI.ViewModels.Pages
             {
                 IsLoading = true;
                 await Settings.GetInstance().SettingsModel.APISettingsPart.APILoginSettings.TestConnection().WaitAsync(CancellationToken.None);
-                IsLoading = false;
+                
             }
             catch
             {
@@ -68,20 +68,23 @@ namespace ShopProject.UI.ViewModels.Pages
             }
             if (passwordBoxObj == null || passwordBoxObj as PasswordBox == null)
             {
+                IsLoading = false;
                 return;
             }
-            var response = await ClientDbProvider.SingIn(Login, (passwordBoxObj as PasswordBox).Password);
+            var response = await ClientDbProvider.SingIn(Login, (passwordBoxObj as PasswordBox).Password).WaitAsync(CancellationToken.None);
             if( response.IsSuccessStatusCode == false)
             {
+                IsLoading = false;
                 AlertPoster.PostErrorAlert("Вход в систему", "Ошибка входа");
                 return;
             }
             var jsonUser = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<User>(jsonUser);
             Settings.SetActiveUser(result);
-            var res = _navigationService.GetNavigationControl();
+            //var res = _navigationService.GetNavigationControl();
             _navigationService.Navigate(typeof(ActiveProfilePage));
             AlertPoster.PostSuccessAlert("Вход в систему", "Успешный вход");
+            IsLoading = false;
         }
 
 

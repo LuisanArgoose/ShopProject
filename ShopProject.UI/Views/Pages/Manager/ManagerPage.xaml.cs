@@ -1,4 +1,6 @@
-﻿using ShopProject.UI.ViewModels.Pages.Manager;
+﻿using LiveChartsCore.SkiaSharpView.Painting;
+using ShopProject.UI.ViewModels.Pages.Manager;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +32,11 @@ namespace ShopProject.UI.Views.Pages.Manager
             ViewModel = viewModel;
             DataContext = this;
 
+            
+
             InitializeComponent();
+            ShopChart.LegendTextPaint = new SolidColorPaint(new SKColor(255, 255, 255));
+            
         }
     }
 }

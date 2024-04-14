@@ -13,7 +13,9 @@ namespace ShopProject.EFDB.DataModels
         [ObservableProperty]
         private decimal _averageBill;
         [ObservableProperty]
-        private decimal _profit;
+        private decimal _allProfit;
+        [ObservableProperty]
+        private decimal _clearProfit;
         [ObservableProperty]
         private int _purchasesCount;
     }
