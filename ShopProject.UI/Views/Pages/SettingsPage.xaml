@@ -166,7 +166,10 @@
 
                     </StackPanel>
                 </ui:CardExpander>
-                <ui:CardExpander Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsAdmin, Converter={StaticResource myVisibilityConverter}}" Grid.Column="0" Margin="0,10,0,0" Icon="{ui:SymbolIcon ChannelShare20}">
+                <ui:CardExpander 
+                     
+                    Grid.Column="0" Margin="0,10,0,0" Icon="{ui:SymbolIcon ChannelShare20}">
+                    <!--Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsAdmin, Converter={StaticResource myVisibilityConverter}}"-->
                     <ui:CardExpander.Header>
                         <Grid>
                             <Grid.RowDefinitions>

@@ -52,16 +52,22 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <DatePicker 
-                        SelectedDate="{Binding ViewModel.StartDate}"  Grid.Row="0" 
-                        x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <ComboBox SelectedValue="{Binding ViewModel.Interval}">
+                        <ComboBoxItem Tag="Day" Content="День"/>
+                        <ComboBoxItem Tag="Month" Content="Месяц"/>
+                        <ComboBoxItem Tag="Year" Content="Год"/>
+                    </ComboBox>
                     <DatePicker 
                         Margin="0,5,0,0"
-                        SelectedDate="{Binding ViewModel.EndDate}" Grid.Row="1"
+                        SelectedDate="{Binding ViewModel.StartDate}"  Grid.Row="1" 
+                        x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FirstDayOfWeek="Monday" Text="fds" />
+                    <DatePicker 
+                        Margin="0,5,0,0"
+                        SelectedDate="{Binding ViewModel.EndDate}" Grid.Row="2"
                         x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    <StackPanel Grid.Row="2">
+                    <StackPanel Grid.Row="3">
                         <ui:Button  Command="{Binding ViewModel.GetShopAverageBillCommand}" 
                                    Appearance="Info" Content="Обновить данные" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
                         <ProgressBar IsIndeterminate="{Binding ViewModel.IsLoading}"/>
