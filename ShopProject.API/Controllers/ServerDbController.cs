@@ -13,6 +13,7 @@ using ShopProject.EFDB.Models;
 using System.Drawing;
 using System.Collections;
 using System.Globalization;
+using ShopProject.EFDB.DataModels;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -69,7 +70,8 @@ namespace ShopProject.API.Controllers
 
         [HttpGet("FillDataBase")]
         public IActionResult FillDataBase(string startDate, string endDate)
-        {   
+        {
+            var test = DateTime.Parse(startDate);
             DbFiller.FillDb(_context,
                 DateTime.Parse(startDate),
                 DateTime.Parse(endDate));
@@ -78,157 +80,99 @@ namespace ShopProject.API.Controllers
         }
 
 
-        // GET: api/<DbController>/Select/entityTypeName
-        [HttpGet("Select")]
-        public async Task<IActionResult> Select(string entityTypeName)
+        [HttpGet("GetShopAverageBill")]
+        public IActionResult GetShopAverageBill(int shopId, string startDate, string endDate)
         {
 
-            PropertyInfo? dbSetProperty = _context.GetType().GetProperties()
-                .FirstOrDefault(p => p.PropertyType.IsGenericType && 
-                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) && 
-                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName);
-
-            var entityType = _context.GetType().GetProperties().FirstOrDefault(p => p.PropertyType.GetGenericArguments()[0].Name == entityTypeName).PropertyType.GetGenericArguments()[0];
-
-            if (dbSetProperty != null)
+            DateTime startDateD = DateTime.Parse(startDate);
+            DateTime endDateD = DateTime.Parse(endDate);
+            void Swap<T>(ref T a, ref T b)
             {
-                var dbSet = dbSetProperty.GetValue(_context);
-
-                if (dbSet == null)
-                {
-                    return BadRequest("Not found property in dbContext");
-                }
-                MethodInfo? toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
-                    .GetMethod("ToListAsync");
-                if(toListAsyncMethod == null)
-                {
-                    return BadRequest("Not found ToListAsync method");
-                }
-                toListAsyncMethod = toListAsyncMethod.MakeGenericMethod(dbSetProperty.PropertyType.GetGenericArguments()[0]);
-
-                var results = await (dynamic?)toListAsyncMethod.Invoke(null, [dbSet, null]);
-                return Json(results, _options);
+                T temp = a;
+                a = b;
+                b = temp;
+            }
+            if (startDateD > endDateD)
+            {
+                Swap(ref startDateD, ref endDateD);
             }
 
-            return BadRequest("Invalid entity type name");
+            var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
+            if(shop == null) { return BadRequest("Shop not found"); }
+            List<ShopAverageBill> averageBillList = [];
+            var allPurchasesInShop = _context.Purchases
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.OperationTime.Date >= startDateD &&
+                    x.OperationTime.Date <= endDateD);
+            DateTime currentDate = startDateD;
+            while (currentDate <= endDateD)
+            {
+                var selectedDay = currentDate;
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
 
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
+
+                averageBillList.Add(new ShopAverageBill()
+                {
+                    AverageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0,
+                    PurchasesCount = daysPurchasesCount,
+                    AllProfit = daysAllProfit,
+                    ClearProfit = daysClearProfit,
+                    Day = selectedDay
+                });
+                currentDate = currentDate.AddDays(1);
+            }
+
+            return Json(averageBillList, _options);
         }
 
-        [HttpGet("GetShopPlan")]
-        public IActionResult GetShopPlan(int shopId)
+        [HttpGet("GetShopsCollection")]
+        public IActionResult GetShopsCollection()
         {
+            var shopCollection = _context.Shops.Select(x => x);
 
-            var shop = _context.Shops.Find(shopId);
-            if (shop == null) BadRequest("Shop is not found");
-
-            shop.ShopPlans.Where(x => x.UpdatedTime > DateTime.Now.AddDays(-30));
-            var prorductsCount = _context.PurchaseProducts
-                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
-                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
-                .GroupBy(x => x.ProductName, x => x.Count)
-                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
-            return Json(prorductsCount, _options);
+            return Json(shopCollection, _options);
         }
-
 
         [HttpGet("test")]
         public IActionResult Test()
         {
             var shop = _context.Shops.First();
-            var prorductsCount = _context.PurchaseProducts
-                .Where(productPurchase => productPurchase.Purchase.Cashier.Shop == shop)
-                .Select(productPurchase => new { productPurchase.Product.ProductName, productPurchase.Count })
-                .GroupBy(x => x.ProductName, x => x.Count)
-                .Select(x => new { ProductName = x.Key, Count = x.Sum() });
-            return Json(prorductsCount, _options);
-        }
-
-
-        /*
-        // POST api/<DbController>/Create
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] dynamic stringContent)
-        {
-           
-            return await CUD(stringContent, "Create");
-        }
-
-        // PUT api/<DbController>/Update
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update([FromBody] dynamic stringContent)
-        {
-            return await CUD(stringContent, "Update");
-
-        }
-
-        // DELETE api/<DbController>/Delete
-        [HttpPost("Delete")]
-        public async Task<IActionResult> Delete([FromBody] dynamic stringContent)
-        {
-            return await CUD(stringContent, "Delete");
-        }
-        private Type GetEntityType(string entityTypeName)
-        {
-            PropertyInfo? dbSet = _context.GetType().GetProperties()
-                .FirstOrDefault(p => p.PropertyType.IsGenericType &&
-                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
-                p.PropertyType.GetGenericArguments()[0].Name == entityTypeName) ?? throw new Exception("Not found dbSet");
-            Type? entityType = dbSet.PropertyType.GetGenericArguments()[0];
-            return entityType;
-        }
-        
-        private object DeserilizeEntity(JsonElement content)
-        {
-            try
+            List<ShopAverageBill> averageBillList = new List<ShopAverageBill>();
+            var allPurchasesInShop = _context.Purchases
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId && 
+                    x.OperationTime.Date > DateTime.Today.AddDays(-31).Date);
+            for(int i = 0; i <= 30; i++)
             {
-                dynamic stringContentJson = content.ToString();
-                
-                
-                dynamic stringContent = Newtonsoft.Json.JsonConvert.DeserializeObject(stringContentJson);
-                var jsonEntity = (string)stringContent["jsonEntity"];
-                var entityTypeName = (string)stringContent["entityTypeName"];
+                var selectedDay = DateTime.Today.AddDays(-i).Date;
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
 
-                Type entityType = GetEntityType(entityTypeName);
-                if (entityType == null)
-                    return BadRequest("Invalid entity type name");
-                var entity = JsonSerializer.Deserialize(jsonEntity, entityType);
-                if (entity == null)
-                    return BadRequest("Deserialize was failed");
-                return entity;
-            }
-            catch(Exception e)
-            {
-                return e;
-            }
-            
-        }
-        private async Task<IActionResult> CUD(dynamic stringContent, string operationName)
-        {
-            var entity = DeserilizeEntity(stringContent);
-            try
-            {
-                switch (operationName)
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
+
+                averageBillList.Add(new ShopAverageBill()
                 {
-                    case "Create":
-                        _context.Add(entity);
-                        break;
-                    case "Update":
-                        _context.Update(entity);
-                        break;
-                    case "Delete":
-                        _context.Remove(entity);
-                        break;
-                }
-                await _context.SaveChangesAsync();
-                return Json(entity, _options);
-
+                    AverageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0,
+                    PurchasesCount = daysPurchasesCount,
+                    AllProfit = daysAllProfit,
+                    ClearProfit = daysClearProfit,
+                    Day = selectedDay
+                });
             }
-            catch(Exception e)
-            {
-                return BadRequest(e);
-            }
-            
 
-        }*/
+            return Json(averageBillList, _options);
+        }
+
+
+        
     }
 }

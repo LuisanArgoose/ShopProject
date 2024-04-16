@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿
+using System.Configuration;
 using System.Data;
 using System.Windows;
 using System.Windows.Threading;
@@ -58,7 +59,12 @@ namespace ShopProject.UI
         /// </summary>
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            _host.Start();
+
+
+
+           _host.Start();
+           
+
         }
 
         /// <summary>

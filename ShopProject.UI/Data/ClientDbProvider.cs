@@ -156,66 +156,57 @@ namespace ShopProject.UI.Data
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
         }
-
-        public static async Task<HttpResponseMessage> GetEntitiesAsync(Type entityType)
+        public static async Task<HttpResponseMessage> GetShopAverageBill(DateTime startDate, DateTime endDate)
         {
-            
             try
             {
                 using (var client = MyHttpClient())
                 {
-                    var url = "ServerDb/Select?entityTypeName=" + entityType.Name;
+                    var shopId = Settings.GetActiveUser().ShopId;
+                    var url = "ServerDb/GetShopAverageBill?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
                     var response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
-                        AlertPoster.PostSystemSuccessAlert("Получение Entity");
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Получение графика магазина");
+                    }
                     else
-                        AlertPoster.PostSystemErrorAlert("Получение Entity", response.StatusCode.ToString());
+                        AlertPoster.PostSystemErrorAlert("Получение графика магазина", response.StatusCode.ToString());
                     return response;
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                AlertPoster.PostSystemErrorAlert("Получение Entity", ex.Message);
+                AlertPoster.PostSystemErrorAlert("Получение графика магазина", ex.Message);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
-            
-
         }
 
-        
-        private static StringContent ComplectEntity(object entity)
+        public static async Task<HttpResponseMessage> GetShopsCollection()
         {
-            string jsonEntity = JsonSerializer.Serialize(entity);
-            string entityTypeName = entity.GetType().Name;
-            EntityModel requestData = new EntityModel
+            try
             {
-                JsonEntity = jsonEntity,
-                EntityTypeName = entityTypeName
+                using (var client = MyHttpClient())
+                {
 
-            };
-            string requestDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(requestData);
-            return new StringContent(requestDataJson, Encoding.UTF8, "application/json");
-
+                    var url = "ServerDb/GetShopsCollection";
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Получение списка магазинов");
+                    }
+                    else
+                        AlertPoster.PostSystemErrorAlert("Получение списка магазинов", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение списка магазинов", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
         }
 
-        public static async Task<HttpResponseMessage> PostCUD(object entity, string operationName) 
-        {
 
-            List<string> operations =
-            [
-                "Create",
-                "Delete",
-                "Update"
-            ];
-            if (!operations.Contains(operationName))
-                throw new Exception("Bad operation name");
-            var content = ComplectEntity(entity);
-            using (var client = MyHttpClient())
-            {
-                var url = "ServerDb/" + operationName;
-                var response = await client.PostAsync(url, content);
-                return response;
-            };
-        }
+
     }
 }

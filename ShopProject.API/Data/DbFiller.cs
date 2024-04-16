@@ -404,6 +404,7 @@ namespace ShopProject.API.Data
                     Fullname = "Админ1",
                     Login = "Admin1",
                     Password = "AdminPass1",
+                    Shop = shops.First(x => x.ShopName == "Магазин 1"),
                     Role = roles.First(x => x.RoleName == "Админ"),
                 }
             };
@@ -427,6 +428,7 @@ namespace ShopProject.API.Data
         private static Random _rnd = new();
         public static void FillDb(ServerAPIDbContext context, DateTime startDate, DateTime endDate)
         {
+            // Расстановка даты по порядку
             void Swap<T>(ref T a, ref T b)
             {
                 T temp = a;
@@ -438,15 +440,22 @@ namespace ShopProject.API.Data
                 Swap(ref startDate, ref endDate);
             }
 
+            //Очистка всех покупок
             context.Purchases.RemoveRange(context.Purchases);
+
+            //Перебор каждого дня в промежутке дат
             for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
                 var cashiers = context.Cashiers.ToList();
 
                 foreach (var cashier in cashiers)
                 {
-                    for (int i = 0; i < _rnd.Next(15, 25); i++)
+                    //Случайное количество покупок кассира
+                    //var randomPurchasesCount = 5 //Для контроля
+                    var randomPurchasesCount = _rnd.Next(15, 25);
+                    for (int i = 0; i < randomPurchasesCount; i++)
                     {
+                        //Создание самой покупки
                         var purchase = new Purchase()
                         {
                             Cashier = cashier,
@@ -455,19 +464,28 @@ namespace ShopProject.API.Data
 
                         var purchaseProductList = new List<PurchaseProduct>();
 
+                        //Выбор случайных товаров
                         var products = new List<Product>();
-
-                        while (purchaseProductList.Select(x => x.Product).Count() < _rnd.Next(1, 5))
+                        //Количество товаров в покупке
+                        //int count = 3; //Для контроля
+                        int count = _rnd.Next(1, 5);
+                        while (purchaseProductList.Select(x => x.Product).Count() < count)
                         {
+                            //Выборка случайного продукта
+                            //int randomIndex = _rnd.Next(count); //Для контроля
                             int randomIndex = _rnd.Next(context.Products.Count());
-                            var randomProduct = context.Products.Find(randomIndex);
+                            //var randomProduct = context.Products.ToList()[randomIndex];
+                            var randomProduct = context.Products.ToList()[purchaseProductList.Select(x => x.Product).Count()];
 
+
+                            //Проверка на сущетвование товара в покупке
                             if (!purchaseProductList.Select(x => x.Product).Contains(randomProduct))
                             {
                                 purchaseProductList.Add(new PurchaseProduct()
                                 {
                                     Product = randomProduct,
                                     Purchase = purchase,
+                                    //Count = 1 //Для контроля
                                     Count = _rnd.Next(1, 5)
                                 });
                             }

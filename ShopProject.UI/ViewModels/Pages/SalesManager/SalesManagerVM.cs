@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.EFDB.DataModels
+namespace ShopProject.UI.ViewModels.Pages.SalesManager
 {
-    public partial class ShopPlanData : ObservableObject
+    class SalesManagerVM
     {
-
     }
 }

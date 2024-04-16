@@ -4,32 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopProject.EFDB.Models
+namespace ShopProject.EFDB.DataModels
 {
-    public partial class ShopPlan : ObservableObject
+    public partial class ShopAverageBill : ObservableObject
     {
         [ObservableProperty]
-        private int _shopPlanId;
-
+        private DateTime _day;
         [ObservableProperty]
         private decimal _averageBill;
-
         [ObservableProperty]
         private decimal _allProfit;
-
         [ObservableProperty]
         private decimal _clearProfit;
-
         [ObservableProperty]
         private int _purchasesCount;
-
-        [ObservableProperty]
-        private DateTime _updatedTime;
-
-        [ObservableProperty]
-        private int _shopId;
-
-        [ObservableProperty]
-        private Shop _shop = null!;
     }
 }

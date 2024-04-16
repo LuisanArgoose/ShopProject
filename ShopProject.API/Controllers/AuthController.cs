@@ -12,6 +12,8 @@ namespace ShopProject.API.Controllers
     public class AuthController(ServerAPIDbContext context) : Controller
     {
         private readonly ServerAPIDbContext _context = context;
+        private const string TokenLogin = "TokenKey";
+        private const string TokenPassword = "TokenPass";
         private const string SecretKey = "MySuperSecretSecretKeyShopProjectSecretKey"; // секретный ключ для подписи токена
         JsonSerializerOptions _options = new JsonSerializerOptions()
         {
@@ -44,12 +46,17 @@ namespace ShopProject.API.Controllers
         [HttpGet]
         public IActionResult RequestToken(string login, string password)
         {
+            /*
             var tokenLogin = _context.TokenLogins.Where(x => x.Login == login);
             if(!tokenLogin.Any())
             {
                 return BadRequest("Неправильные учетные данные");
             }
             if(tokenLogin.First().Password != password) 
+            {
+                return BadRequest("Неправильные учетные данные");
+            }*/
+            if(login != TokenLogin || password != TokenPassword)
             {
                 return BadRequest("Неправильные учетные данные");
             }

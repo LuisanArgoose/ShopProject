@@ -4,6 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages.Manager"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+      xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagerPage,
@@ -11,15 +13,17 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="ManagerPage">
-
+    <Page.Resources>
+        <helpers:DateTimeToStringDateConverter x:Key="myDateTimeToStringDateConverter"/>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ui:TextBlock FontTypography="Title" Text="Кабинет менеджера" Padding="20,5"/>
+        <ui:TextBlock FontTypography="Title" Text="План магазина" Padding="20,5"/>
         <Border
             Grid.Row="1"
             Padding="16"
@@ -28,42 +32,65 @@
             BorderThickness="1,1,1,0"
             CornerRadius="8"
             Margin="10,0,10,10">
-            <TabControl>
-                <TabItem IsSelected="True">
-                    <TabItem.Header >
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="ArrowTrendingLines20" />
-                            <TextBlock Text="План магазина" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid>
-                        
-                        
-                    </Grid>
-                </TabItem >
-                <TabItem>
-                    <TabItem.Header >
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="People20" />
-                            <TextBlock Text="Работники" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid>
-                        <TextBlock Margin="12" Text="World" />
-                    </Grid>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Margin="0,0,6,0" Symbol="StoreMicrosoft16" />
-                            <TextBlock Text="Товары" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid>
-                        <TextBlock Margin="12" Text="Is a lie." />
-                    </Grid>
-                </TabItem>
-            </TabControl>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+
+                <StackPanel>
+                    <TextBlock Text="Промежуток данных"/>
+
+                    <ComboBox SelectedItem="{Binding ViewModel.Interval}" SelectedIndex="0"  Margin="0,5,0,0">
+                        <ComboBoxItem Tag="Day" Content="День"/>
+                        <ComboBoxItem Tag="Month" Content="Месяц"/>
+                        <ComboBoxItem Tag="Year" Content="Год"/>
+                    </ComboBox>
+                    <TextBlock Text="Временной интервал" Margin="0,5,0,0"/>
+                    <DatePicker 
+                        Margin="0,5,0,0"
+                        SelectedDate="{Binding ViewModel.StartDate}"  Grid.Row="1" 
+                        x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FirstDayOfWeek="Monday" Text="fds" />
+                    <DatePicker 
+                        Margin="0,5,0,0"
+                        SelectedDate="{Binding ViewModel.EndDate}" Grid.Row="2"
+                        x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <StackPanel Grid.Row="3">
+                        <ui:Button  Command="{Binding ViewModel.GetShopAverageBillCommand}" 
+                                   Appearance="Info" Content="Обновить данные" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
+                        <ProgressBar IsIndeterminate="{Binding ViewModel.IsLoading}"/>
+                    </StackPanel>
+                    
+                </StackPanel>
+
+
+                <ItemsControl Grid.Row="2" Margin="0,10,0,0">
+                    <RadioButton IsChecked="{Binding ViewModel.IsAll}" Content="Общая сводка" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
+                    <RadioButton IsChecked="{Binding ViewModel.IsAverageBill}" GroupName="Data" Content="Средний чек" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
+                    <RadioButton IsChecked="{Binding ViewModel.IsAllProfit}" Content="Общая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
+                    <RadioButton IsChecked="{Binding ViewModel.IsClearProfit}" Content="Чистая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
+                    <RadioButton IsChecked="{Binding ViewModel.IsPurchasesCount}" Content="Количество покупок" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
+                </ItemsControl>
+                <lvc:CartesianChart 
+                    x:Name="ShopChart"
+                    Grid.Column="1"
+                    Grid.RowSpan="2"
+                    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    YAxes="{Binding ViewModel.YAxes}"
+                    Series="{Binding ViewModel.Series}"
+                    XAxes="{Binding ViewModel.XAxes}"
+                    LegendPosition="Right">
+                    
+                </lvc:CartesianChart>
+            </Grid>
+            
         </Border>
+        
     </Grid>
 </Page>
