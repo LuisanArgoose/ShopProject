@@ -23,12 +23,11 @@ namespace ShopProject.UI.ViewModels.Pages.Manager
             StartDate = DateTime.Today.AddDays(-15);
             EndDate = DateTime.Today;
             _isAll = true;
-            _interval = "day";
-            GetShopAverageBillCommand.Execute(this);
+            
         }
 
         [ObservableProperty]
-        private string _interval;
+        private object _interval;
 
         [ObservableProperty]
         private bool _isLoading;

@@ -404,6 +404,7 @@ namespace ShopProject.API.Data
                     Fullname = "Админ1",
                     Login = "Admin1",
                     Password = "AdminPass1",
+                    Shop = shops.First(x => x.ShopName == "Магазин 1"),
                     Role = roles.First(x => x.RoleName == "Админ"),
                 }
             };

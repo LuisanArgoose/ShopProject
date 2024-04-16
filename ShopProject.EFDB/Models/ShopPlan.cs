@@ -12,13 +12,16 @@ namespace ShopProject.EFDB.Models
         private int _shopPlanId;
 
         [ObservableProperty]
-        private int _tradeTurnover;
-
-        [ObservableProperty]
-        private int _moneyTurnover;
-
-        [ObservableProperty]
         private decimal _averageBill;
+
+        [ObservableProperty]
+        private decimal _allProfit;
+
+        [ObservableProperty]
+        private decimal _clearProfit;
+
+        [ObservableProperty]
+        private int _purchasesCount;
 
         [ObservableProperty]
         private DateTime _updatedTime;

@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:ShopProject.UI.Views.Windows"
     xmlns:pages="clr-namespace:ShopProject.UI.Views.Pages"
     xmlns:manager="clr-namespace:ShopProject.UI.Views.Pages.Manager"
+    xmlns:smanager="clr-namespace:ShopProject.UI.Views.Pages.SalesManager"
     xmlns:alert="clr-namespace:ShopProject.UI.AuxiliarySystems.AlertSystem"
     xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
     xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
@@ -73,7 +74,13 @@
                     Content="Менеджер по продажам"
                     Icon="{ui:SymbolIcon PersonMoney20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"
-                    
+
+                    />
+                <ui:NavigationViewItem
+                    Content="Магазины"
+                    Icon="{ui:SymbolIcon BuildingShop20}"
+                    Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"
+                    TargetPageType="{x:Type smanager:SMShopPage}"
                     />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>

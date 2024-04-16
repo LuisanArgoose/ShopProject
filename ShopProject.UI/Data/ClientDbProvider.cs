@@ -181,7 +181,30 @@ namespace ShopProject.UI.Data
             }
         }
 
+        public static async Task<HttpResponseMessage> GetShopsCollection()
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
 
+                    var url = "ServerDb/GetShopsCollection";
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Получение списка магазинов");
+                    }
+                    else
+                        AlertPoster.PostSystemErrorAlert("Получение списка магазинов", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение списка магазинов", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
 
 
 

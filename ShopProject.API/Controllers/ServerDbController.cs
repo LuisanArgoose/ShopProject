@@ -131,6 +131,13 @@ namespace ShopProject.API.Controllers
             return Json(averageBillList, _options);
         }
 
+        [HttpGet("GetShopsCollection")]
+        public IActionResult GetShopsCollection()
+        {
+            var shopCollection = _context.Shops.Select(x => x);
+
+            return Json(shopCollection, _options);
+        }
 
         [HttpGet("test")]
         public IActionResult Test()

@@ -1,6 +1,5 @@
-﻿using LiveChartsCore.SkiaSharpView.Painting;
-using ShopProject.UI.ViewModels.Pages.Manager;
-using SkiaSharp;
+﻿using ShopProject.UI.ViewModels.Pages.Manager;
+using ShopProject.UI.ViewModels.Pages.SalesManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,31 +15,27 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ShopProject.UI.Views.Pages.Manager
+namespace ShopProject.UI.Views.Pages.SalesManager
 {
     /// <summary>
-    /// Логика взаимодействия для ManagerPage.xaml
+    /// Логика взаимодействия для SMShopPage.xaml
     /// </summary>
-    public partial class ManagerPage : Page
+    public partial class SMShopPage : Page
     {
-        public ManagerVM ViewModel { get; }
-
-        public ManagerPage(
-            ManagerVM viewModel
+        public SMShopsVM ViewModel { get; }
+        public SMShopPage(
+            SMShopsVM viewModel
             )
         {
             ViewModel = viewModel;
             DataContext = this;
 
-            
-
             InitializeComponent();
-            ShopChart.LegendTextPaint = new SolidColorPaint(new SKColor(255, 255, 255));
             OnStartup();
         }
         private async void OnStartup()
         {
-            await ViewModel.GetShopAverageBillCommand.ExecuteAsync(this);
+            await ViewModel.GetShopsCollectionCommand.ExecuteAsync(this);
             return;
         }
     }
