@@ -156,13 +156,12 @@ namespace ShopProject.UI.Data
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
         }
-        public static async Task<HttpResponseMessage> GetShopAverageBill(DateTime startDate, DateTime endDate)
+        public static async Task<HttpResponseMessage> GetShopAverageBill(int shopId, DateTime startDate, DateTime endDate)
         {
             try
             {
                 using (var client = MyHttpClient())
                 {
-                    var shopId = Settings.GetActiveUser().ShopId;
                     var url = "ServerDb/GetShopAverageBill?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
                     var response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)

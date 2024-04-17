@@ -1,5 +1,6 @@
 ﻿using ShopProject.EFDB.DataModels;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
+using ShopProject.UI.ViewModels.Pages.Examples;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,7 +46,23 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
         [ObservableProperty]
         private ICollection _shopsCollection;
 
+        private Shop? _selectedShop;
+
+        public Shop? SelectedShop
+        {
+            get => _selectedShop;
+            set
+            {
+                SetProperty(ref _selectedShop, value);
+                OnPropertyChanged(nameof(IsShopSelected));
+                SelectedShopVM = new ShopVM(SelectedShop.ShopId);
+                SelectedShopVM.GetShopAverageBillCommand.Execute(this);
+            }
+        }
+
+        public bool IsShopSelected { get => SelectedShop != null;}
+
         [ObservableProperty]
-        private Shop _selectedShop;
+        private ShopVM _selectedShopVM;
     }
 }

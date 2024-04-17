@@ -40,7 +40,7 @@ namespace ShopProject.UI.Views.Pages.Manager
         }
         private async void OnStartup()
         {
-            await ViewModel.GetShopAverageBillCommand.ExecuteAsync(this);
+            await ViewModel.SelectedShop.GetShopAverageBillCommand.ExecuteAsync(this);
             return;
         }
     }
