@@ -1,9 +1,11 @@
 ﻿using LiveChartsCore.SkiaSharpView.Painting;
-using ShopProject.UI.ViewModels.Pages.Manager;
+using ShopProject.UI.ViewModels.Examples;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,32 +17,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
-namespace ShopProject.UI.Views.Pages.Manager
+namespace ShopProject.UI.Views.Examples
 {
     /// <summary>
-    /// Логика взаимодействия для ManagerPage.xaml
+    /// Логика взаимодействия для ShopView.xaml
     /// </summary>
-    public partial class ManagerPage : Page
+    public partial class ShopView : UserControl
     {
-        public ManagerVM ViewModel { get; }
 
-        public ManagerPage(
-            ManagerVM viewModel
-            )
+        public ShopView()
         {
-            ViewModel = viewModel;
-            DataContext = this;
-
-            
 
             InitializeComponent();
 
-            OnStartup();
+            
         }
-        private void OnStartup()
-        {
-            ViewModel.SelectShopWithUser();
-        }
+
+
     }
 }

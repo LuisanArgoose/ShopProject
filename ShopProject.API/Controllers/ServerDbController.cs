@@ -139,6 +139,16 @@ namespace ShopProject.API.Controllers
             return Json(shopCollection, _options);
         }
 
+
+        [HttpGet("GetShopInfo")]
+        public IActionResult GetShopInfo(int shopId)
+        {
+            var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
+            if (shop == null)
+                return BadRequest();
+            return Json(shop, _options);
+        }
+
         [HttpGet("test")]
         public IActionResult Test()
         {

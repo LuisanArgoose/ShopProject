@@ -180,6 +180,30 @@ namespace ShopProject.UI.Data
             }
         }
 
+        public static async Task<HttpResponseMessage> GetShopInfo(int shopId)
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+                    var url = "ServerDb/GetShopInfo?shopId=" + shopId;
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Получение данных магазина");
+                    }
+                    else
+                        AlertPoster.PostSystemErrorAlert("Получение данных магазина", response.StatusCode.ToString());
+                    return response;
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение данных магазина", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
         public static async Task<HttpResponseMessage> GetShopsCollection()
         {
             try

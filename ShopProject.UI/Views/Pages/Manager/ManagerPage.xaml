@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages.Manager"
+      xmlns:ex="clr-namespace:ShopProject.UI.Views.Examples"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -15,82 +16,7 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       d:DesignHeight="700" d:DesignWidth="800"
       Title="ManagerPage">
-    <Page.Resources>
-        <helpers:DateTimeToStringDateConverter x:Key="myDateTimeToStringDateConverter"/>
-    </Page.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <ui:TextBlock FontTypography="Title" Text="План магазина" Padding="20,5"/>
-        <Border
-            Grid.Row="1"
-            Padding="16"
-            Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1,1,1,0"
-            CornerRadius="8"
-            Margin="10,0,10,10">
-            <Grid DataContext="{Binding ViewModel.SelectedShop}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-
-
-                <StackPanel>
-                    <TextBlock Text="Единица данных"/>
-
-                    <ComboBox SelectedItem="{Binding Interval}" SelectedIndex="0"  Margin="0,5,0,0">
-                        <ComboBoxItem Tag="Day" Content="День"/>
-                        <ComboBoxItem Tag="Month" Content="Месяц"/>
-                        <ComboBoxItem Tag="Year" Content="Год"/>
-                    </ComboBox>
-                    <TextBlock Text="Временной интервал" Margin="0,5,0,0"/>
-                    <DatePicker 
-                        Margin="0,5,0,0"
-                        SelectedDate="{Binding StartDate}"  Grid.Row="1" 
-                        x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FirstDayOfWeek="Monday" Text="fds" />
-                    <DatePicker 
-                        Margin="0,5,0,0"
-                        SelectedDate="{Binding EndDate}" Grid.Row="2"
-                        x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    <StackPanel Grid.Row="3">
-                        <ui:Button  Command="{Binding GetShopAverageBillCommand}" 
-                                   Appearance="Info" Content="Обновить данные" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
-                        <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
-                    </StackPanel>
-                    
-                </StackPanel>
-
-
-                <ItemsControl Grid.Row="2" Margin="0,10,0,0">
-                    <RadioButton IsChecked="{Binding IsAll}" Content="Общая сводка" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                    <RadioButton IsChecked="{Binding IsAverageBill}" GroupName="Data" Content="Средний чек" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
-                    <RadioButton IsChecked="{Binding IsAllProfit}" Content="Общая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                    <RadioButton IsChecked="{Binding IsClearProfit}" Content="Чистая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                    <RadioButton IsChecked="{Binding IsPurchasesCount}" Content="Количество покупок" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                </ItemsControl>
-                <lvc:CartesianChart 
-                    x:Name="ShopChart"
-                    Grid.Column="1"
-                    Grid.RowSpan="2"
-                    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    YAxes="{Binding YAxes}"
-                    Series="{Binding Series}"
-                    XAxes="{Binding XAxes}"
-                    LegendPosition="Right">
-                    
-                </lvc:CartesianChart>
-            </Grid>
-            
-        </Border>
-        
+        <ex:ShopView DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>
 </Page>

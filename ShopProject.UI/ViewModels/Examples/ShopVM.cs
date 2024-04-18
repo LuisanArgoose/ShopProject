@@ -11,22 +11,35 @@ using ShopProject.EFDB.DataModels;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
 
 
-namespace ShopProject.UI.ViewModels.Pages.Examples
+namespace ShopProject.UI.ViewModels.Examples
 {
     public partial class ShopVM : ObservableObject
     {
         [ObservableProperty]
         private List<ShopAverageBill> _shopAverageBills = new List<ShopAverageBill>();
 
+        [ObservableProperty]
+        private Shop _selectedShop;
+
         private int _shopId;
+        public int ShopId
+        {
+            get => _shopId;
+            set
+            {
+                SetProperty(ref _shopId, value);
+                GetShopInfoCommand.Execute(this);
+                GetShopAverageBillCommand.Execute(this);
+            }
+        }
         public ShopVM(int shopId)
         {
             GetShopAverageBillCommand = new AsyncRelayCommand(GetShopAverageBill);
+            GetShopInfoCommand = new AsyncRelayCommand(GetShopInfo);
             StartDate = DateTime.Today.AddDays(-15);
             EndDate = DateTime.Today;
             _isAll = true;
-            _shopId = shopId;
-            
+            ShopId = shopId;            
         }
 
         [ObservableProperty]
@@ -136,6 +149,32 @@ namespace ShopProject.UI.ViewModels.Pages.Examples
             OnPropertyChanged(nameof(XAxes));
         }
 
+        public IAsyncRelayCommand GetShopInfoCommand { get; }
+
+        private async Task GetShopInfo()
+        {
+            IsLoading = true;
+            var response = await ClientDbProvider.GetShopInfo(ShopId).WaitAsync(CancellationToken.None);
+            if (response.IsSuccessStatusCode == false)
+            {
+                AlertPoster.PostErrorAlert("Данные магазина", "Не удалось получить данные");
+                IsLoading = false;
+                return;
+            }
+            var jsonShopInfo = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<Shop>(jsonShopInfo);
+            if (result == null)
+            {
+                AlertPoster.PostSystemErrorAlert("Данные магазина", "Не удалось сериализовать данные");
+                IsLoading = false;
+                return;
+            }
+            SelectedShop = result;
+            IsLoading = false;
+            return;
+        }
+
+
         public IAsyncRelayCommand GetShopAverageBillCommand { get; }
 
         [ObservableProperty]
@@ -147,7 +186,7 @@ namespace ShopProject.UI.ViewModels.Pages.Examples
         private async Task GetShopAverageBill()
         {
             IsLoading = true;
-            var response = await ClientDbProvider.GetShopAverageBill(_shopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetShopAverageBill(ShopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
             if (response.IsSuccessStatusCode == false)
             {
                 AlertPoster.PostErrorAlert("Загрузка плана", "Не удалось получить данные");
@@ -180,6 +219,8 @@ namespace ShopProject.UI.ViewModels.Pages.Examples
                 new Axis()
                 {
                      LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
+                     SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
+                     
                 }
             };
         }
@@ -193,7 +234,7 @@ namespace ShopProject.UI.ViewModels.Pages.Examples
                 {
                     Labels = ShopAverageBills.Select(x => x.Day.ToString("dd.MM.yyyy")).ToList(),
                     LabelsRotation = 45,
-                    SeparatorsPaint = new SolidColorPaint(new SKColor(200, 200, 200)),
+                    SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
                     SeparatorsAtCenter = false,
                     TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35)),
                     TicksAtCenter = true,

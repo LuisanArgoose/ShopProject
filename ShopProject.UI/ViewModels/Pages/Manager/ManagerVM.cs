@@ -1,4 +1,4 @@
-﻿using ShopProject.UI.ViewModels.Pages.Examples;
+﻿using ShopProject.UI.ViewModels.Examples;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,17 @@ namespace ShopProject.UI.ViewModels.Pages.Manager
     {
         public ManagerVM()
         {
-            var shopId = Settings.GetActiveUser().ShopId;
-            if(shopId != null)
-                SelectedShop = new ShopVM((int)shopId);
+            
         }
+
         [ObservableProperty]
-        private ShopVM _selectedShop;
+        private ShopVM _selectedShopVM;
+
+        public void SelectShopWithUser()
+        {
+            var shopId = Settings.GetActiveUser().ShopId;
+            if (shopId != null)
+                SelectedShopVM = new ShopVM((int)shopId);
+        }
     }
 }

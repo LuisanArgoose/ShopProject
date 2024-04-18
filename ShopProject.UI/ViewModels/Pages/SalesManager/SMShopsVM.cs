@@ -1,6 +1,6 @@
 ﻿using ShopProject.EFDB.DataModels;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
-using ShopProject.UI.ViewModels.Pages.Examples;
+using ShopProject.UI.ViewModels.Examples;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,8 +55,8 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
             {
                 SetProperty(ref _selectedShop, value);
                 OnPropertyChanged(nameof(IsShopSelected));
-                SelectedShopVM = new ShopVM(SelectedShop.ShopId);
-                SelectedShopVM.GetShopAverageBillCommand.Execute(this);
+                if(SelectedShop != null)
+                    SelectedShopVM = new ShopVM((int)SelectedShop.ShopId);
             }
         }
 
