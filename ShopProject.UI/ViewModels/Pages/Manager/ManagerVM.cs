@@ -11,17 +11,22 @@ namespace ShopProject.UI.ViewModels.Pages.Manager
     {
         public ManagerVM()
         {
-            
+
+            SelectedShop = Settings.GetActiveUser().Shop;
         }
+
+
+        [ObservableProperty]
+        private Shop _selectedShop;
 
         [ObservableProperty]
         private ShopVM _selectedShopVM;
 
         public void SelectShopWithUser()
         {
-            var shopId = Settings.GetActiveUser().ShopId;
-            if (shopId != null)
-                SelectedShopVM = new ShopVM((int)shopId);
+            
+            if (SelectedShop != null)
+                SelectedShopVM = new ShopVM((int)SelectedShop.ShopId);
         }
     }
 }

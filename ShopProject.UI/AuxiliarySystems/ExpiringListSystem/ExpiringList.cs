@@ -15,6 +15,8 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (Count > 9)
+                    RemoveAt(Count - 1);
                 Add(value);
             });
             

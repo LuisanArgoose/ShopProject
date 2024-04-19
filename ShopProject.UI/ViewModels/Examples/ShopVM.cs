@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ShopProject.EFDB.DataModels;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
+using ShopProject.UI.Models.Examples;
 
 
 namespace ShopProject.UI.ViewModels.Examples
@@ -16,10 +17,12 @@ namespace ShopProject.UI.ViewModels.Examples
     public partial class ShopVM : ObservableObject
     {
         [ObservableProperty]
-        private List<ShopAverageBill> _shopAverageBills = new List<ShopAverageBill>();
+        private List<ShopStats> _shopAverageBills = new List<ShopStats>();
 
         [ObservableProperty]
         private Shop _selectedShop;
+
+        public bool IsSalesManager { get => Settings.GetActiveUser().Role.IsSalesManager || Settings.GetActiveUser().Role.IsAdmin; }
 
         private int _shopId;
         public int ShopId
@@ -34,16 +37,44 @@ namespace ShopProject.UI.ViewModels.Examples
         }
         public ShopVM(int shopId)
         {
-            GetShopAverageBillCommand = new AsyncRelayCommand(GetShopAverageBill);
+            GetShopAverageBillCommand = new AsyncRelayCommand(GetShopStats);
             GetShopInfoCommand = new AsyncRelayCommand(GetShopInfo);
             StartDate = DateTime.Today.AddDays(-15);
             EndDate = DateTime.Today;
             _isAll = true;
-            ShopId = shopId;            
+            SetIntervals();
+            ShopId = shopId;
+            
+        }
+
+        private void SetIntervals()
+        {
+            Intervals =
+            [   
+            new Interval()
+            {
+                Name = "Day",
+                View = "День"
+            },
+            new Interval()
+            {
+                Name = "Month",
+                View = "Месяц"
+            },
+            new Interval()
+            {
+                Name = "Year",
+                View = "Год"
+            }];
+            SelectedInterval = Intervals.First();
         }
 
         [ObservableProperty]
-        private object _interval;
+        private List<Interval> _intervals;
+        
+
+        [ObservableProperty]
+        private Interval _selectedInterval;
 
         [ObservableProperty]
         private bool _isLoading;
@@ -183,18 +214,18 @@ namespace ShopProject.UI.ViewModels.Examples
         [ObservableProperty]
         private DateTime _endDate;
 
-        private async Task GetShopAverageBill()
+        private async Task GetShopStats()
         {
             IsLoading = true;
-            var response = await ClientDbProvider.GetShopAverageBill(ShopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetShopStats(ShopId, EndDate, StartDate, SelectedInterval.Name).WaitAsync(CancellationToken.None);
             if (response.IsSuccessStatusCode == false)
             {
                 AlertPoster.PostErrorAlert("Загрузка плана", "Не удалось получить данные");
                 IsLoading = false;
                 return;
             }
-            var jsonShopAverageBill = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<List<ShopAverageBill>>(jsonShopAverageBill);
+            var jsonShopStats = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<List<ShopStats>>(jsonShopStats);
             if(result == null)
             {
                 AlertPoster.PostSystemErrorAlert("Загрузка плана", "Не удалось сериализовать данные");
@@ -220,7 +251,7 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
                      LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
                      SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
-                     
+                     MinLimit = 0
                 }
             };
         }
@@ -232,6 +263,7 @@ namespace ShopProject.UI.ViewModels.Examples
             {
                 new Axis
                 {
+                    
                     Labels = ShopAverageBills.Select(x => x.Day.ToString("dd.MM.yyyy")).ToList(),
                     LabelsRotation = 45,
                     SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),

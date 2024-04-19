@@ -56,7 +56,11 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
                 SetProperty(ref _selectedShop, value);
                 OnPropertyChanged(nameof(IsShopSelected));
                 if(SelectedShop != null)
+                {
                     SelectedShopVM = new ShopVM((int)SelectedShop.ShopId);
+                    GetPlanAtributesCollection((int)SelectedShop.ShopId);
+                }
+                    
             }
         }
 
@@ -64,5 +68,39 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
 
         [ObservableProperty]
         private ShopVM _selectedShopVM;
+
+
+        [ObservableProperty]
+        private ShopPlan _selectedPlan;
+
+        private async void GetPlanAtributesCollection(int shopId)
+        {
+            var response = await ClientDbProvider.GetPlanAtributesCollection(shopId);
+            if (response.IsSuccessStatusCode == false)
+            {
+                AlertPoster.PostErrorAlert("Загрузка типов плана", "Не удалось получить данные");
+                return;
+            }
+            var jsonPlanAtributesCollection = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<List<PlanAtribute>> (jsonPlanAtributesCollection);
+            if (result == null)
+            {
+                AlertPoster.PostSystemErrorAlert("Загрузка типов плана", "Не удалось сериализовать данные");
+                return;
+            }
+            PlanAtributesCollection = result;
+            return;
+        }
+
+        [ObservableProperty]
+        private List<PlanAtribute> _planAtributesCollection;
+
+        [ObservableProperty]
+        private PlanAtribute? _selectedPlanAtribute;
+
+
+        [ObservableProperty]
+        private List<ShopPlan> _plansCollection;
+
     }
 }

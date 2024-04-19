@@ -31,8 +31,9 @@ namespace ShopProject.UI.Views.Examples
         {
 
             InitializeComponent();
+            ShopChart.LegendTextPaint = new SolidColorPaint(new SKColor(255, 255, 255));
 
-            
+
         }
 
 

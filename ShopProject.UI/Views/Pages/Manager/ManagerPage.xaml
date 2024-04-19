@@ -17,6 +17,37 @@
       d:DesignHeight="700" d:DesignWidth="800"
       Title="ManagerPage">
     <Grid>
-        <ex:ShopView DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="20,0,10,0" Grid.Row="0"  >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+        Grid.Row="0"
+        Grid.Column="1"
+        FontSize="18"
+        FontWeight="Bold"
+        Text="{Binding ViewModel.SelectedShop.ShopName, Mode=OneWay}"/>
+            <TextBlock
+        Grid.Row="1"
+        Grid.Column="1"
+        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+        Text="{Binding  ViewModel.SelectedShop.Address, Mode=OneWay}"/>
+        </Grid>
+        <Border
+    Grid.Row="1"
+    Padding="16"
+    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+    BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1,1,1,0"
+    CornerRadius="8"
+    Margin="10,0,5,10">
+            <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+        </Border>
+       
     </Grid>
 </Page>

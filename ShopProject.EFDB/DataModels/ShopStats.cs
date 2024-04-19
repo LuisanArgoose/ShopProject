@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.DataModels
 {
-    public partial class ShopAverageBill : ObservableObject
+    public partial class ShopStats : ObservableObject
     {
         [ObservableProperty]
         private DateTime _day;

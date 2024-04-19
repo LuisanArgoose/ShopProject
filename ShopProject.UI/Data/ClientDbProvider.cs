@@ -90,13 +90,15 @@ namespace ShopProject.UI.Data
                         
                         var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
                         _token = result.Token;
+                        return response;
                     }
                     else
                     {
                         AlertPoster.PostSystemErrorAlert("Подключение к API", response.StatusCode.ToString());
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
                     }
                         
-                    return response;
+                   
                 };
             }
             catch (Exception ex)
@@ -120,10 +122,15 @@ namespace ShopProject.UI.Data
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert("Создание стартовых данных");
+                        return response;
                     }
                     else
+                    {
                         AlertPoster.PostSystemErrorAlert("Создание стартовых данных", response.StatusCode.ToString());
-                    return response;
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+                        
+                    
                 };
             }
             catch (Exception ex)
@@ -144,10 +151,15 @@ namespace ShopProject.UI.Data
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert("Создание тестовых данных");
+                        return response;
                     }
                     else
+                    {
                         AlertPoster.PostSystemErrorAlert("Создание тестовых данных", response.StatusCode.ToString());
-                    return response;
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+                        
+                   
                 };
             }
             catch (Exception ex)
@@ -156,21 +168,27 @@ namespace ShopProject.UI.Data
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
         }
-        public static async Task<HttpResponseMessage> GetShopAverageBill(int shopId, DateTime startDate, DateTime endDate)
+        public static async Task<HttpResponseMessage> GetShopStats(int shopId, DateTime startDate, DateTime endDate, string interval)
         {
             try
             {
                 using (var client = MyHttpClient())
                 {
-                    var url = "ServerDb/GetShopAverageBill?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
+                    var url = "ServerDb/GetShopStats?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy") 
+                        + "&endDate=" + endDate.ToString("MM.dd.yyyy") + "&interval=" + interval;
                     var response = await client.GetAsync(url);
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert("Получение графика магазина");
+                        return response;
                     }
                     else
+                    {
                         AlertPoster.PostSystemErrorAlert("Получение графика магазина", response.StatusCode.ToString());
-                    return response;
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+                        
+                    
                 };
             }
             catch (Exception ex)
@@ -191,10 +209,15 @@ namespace ShopProject.UI.Data
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert("Получение данных магазина");
+                        return response;
                     }
                     else
+                    {
                         AlertPoster.PostSystemErrorAlert("Получение данных магазина", response.StatusCode.ToString());
-                    return response;
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+                        
+                    
                 };
             }
             catch (Exception ex)
@@ -216,15 +239,50 @@ namespace ShopProject.UI.Data
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert("Получение списка магазинов");
+                        return response;
                     }
                     else
+                    {
+
                         AlertPoster.PostSystemErrorAlert("Получение списка магазинов", response.StatusCode.ToString());
-                    return response;
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+                    
                 };
             }
             catch (Exception ex)
             {
                 AlertPoster.PostSystemErrorAlert("Получение списка магазинов", ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> GetPlanAtributesCollection(int shopId)
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+
+                    var url = "ServerDb/GetPlanAtributesCollection?shopId=" + shopId;
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert("Получение списка вида планов");
+                        return response;
+                    }
+                    else
+                    {
+
+                        AlertPoster.PostSystemErrorAlert("Получение списка вида планов", response.StatusCode.ToString());
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                    }
+
+                };
+            }
+            catch (Exception ex)
+            {
+                AlertPoster.PostSystemErrorAlert("Получение списка вида планов", ex.Message);
                 return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
         }
