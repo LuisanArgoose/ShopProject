@@ -12,19 +12,16 @@ namespace ShopProject.EFDB.Models
         private int _shopPlanId;
 
         [ObservableProperty]
-        private decimal _averageBill;
+        private int _planAtributeId;
 
         [ObservableProperty]
-        private decimal _allProfit;
+        private PlanAtribute _planAtribute = null!;
 
         [ObservableProperty]
-        private decimal _clearProfit;
+        private decimal _atributeValue;
 
         [ObservableProperty]
-        private int _purchasesCount;
-
-        [ObservableProperty]
-        private DateTime _updatedTime;
+        private DateTime _setTime;
 
         [ObservableProperty]
         private int _shopId;

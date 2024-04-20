@@ -4,7 +4,10 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShopProject.UI.Views.Pages.SalesManager"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
+      xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
+       xmlns:ex="clr-namespace:ShopProject.UI.Views.Examples"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d" 
         d:DataContext="{d:DesignInstance local:SMShopPage,
@@ -12,8 +15,13 @@
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
         ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-        d:DesignHeight="700" d:DesignWidth="800"
+        d:DesignHeight="700" d:DesignWidth="1300"
       Title="SMShopPage">
+    <Page.Resources>
+
+        <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
+        <helpers:InverseBoolToVisibilityConverter x:Key="myInverseBoolToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -24,7 +32,27 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
         <ui:TextBlock FontTypography="Title" Text="Магазины" Padding="20,5"/>
+
+        <Grid Margin="20,0,10,0" Grid.Row="0" Grid.Column="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="{Binding ViewModel.SelectedShop.ShopName, Mode=OneWay}"/>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                Text="{Binding ViewModel.SelectedShop.Address, Mode=OneWay}"/>    
+        </Grid>
+
         <Border
             Grid.Row="1"
             Padding="16"
@@ -72,13 +100,14 @@
                         <DataTemplate DataType="{x:Type efdb:Shop}">
                             <Grid Width="300">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     Margin="12,6,0,0"
+                                    FontSize="18"
                                     FontWeight="Bold"
                                     TextWrapping="WrapWithOverflow"
                                     Text="{Binding ShopName, Mode=OneWay}" />
@@ -95,6 +124,7 @@
                 </ui:ListView>
             </Grid>
         </Border>
+
         <Border
             Grid.Row="1"
             Grid.Column="1"
@@ -104,30 +134,90 @@
             BorderThickness="1,1,1,0"
             CornerRadius="8"
             Margin="5,0,10,10">
-            <Grid>
+
+            <Grid Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myVisibilityConverter}}">
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
 
-                        FontWeight="Bold"
-                        Text="{Binding ViewModel.SelectedShop.ShopName, Mode=OneWay}" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
 
-                        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-                        Text="{Binding ViewModel.SelectedShop.Address, Mode=OneWay}" />
-                </Grid>
+
+                <TabControl 
+         
+                    Grid.RowSpan="2">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Margin="0,0,6,0" Symbol="ClipboardTextEdit20" />
+                                <TextBlock Text="Информация" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+                    </TabItem>
+                    <TabItem >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Margin="0,0,6,0" Symbol="ClipboardTextEdit20" />
+                                <TextBlock Text="Планы" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:ListView Grid.Column="0"  ItemsSource="{Binding ViewModel.PlanAtributesCollection}" SelectedItem="{Binding ViewModel.SelectedPlanAtribute}">
+                                <ui:ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Width="200">
+                                            <TextBlock Text="{Binding AtributeName}"/>
+                                        </Grid>
+                                        
+                                    </DataTemplate>
+                                </ui:ListView.ItemTemplate>
+                            </ui:ListView>
+                            <ui:ListView SelectionMode="Single" Grid.Column="1" ItemsSource="{Binding ViewModel.PlansCollection}" SelectedItem="{Binding ViewModel.SelectedPlan}">
+                                <ui:ListView.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type efdb:Shop}">
+                                        <Grid Width="300">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Margin="12,6,0,0"
+                                                FontSize="18"
+                                                FontWeight="Bold"
+                                                TextWrapping="WrapWithOverflow"
+                                                Text="{Binding ShopName, Mode=OneWay}" />
+                                            <TextBlock
+                                                TextWrapping="WrapWithOverflow"
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Margin="12,0,0,6"
+                                                Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                                                Text="{Binding Address, Mode=OneWay}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ui:ListView.ItemTemplate>
+                            </ui:ListView>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Border>
+
+
+        <TextBlock
+
+            Grid.Row="1"
+            Grid.Column="1"
+            FontSize="18"
+            FontWeight="Bold"
+            Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myInverseBoolToVisibilityConverter}}"
+            Text="Выберите магазин" d:Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Grid>
 </Page>

@@ -20,6 +20,8 @@ public partial class ShopProjectDbContext : DbContext
 
     public virtual DbSet<Cashier> Cashiers { get; set; }
 
+    public virtual DbSet<PlanAtribute> PlanAtributes { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductPlan> ProductPlans { get; set; }
@@ -56,6 +58,11 @@ public partial class ShopProjectDbContext : DbContext
             entity.Property(p => p.OperationTime).HasColumnType("timestamp without time zone");
 
            
+        });
+
+        modelBuilder.Entity<ShopPlan>(entity =>
+        {
+            entity.Property(p => p.SetTime).HasColumnType("timestamp without time zone");
         });
 
         modelBuilder.Entity<Shop>(entity =>

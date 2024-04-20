@@ -51,6 +51,7 @@ namespace ShopProject.API.Controllers
         {
             _context.Users.Load();
             _context.Roles.Load();
+            _context.Shops.Load();
             var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
             
             if (user == null) { return BadRequest(); }          
@@ -80,32 +81,51 @@ namespace ShopProject.API.Controllers
         }
 
 
-        [HttpGet("GetShopAverageBill")]
-        public IActionResult GetShopAverageBill(int shopId, string startDate, string endDate)
+        [HttpGet("GetShopStats")]
+        public IActionResult GetShopStats(int shopId, string startDate, string endDate, string interval)
         {
-
+            //Получаю дату начала и конца периода 
             DateTime startDateD = DateTime.Parse(startDate);
             DateTime endDateD = DateTime.Parse(endDate);
+
+            //Вложенный метод замены переменных
             void Swap<T>(ref T a, ref T b)
             {
                 T temp = a;
                 a = b;
                 b = temp;
             }
+
+            //Меняю сортирую от меньшего к большему
             if (startDateD > endDateD)
             {
                 Swap(ref startDateD, ref endDateD);
             }
 
+
+            //Нахожу магазин по ID
             var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
             if(shop == null) { return BadRequest("Shop not found"); }
-            List<ShopAverageBill> averageBillList = [];
+
+            //Список данных
+            List<ShopStats> shopStatsList = GetShopStatsDay(shop, startDateD, endDateD);
+
+
+
+
+            return Json(shopStatsList, _options);
+        }
+
+        private List<ShopStats> GetShopStatsDay(Shop shop, DateTime startDate, DateTime endDate)
+        {
+
+            List<ShopStats> shopStatsList = [];
             var allPurchasesInShop = _context.Purchases
                 .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.OperationTime.Date >= startDateD &&
-                    x.OperationTime.Date <= endDateD);
-            DateTime currentDate = startDateD;
-            while (currentDate <= endDateD)
+                    x.OperationTime.Date >= startDate &&
+                    x.OperationTime.Date <= endDate);
+            DateTime currentDate = startDate;
+            while (currentDate <= endDate)
             {
                 var selectedDay = currentDate;
                 var daysPurchaseProducts = _context.PurchaseProducts
@@ -117,7 +137,7 @@ namespace ShopProject.API.Controllers
 
                 var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
 
-                averageBillList.Add(new ShopAverageBill()
+                shopStatsList.Add(new ShopStats()
                 {
                     AverageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0,
                     PurchasesCount = daysPurchasesCount,
@@ -127,9 +147,16 @@ namespace ShopProject.API.Controllers
                 });
                 currentDate = currentDate.AddDays(1);
             }
+            return shopStatsList;
 
-            return Json(averageBillList, _options);
         }
+
+
+
+
+
+
+
 
         [HttpGet("GetShopsCollection")]
         public IActionResult GetShopsCollection()
@@ -139,40 +166,75 @@ namespace ShopProject.API.Controllers
             return Json(shopCollection, _options);
         }
 
-        [HttpGet("test")]
-        public IActionResult Test()
+
+        [HttpGet("GetPlanAtributesCollection")]
+        public IActionResult GetPlanAtributesCollection(int shopId)
         {
-            var shop = _context.Shops.First();
-            List<ShopAverageBill> averageBillList = new List<ShopAverageBill>();
-            var allPurchasesInShop = _context.Purchases
-                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId && 
-                    x.OperationTime.Date > DateTime.Today.AddDays(-31).Date);
-            for(int i = 0; i <= 30; i++)
-            {
-                var selectedDay = DateTime.Today.AddDays(-i).Date;
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+            var planAtributesCollection = _context.ShopPlans.Where(x => x.ShopId == shopId).Select(x => x.PlanAtribute).GroupBy(x => x.PlanAtributeId);
 
-                var daysPurchasesCount = daysPurchaseProducts.Count();
-
-                var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
-
-                averageBillList.Add(new ShopAverageBill()
-                {
-                    AverageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0,
-                    PurchasesCount = daysPurchasesCount,
-                    AllProfit = daysAllProfit,
-                    ClearProfit = daysClearProfit,
-                    Day = selectedDay
-                });
-            }
-
-            return Json(averageBillList, _options);
+            return Json(planAtributesCollection, _options);
         }
 
 
-        
+        [HttpGet("GetShopInfo")]
+        public IActionResult GetShopInfo(int shopId)
+        {
+            var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
+            if (shop == null)
+                return BadRequest();
+            return Json(shop, _options);
+        }
+
+        [HttpGet("GetPlanAtributes")]
+        public IActionResult GetPlanAtributes(int shopId, int planAtributeId, int count)
+        {
+            //_context.PlanAtributes.Load();
+            var planAtributes = _context.ShopPlans.Where(x => x.ShopId == shopId && x.PlanAtributeId == planAtributeId).Take(count);
+
+            return Json(planAtributes, _options);
+        }
+
+
+        [HttpGet("Test")]
+        public IActionResult Test()
+        {
+            /*
+            var res = new List<PlanAtribute>() 
+            {
+
+                new PlanAtribute()
+                {
+                    AtributeName = "AverageBill"
+                },
+                new PlanAtribute()
+                {
+                    AtributeName = "AllProfit"
+                },
+                new PlanAtribute()
+                {
+                    AtributeName = "ClearProfit"
+                },
+                new PlanAtribute()
+                {
+                    AtributeName = "PurchasesCount"
+                }
+            };
+
+            _context.PlanAtributes.AddRange(res);
+
+            var shop = _context.Shops.First(x => x.ShopId == 16);
+            var plan = new ShopPlan()
+            {
+                Shop = shop,
+                AtributeValue = 595,
+                PlanAtribute = _context.PlanAtributes.First(x => x.AtributeName == "AverageBill"),
+                SetTime = DateTime.Now.AddDays(-10)
+            };
+            _context.ShopPlans.Add(plan);
+            _context.SaveChanges();*/
+            return Ok();
+        }
+
+
     }
 }
