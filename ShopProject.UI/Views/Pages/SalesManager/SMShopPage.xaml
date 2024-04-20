@@ -167,10 +167,13 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <ui:ListView ItemsSource="{Binding ViewModel.PlanAtributesCollection}" SelectedItem="{Binding ViewModel.SelectedPlanAtribute}">
+                            <ui:ListView Grid.Column="0"  ItemsSource="{Binding ViewModel.PlanAtributesCollection}" SelectedItem="{Binding ViewModel.SelectedPlanAtribute}">
                                 <ui:ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding AtributeName}"/>
+                                        <Grid Width="200">
+                                            <TextBlock Text="{Binding AtributeName}"/>
+                                        </Grid>
+                                        
                                     </DataTemplate>
                                 </ui:ListView.ItemTemplate>
                             </ui:ListView>

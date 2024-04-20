@@ -95,9 +95,23 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
         [ObservableProperty]
         private List<PlanAtribute> _planAtributesCollection;
 
-        [ObservableProperty]
+        
         private PlanAtribute? _selectedPlanAtribute;
+        
+        public PlanAtribute? SelectedPlanAtribute
+        {
+            get => _selectedPlanAtribute;
+            set
+            {
+                SetProperty(ref _selectedPlanAtribute, value);
+                GetPlansCollection();
+            }
+        }
 
+        private async void GetPlansCollection()
+        {
+
+        }
 
         [ObservableProperty]
         private List<ShopPlan> _plansCollection;
