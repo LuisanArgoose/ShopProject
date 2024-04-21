@@ -110,7 +110,7 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
 
         private async void GetPlansCollection()
         {
-
+            
         }
 
         [ObservableProperty]

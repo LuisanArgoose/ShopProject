@@ -32,12 +32,12 @@ namespace ShopProject.UI.ViewModels.Examples
             {
                 SetProperty(ref _shopId, value);
                 GetShopInfoCommand.Execute(this);
-                GetShopAverageBillCommand.Execute(this);
+                GetMainShopPlanCommand.Execute(this);
             }
         }
         public ShopVM(int shopId)
         {
-            GetShopAverageBillCommand = new AsyncRelayCommand(GetShopStats);
+            GetMainShopPlanCommand = new AsyncRelayCommand(GetMainShopPlan);
             GetShopInfoCommand = new AsyncRelayCommand(GetShopInfo);
             StartDate = DateTime.Today.AddDays(-15);
             EndDate = DateTime.Today;
@@ -206,7 +206,16 @@ namespace ShopProject.UI.ViewModels.Examples
         }
 
 
-        public IAsyncRelayCommand GetShopAverageBillCommand { get; }
+        public IAsyncRelayCommand GetMainShopPlanCommand { get; }
+
+        [ObservableProperty]
+        private List<PlanAtribute> _planAtributesCollection;
+
+        [ObservableProperty]
+        private PlanAtribute _selectedPlanAtribute;
+
+
+
 
         [ObservableProperty]
         private DateTime _startDate;
@@ -214,10 +223,10 @@ namespace ShopProject.UI.ViewModels.Examples
         [ObservableProperty]
         private DateTime _endDate;
 
-        private async Task GetShopStats()
+        private async Task GetMainShopPlan()
         {
             IsLoading = true;
-            var response = await ClientDbProvider.GetShopStats(ShopId, EndDate, StartDate, SelectedInterval.Name).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetMainShopPlan(ShopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
             if (response.IsSuccessStatusCode == false)
             {
                 AlertPoster.PostErrorAlert("Загрузка плана", "Не удалось получить данные");

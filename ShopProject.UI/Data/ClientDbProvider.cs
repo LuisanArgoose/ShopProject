@@ -30,6 +30,38 @@ namespace ShopProject.UI.Data
             
         }
 
+        private static async Task<HttpResponseMessage> AlertDecorator(string url, string message)
+        {
+            try
+            {
+                using (var client = MyHttpClient())
+                {
+                    
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        AlertPoster.PostSystemSuccessAlert(message);
+                        return response;
+                    }
+                    else
+                    {
+                        
+                        AlertPoster.PostSystemErrorAlert(message, response.StatusCode.ToString());
+                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                        
+                    }
+
+                    
+                };
+            }
+            catch (Exception ex)
+            {
+                
+                AlertPoster.PostSystemErrorAlert(message, ex.Message);
+                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
         public static HttpClient MyHttpClient(bool authorize = true)
         {
             var client = new HttpClient()
@@ -46,245 +78,81 @@ namespace ShopProject.UI.Data
 
         public static async Task<HttpResponseMessage> SingIn(string login, string password)
         {
-
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/SingIn?login=" + login + "&password=" + password;
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Вход в систему");
-                    }
-                    else
-                    {
-                        _token = null;
-                        AlertPoster.PostSystemErrorAlert("Вход в систему", response.StatusCode.ToString());
-                    }
-                        
-                    return response;
-                };
-            }
-            catch (Exception ex)
+            var url = "ServerDb/SingIn?login=" + login + "&password=" + password;
+            var response = await AlertDecorator(url, "Вход в систему");
+            if (!response.IsSuccessStatusCode)
             {
                 _token = null;
-                AlertPoster.PostSystemErrorAlert("Вход в систему", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
             }
+            return response;
+            
 
         }
 
         public static async Task<HttpResponseMessage> TestConnect(string login, string password)
         {
-            try
+            var url = "Auth?login=" + login + "&password=" + password;
+            var response = await AlertDecorator(url, "Подключение к API");
+            if (!response.IsSuccessStatusCode)
             {
-                using (var client = MyHttpClient(false))
-                {
-                    var url = "Auth?login=" + login + "&password=" + password;
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Подключение к API");
-                        var jsonToken = await response.Content.ReadAsStringAsync();
-                        
-                        var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
-                        _token = result.Token;
-                        return response;
-                    }
-                    else
-                    {
-                        AlertPoster.PostSystemErrorAlert("Подключение к API", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                        
-                   
-                };
+                var jsonToken = await response.Content.ReadAsStringAsync();
+
+                var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
+                _token = result.Token;
             }
-            catch (Exception ex)
+            else
             {
-                AlertPoster.PostSystemErrorAlert("Подключение к API", ex.Message);
-                _token = "Bad";
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
+                _token = null;
             }
-
-
-
+            return response;
+           
         }
         public static async Task<HttpResponseMessage> InitDb()
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/InitializeDataBase";
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Создание стартовых данных");
-                        return response;
-                    }
-                    else
-                    {
-                        AlertPoster.PostSystemErrorAlert("Создание стартовых данных", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                        
-                    
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Создание стартовых данных", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
+            var url = "ServerDb/InitializeDataBase";
+            var response = await AlertDecorator(url, "Создание стартовых данных");
+            return response;
         }
 
         public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Создание тестовых данных");
-                        return response;
-                    }
-                    else
-                    {
-                        AlertPoster.PostSystemErrorAlert("Создание тестовых данных", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                        
-                   
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Создание тестовых данных", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
+            var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
+            var response = await AlertDecorator(url, "Создание тестовых данных");
+            return response;
         }
-        public static async Task<HttpResponseMessage> GetShopStats(int shopId, DateTime startDate, DateTime endDate, string interval)
+
+        public static async Task<HttpResponseMessage> GetMainShopPlan(int shopId, DateTime startDate, DateTime endDate)
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/GetShopStats?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy") 
-                        + "&endDate=" + endDate.ToString("MM.dd.yyyy") + "&interval=" + interval;
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Получение графика магазина");
-                        return response;
-                    }
-                    else
-                    {
-                        AlertPoster.PostSystemErrorAlert("Получение графика магазина", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                        
-                    
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Получение графика магазина", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
+            var url = "ServerDb/GetMainShopPlan?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy")
+                        + "&endDate=" + endDate.ToString("MM.dd.yyyy");
+            var response = await AlertDecorator(url, "Получение общего плана");
+            return response;
+           
         }
+
 
         public static async Task<HttpResponseMessage> GetShopInfo(int shopId)
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-                    var url = "ServerDb/GetShopInfo?shopId=" + shopId;
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Получение данных магазина");
-                        return response;
-                    }
-                    else
-                    {
-                        AlertPoster.PostSystemErrorAlert("Получение данных магазина", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                        
-                    
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Получение данных магазина", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
+            var url = "ServerDb/GetShopInfo?shopId=" + shopId;
+            var response = await AlertDecorator(url, "Получение данных магазина");
+            return response;
+            
         }
 
         public static async Task<HttpResponseMessage> GetShopsCollection()
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
+            var url = "ServerDb/GetShopsCollection";
+            var response = await AlertDecorator(url, "Получение списка магазинов");
+            return response;
 
-                    var url = "ServerDb/GetShopsCollection";
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Получение списка магазинов");
-                        return response;
-                    }
-                    else
-                    {
-
-                        AlertPoster.PostSystemErrorAlert("Получение списка магазинов", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-                    
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Получение списка магазинов", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
         }
 
         public static async Task<HttpResponseMessage> GetPlanAtributesCollection(int shopId)
         {
-            try
-            {
-                using (var client = MyHttpClient())
-                {
-
-                    var url = "ServerDb/GetPlanAtributesCollection?shopId=" + shopId;
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        AlertPoster.PostSystemSuccessAlert("Получение списка вида планов");
-                        return response;
-                    }
-                    else
-                    {
-
-                        AlertPoster.PostSystemErrorAlert("Получение списка вида планов", response.StatusCode.ToString());
-                        return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-                    }
-
-                };
-            }
-            catch (Exception ex)
-            {
-                AlertPoster.PostSystemErrorAlert("Получение списка вида планов", ex.Message);
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
-            }
+            var url = "ServerDb/GetPlanAtributesCollection?shopId=" + shopId;
+            var response = await AlertDecorator(url, "Получение списка вида планов");
+            return response;
+            
         }
 
 

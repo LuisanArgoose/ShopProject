@@ -7,6 +7,7 @@
              xmlns:ex="clr-namespace:ShopProject.UI.ViewModels.Examples"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
+             xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
              xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance ex:ShopVM}"
@@ -44,23 +45,46 @@
                             SelectedDate="{Binding EndDate}" Grid.Row="2"
                             x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                         <StackPanel Grid.Row="3">
-                            <ui:Button  Command="{Binding GetShopAverageBillCommand}" 
-                                 Appearance="Info" Content="Обновить данные" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
+                            <ui:Button  Command="{Binding GetMainShopPlanCommand}" 
+                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
                             <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
                         </StackPanel>
 
                     </StackPanel>
+        <StackPanel Grid.Row="1">
 
 
-                    <ItemsControl Grid.Row="2" Margin="0,10,0,0">
+            <ui:ListView SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection}" SelectedItem="{Binding SelectedPlanAtribute}">
+                <ui:ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
+                        <Grid Width="300">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,6,0,0"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        TextWrapping="WrapWithOverflow"
+                        Text="{Binding AtributeName, Mode=OneWay}" />
+                        </Grid>
+                    </DataTemplate>
+                </ui:ListView.ItemTemplate>
+            </ui:ListView>
+        </StackPanel>
+
+        <!--<ItemsControl Grid.Row="2" Margin="0,10,0,0">
                         <RadioButton IsChecked="{Binding IsAll}" Content="Общая сводка" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
                         <RadioButton IsChecked="{Binding IsAverageBill}" GroupName="Data" Content="Средний чек" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
                         <RadioButton IsChecked="{Binding IsAllProfit}" Content="Общая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
                         <RadioButton IsChecked="{Binding IsClearProfit}" Content="Чистая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
                         <RadioButton IsChecked="{Binding IsPurchasesCount}" Content="Количество покупок" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                    </ItemsControl>
+                    </ItemsControl>-->
                     <lvc:CartesianChart 
-                                
+                                ZoomMode="X"
                                 x:Name="ShopChart"
                                 Grid.Column="1"
                                 Grid.RowSpan="2"

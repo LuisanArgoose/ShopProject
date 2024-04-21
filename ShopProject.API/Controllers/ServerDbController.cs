@@ -37,14 +37,9 @@ namespace ShopProject.API.Controllers
         {
             _context = context;
 
-            LoadAll();
             
         }
 
-        private void LoadAll()
-        {
-
-        }
 
         [HttpGet("SingIn")]
         public IActionResult SingIn(string login, string password)
@@ -81,8 +76,8 @@ namespace ShopProject.API.Controllers
         }
 
 
-        [HttpGet("GetShopStats")]
-        public IActionResult GetShopStats(int shopId, string startDate, string endDate, string interval)
+        [HttpGet("GetMainShopPlan")]
+        public IActionResult GetMainShopPlan(int shopId, string startDate, string endDate)
         {
             //Получаю дату начала и конца периода 
             DateTime startDateD = DateTime.Parse(startDate);
@@ -108,7 +103,7 @@ namespace ShopProject.API.Controllers
             if(shop == null) { return BadRequest("Shop not found"); }
 
             //Список данных
-            List<ShopStats> shopStatsList = GetShopStatsDay(shop, startDateD, endDateD);
+            List<ShopStats> shopStatsList = Test(shop, startDateD, endDateD); // GetShopStatsDay(shop, startDateD, endDateD);
 
 
 
@@ -196,7 +191,7 @@ namespace ShopProject.API.Controllers
 
 
         [HttpGet("Test")]
-        public IActionResult Test()
+        public List<ShopStats> Test(Shop shop, DateTime startDate, DateTime endDate)
         {
             /*
             var res = new List<PlanAtribute>() 
@@ -232,7 +227,64 @@ namespace ShopProject.API.Controllers
             };
             _context.ShopPlans.Add(plan);
             _context.SaveChanges();*/
-            return Ok();
+
+            //var shop = _context.Shops.First();
+            //DateTime startDate = DateTime.Parse("04.01.2024");
+            //DateTime endDate = DateTime.Parse("04.20.2024");
+            List<ShopStats> shopStatsList = [];
+            var allPurchasesInShop = _context.Purchases
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.OperationTime.Date >= startDate &&
+                    x.OperationTime.Date <= endDate);
+            DateTime currentDate = startDate;
+            while (currentDate <= endDate)
+            {
+                var selectedDay = currentDate;
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
+
+                var averageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0;
+
+                decimal? GetPlanAtributeValue(string atribute)
+                {
+                    var result = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == currentDate.Date && x.PlanAtribute.AtributeName == atribute);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date < currentDate.Date && x.PlanAtribute.AtributeName == atribute);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date > currentDate.Date && x.PlanAtribute.AtributeName == atribute);
+
+                    return result?.AtributeValue;
+
+                }
+
+                var averageBillAtributeValue = GetPlanAtributeValue("AverageBill");
+                var averageBillPercent = averageBillAtributeValue != null ? averageBill * 100 / averageBillAtributeValue : 0;
+
+                var daysPurchasesCountAtributeValue = GetPlanAtributeValue("PurchasesCount");
+                var daysPurchasesCountPercent = daysPurchasesCountAtributeValue != null ? daysPurchasesCount * 100 / daysPurchasesCountAtributeValue : 0;
+
+                var daysAllProfitAtributeValue = GetPlanAtributeValue("AllProfit");
+                var daysAllProfitPercent = daysAllProfitAtributeValue != null ? daysAllProfit * 100 / daysAllProfitAtributeValue : 0;
+
+                var clearProfitAtributeValue = GetPlanAtributeValue("ClearProfit");
+                var daysClearProfitPercent = clearProfitAtributeValue != null ? daysClearProfit * 100 / clearProfitAtributeValue : 0;
+
+
+                shopStatsList.Add(new ShopStats()
+                {
+                    AverageBill = (decimal)averageBillPercent,
+                    PurchasesCount = (int)daysPurchasesCountPercent,
+                    AllProfit = (decimal)daysAllProfitPercent,
+                    ClearProfit = (decimal)daysClearProfitPercent,
+                    Day = selectedDay
+                });
+                currentDate = currentDate.AddDays(1);
+            }
+            return shopStatsList;
         }
 
 
