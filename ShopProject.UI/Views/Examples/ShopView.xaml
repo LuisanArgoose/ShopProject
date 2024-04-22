@@ -14,67 +14,86 @@
              
              d:DesignHeight="700" d:DesignWidth="800">
 
+    
+    <Grid Margin="10">
 
-                <Grid Margin="10">
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-
-
-                    <StackPanel>
-                        <ui:TextBlock Text="Единица данных" Visibility="Collapsed"/>
-
-                        <ComboBox Visibility="Collapsed" ItemsSource="{Binding Intervals}" SelectedItem="{Binding SelectedInterval}" SelectedIndex="0"  Margin="0,5,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
 
-                        </ComboBox>
-                        <TextBlock Text="Временной интервал" Margin="0,5,0,0"/>
-                        <DatePicker 
-                            Margin="0,5,0,0"
-                            SelectedDate="{Binding StartDate}"  Grid.Row="1" 
-                            x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FirstDayOfWeek="Monday" Text="fds" />
-                        <DatePicker 
-                            Margin="0,5,0,0"
-                            SelectedDate="{Binding EndDate}" Grid.Row="2"
-                            x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <StackPanel Grid.Row="3">
-                            <ui:Button  Command="{Binding GetMainShopPlanCommand}" 
-                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
-                            <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
-                        </StackPanel>
 
-                    </StackPanel>
-        <StackPanel Grid.Row="1">
+        <StackPanel>
+            <ui:TextBlock Text="Единица данных" Visibility="Collapsed"/>
+
+            <ComboBox Visibility="Collapsed" ItemsSource="{Binding Intervals}" SelectedItem="{Binding SelectedInterval}" SelectedIndex="0"  Margin="0,5,0,0">
 
 
-            <ui:ListView SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection}" SelectedItem="{Binding SelectedPlanAtribute}">
-                <ui:ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
-                        <Grid Width="300">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="12,6,0,0"
-                        FontSize="18"
-                        FontWeight="Bold"
-                        TextWrapping="WrapWithOverflow"
-                        Text="{Binding AtributeName, Mode=OneWay}" />
-                        </Grid>
-                    </DataTemplate>
-                </ui:ListView.ItemTemplate>
-            </ui:ListView>
+            </ComboBox>
+            <ui:TextBlock Text="Временной интервал" Margin="0,5,0,0" FontTypography="Subtitle" />
+            <DatePicker 
+                        Margin="0,5,0,0"
+                        SelectedDate="{Binding StartDate}"  Grid.Row="1" 
+                        x:Name="StartDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FirstDayOfWeek="Monday" Text="fds" />
+            <DatePicker 
+                        Margin="0,5,0,0"
+                        SelectedDate="{Binding EndDate}" Grid.Row="2"
+                        x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <StackPanel Grid.Row="3">
+                <ui:Button  Command="{Binding GetMainShopPlanCommand}" 
+                                Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
+                <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
+            </StackPanel>
+  
         </StackPanel>
+        <TabControl Grid.Row="1">
+            <TabItem>
+                <TabItem.Header>
+                    <Grid MinWidth="186">
+                        <ui:TextBlock Text="Атрибуты" HorizontalAlignment="Center"/>
+                    </Grid>
+                 
+                </TabItem.Header>
+                
+            
+                <Grid>
+
+                    <ui:ListView   SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection}" SelectedItem="{Binding SelectedPlanAtribute}">
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Margin="12,6,0,0"
+                                        FontSize="18"
+                                        FontWeight="Bold"
+                                        TextWrapping="WrapWithOverflow"
+                                        Text="{Binding AtributeName, Mode=OneWay}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>
+
+                </Grid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Grid MinWidth="186">
+                        <ui:TextBlock Text="Планы" HorizontalAlignment="Center"/>
+                    </Grid>
+                </TabItem.Header>
+            </TabItem>
+        </TabControl>
 
         <!--<ItemsControl Grid.Row="2" Margin="0,10,0,0">
                         <RadioButton IsChecked="{Binding IsAll}" Content="Общая сводка" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />

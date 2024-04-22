@@ -13,6 +13,8 @@ namespace ShopProject.EFDB.Models
 
         [ObservableProperty]
         private string _atributeName = null!;
+        [ObservableProperty]
+        private string _atributeViewName = null!;
 
         [ObservableProperty]
         private ICollection<ShopPlan> _shopPlans = new List<ShopPlan>();

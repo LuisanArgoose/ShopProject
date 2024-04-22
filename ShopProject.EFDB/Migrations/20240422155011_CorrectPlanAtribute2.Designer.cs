@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShopProject.EFDB.Models;
@@ -11,9 +12,11 @@ using ShopProject.EFDB.Models;
 namespace ShopProject.EFDB.Migrations
 {
     [DbContext(typeof(ShopProjectDbContext))]
-    partial class ShopProjectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240422155011_CorrectPlanAtribute2")]
+    partial class CorrectPlanAtribute2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

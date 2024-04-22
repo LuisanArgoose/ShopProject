@@ -414,6 +414,31 @@ namespace ShopProject.API.Data
                 Login = "TokenKey",
                 Password = "TokenPass"
             };
+            var planAtributes = new List<PlanAtribute>()
+            {
+                new PlanAtribute()
+                {
+                    AtributeName = "AverageBill",
+                    AtributeViewName = "Средний чек"
+                },
+                new PlanAtribute()
+                {
+                    AtributeName = "AllProfit",
+                    AtributeViewName = "Общая прибыль"
+                },
+                new PlanAtribute()
+                {
+                    AtributeName = "ClearProfit",
+                    AtributeViewName = "Чистая прибыль"
+                },
+                new PlanAtribute()
+                {
+
+                    AtributeName = "PurchasesCount",
+                    AtributeViewName = "Количество покупок"
+                }
+            };
+            
 
             context.AddRange(cashiers);
             context.AddRange(shops);
