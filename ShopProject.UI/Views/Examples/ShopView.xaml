@@ -57,10 +57,10 @@
                     <Grid MinWidth="186">
                         <ui:TextBlock Text="Атрибуты" HorizontalAlignment="Center"/>
                     </Grid>
-                 
+
                 </TabItem.Header>
-                
-            
+
+
                 <Grid>
 
                     <ui:ListView   SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection}" SelectedItem="{Binding SelectedPlanAtribute}">
@@ -94,26 +94,18 @@
                 </TabItem.Header>
             </TabItem>
         </TabControl>
+        <lvc:CartesianChart 
+            ZoomMode="X"
+            x:Name="ShopChart"
+            Grid.Column="1"
+            Grid.RowSpan="2"
+            Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+            YAxes="{Binding YAxes}"
+            Series="{Binding Series}"
+            XAxes="{Binding XAxes}"
+            LegendPosition="Right">
+        </lvc:CartesianChart>
 
-        <!--<ItemsControl Grid.Row="2" Margin="0,10,0,0">
-                        <RadioButton IsChecked="{Binding IsAll}" Content="Общая сводка" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                        <RadioButton IsChecked="{Binding IsAverageBill}" GroupName="Data" Content="Средний чек" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
-                        <RadioButton IsChecked="{Binding IsAllProfit}" Content="Общая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                        <RadioButton IsChecked="{Binding IsClearProfit}" Content="Чистая прибыль" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                        <RadioButton IsChecked="{Binding IsPurchasesCount}" Content="Количество покупок" GroupName="Data" HorizontalAlignment="Stretch" Margin="0,5,0,0" />
-                    </ItemsControl>-->
-                    <lvc:CartesianChart 
-                                ZoomMode="X"
-                                x:Name="ShopChart"
-                                Grid.Column="1"
-                                Grid.RowSpan="2"
-                                Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                YAxes="{Binding YAxes}"
-                                Series="{Binding Series}"
-                                XAxes="{Binding XAxes}"
-                                LegendPosition="Right">
-                    </lvc:CartesianChart>
-
-                </Grid>
+    </Grid>
 
 </UserControl>
