@@ -14,7 +14,7 @@
              
              d:DesignHeight="700" d:DesignWidth="800">
 
-    
+
     <Grid Margin="10">
 
         <Grid.ColumnDefinitions>
@@ -49,7 +49,7 @@
                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
                 <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
             </StackPanel>
-  
+
         </StackPanel>
         <TabControl Grid.Row="1">
             <TabItem>
@@ -62,8 +62,12 @@
 
 
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="13*"/>
+                        <ColumnDefinition Width="7*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <ui:ListView   SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection}" SelectedItem="{Binding SelectedPlanAtribute}">
+                    <ui:ListView   SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}" Grid.ColumnSpan="2">
                         <ui:ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
                                 <Grid>
@@ -100,8 +104,9 @@
             Grid.Column="1"
             Grid.RowSpan="2"
             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+            Sections ="{Binding Sections}"
             YAxes="{Binding YAxes}"
-            Series="{Binding Series}"
+            Series="{Binding Series, UpdateSourceTrigger=PropertyChanged}"
             XAxes="{Binding XAxes}"
             LegendPosition="Right">
         </lvc:CartesianChart>

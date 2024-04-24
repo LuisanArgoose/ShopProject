@@ -145,20 +145,20 @@ namespace ShopProject.API.Controllers
                 }
 
                 var averageBillAtributeValue = GetPlanAtributeValue("AverageBill");
-                var averageBillPercent = averageBillAtributeValue != null ? averageBill * 100 / averageBillAtributeValue : null;
+                var averageBillPercent = averageBillAtributeValue != null ? (decimal?)Math.Round((decimal)(averageBill * 100 / averageBillAtributeValue), 2, MidpointRounding.AwayFromZero): null;
 
                 var daysPurchasesCountAtributeValue = GetPlanAtributeValue("PurchasesCount");
-                var daysPurchasesCountPercent = daysPurchasesCountAtributeValue != null ? daysPurchasesCount * 100 / daysPurchasesCountAtributeValue : null;
+                var daysPurchasesCountPercent = daysPurchasesCountAtributeValue != null ? (decimal?)Math.Round((decimal)(daysPurchasesCount * 100 / daysPurchasesCountAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
 
                 var daysAllProfitAtributeValue = GetPlanAtributeValue("AllProfit");
-                var daysAllProfitPercent = daysAllProfitAtributeValue != null ? daysAllProfit * 100 / daysAllProfitAtributeValue : null;
+                var daysAllProfitPercent = daysAllProfitAtributeValue != null ? (decimal?)Math.Round((decimal)(daysAllProfit * 100 / daysAllProfitAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
 
                 var clearProfitAtributeValue = GetPlanAtributeValue("ClearProfit");
-                var daysClearProfitPercent = clearProfitAtributeValue != null ? daysClearProfit * 100 / clearProfitAtributeValue : null;
+                var daysClearProfitPercent = clearProfitAtributeValue != null ? (decimal?)Math.Round((decimal)(daysClearProfit * 100 / clearProfitAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
 
                 shopStatsData.Day.Add(selectedDay);
                 shopStatsData.AverageBill.Add((decimal?)averageBillPercent);
-                shopStatsData.PurchasesCount.Add((int?)daysPurchasesCountPercent);
+                shopStatsData.PurchasesCount.Add((decimal?)daysPurchasesCountPercent);
                 shopStatsData.AllProfit.Add((decimal?)daysAllProfitPercent);
                 shopStatsData.ClearProfit.Add((decimal?)daysClearProfitPercent);
 
@@ -184,9 +184,9 @@ namespace ShopProject.API.Controllers
 
 
         [HttpGet("GetPlanAtributesCollection")]
-        public IActionResult GetPlanAtributesCollection(int shopId)
+        public IActionResult GetPlanAtributesCollection()
         {
-            var planAtributesCollection = _context.ShopPlans.Where(x => x.ShopId == shopId).Select(x => x.PlanAtribute).GroupBy(x => x.PlanAtributeId);
+            var planAtributesCollection = _context.PlanAtributes;
 
             return Json(planAtributesCollection, _options);
         }
@@ -201,14 +201,6 @@ namespace ShopProject.API.Controllers
             return Json(shop, _options);
         }
 
-        [HttpGet("GetPlanAtributes")]
-        public IActionResult GetPlanAtributes(int shopId, int planAtributeId, int count)
-        {
-            //_context.PlanAtributes.Load();
-            var planAtributes = _context.ShopPlans.Where(x => x.ShopId == shopId && x.PlanAtributeId == planAtributeId).Take(count);
-
-            return Json(planAtributes, _options);
-        }
 
 
         [HttpGet("Test")]

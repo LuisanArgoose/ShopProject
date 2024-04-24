@@ -13,6 +13,8 @@ using ShopProject.UI.Models.Examples;
 using System.Collections;
 using ShopProject.UI.AuxiliarySystems;
 using ShopProject.EFDB.Models;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using System.Xml.Serialization;
 
 
 namespace ShopProject.UI.ViewModels.Examples
@@ -96,41 +98,72 @@ namespace ShopProject.UI.ViewModels.Examples
             {
                 ShopStatsData = result;
                 SetChartLabels(ShopStatsData.Day.Select(x => x.ToString("dd.MM.yyyy")).ToList());
-                SetChartCollection(new List<ISeries>(){
-                    new ColumnSeries<decimal>
+                var daysCount = EndDate - StartDate;
+                var series = new List<ISeries>();
+
+                if (ShopStatsData.AverageBill.All(x => x != null))
+                {
+                    series.Add(new ColumnSeries<decimal?>
                     {
+                        Fill = new SolidColorPaint
+                        {
+                            
+                            Color = SKColors.DeepSkyBlue,
+                        },
                         Name = "Среднее значение заказа",
-                        Values = (IEnumerable<decimal>)ShopStatsData.AverageBill,
-                    },
-                    new ColumnSeries<decimal>
+                        Values = ShopStatsData.AverageBill,
+                    });
+                }
+                if (ShopStatsData.AllProfit.All(x => x != null))
+                {
+                    series.Add(new ColumnSeries<decimal?>
                     {
+                        Fill = new SolidColorPaint
+                        {
+                            Color = SKColors.DarkOrange,
+                        },
                         Name = "Общий доход",
-                        Values = (IEnumerable<decimal>)ShopStatsData.AllProfit,
-                    },
-                    new ColumnSeries<decimal>
+                        Values = ShopStatsData.AllProfit,
+                    });
+                }
+                if (ShopStatsData.ClearProfit.All(x => x != null))
+                {
+                    series.Add(new ColumnSeries<decimal?>
                     {
+                        Fill = new SolidColorPaint
+                        {
+                            Color = SKColors.Indigo,
+                        },
                         Name = "Чистая прибыль",
-                        Values = (IEnumerable<decimal>)ShopStatsData.ClearProfit,
-                    },
-                    new ColumnSeries<decimal>
+                        Values = ShopStatsData.ClearProfit,
+                    });
+                }
+                if (ShopStatsData.PurchasesCount.All(x => x != null))
+                {
+                    series.Add(new ColumnSeries<decimal?>
                     {
+                        Fill = new SolidColorPaint
+                        {
+                            Color = SKColors.Salmon,
+                        },
                         Name = "Количество транзакций",
-                        Values = (IEnumerable<decimal>)ShopStatsData.PurchasesCount,
-                    },
-                });
+                        Values = ShopStatsData.PurchasesCount,
+                    });
+                }
+
+                SetChartCollection(series);
 
             }                
-            GetPlanAtributesCollection();
+            //GetPlanAtributesCollection();
             IsLoading = false;
             return;
         }
-
         [ObservableProperty]
         private List<PlanAtribute> _planAtributesCollection;
         private async void GetPlanAtributesCollection()
         {
             IsLoading = true;
-            var response = await ClientDbProvider.GetPlanAtributesCollection(ShopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetPlanAtributesCollection().WaitAsync(CancellationToken.None);
             var result = await AlertDeserializer.Deserialize<List<PlanAtribute>>(response, "Загрузка коллекции атрибутов").WaitAsync(CancellationToken.None);
             if (result != null)
             {
@@ -140,11 +173,25 @@ namespace ShopProject.UI.ViewModels.Examples
             IsLoading = false;
             return;
         }
+        public List<RectangularSection> Sections { get; set; } = new()
+        {
+            new RectangularSection
+            {
+                Label = "План",
+                ZIndex = 10,
+                Yi = 100,
+                Yj = 100,
+                Stroke = new SolidColorPaint
+                {
+                    Color = SKColors.Red,
+                    StrokeThickness = 3,
+                    PathEffect = new DashEffect(new float[] { 6, 6 })
+                }
+            },
+        };
 
-        
 
 
-        
         private PlanAtribute _selectedPlanAtribute;
 
         public PlanAtribute SelectedPlanAtribute
@@ -223,15 +270,15 @@ namespace ShopProject.UI.ViewModels.Examples
 
         private void SetChartCollection(ISeries seriesCollection)
         {
-            Series.Clear();
-            Series.Add(seriesCollection);
-            OnPropertyChanged(nameof(Series));
+            Series = new()
+            {
+                seriesCollection
+            };
         }
         private void SetChartCollection(List<ISeries> seriesCollection)
         {
-            Series.Clear();
-            Series.AddRange(seriesCollection);
-            OnPropertyChanged(nameof(Series));
+            Series = new(seriesCollection);
+
         }
 
         private List<Axis> _XAxes = new()

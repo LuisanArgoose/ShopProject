@@ -147,19 +147,22 @@ namespace ShopProject.UI.Data
 
         }
 
-        public static async Task<HttpResponseMessage> GetPlanAtributesCollection(int shopId, DateTime endDate, DateTime startDate)
+        // Получение списка доступных атрибутов
+        public static async Task<HttpResponseMessage> GetPlanAtributesCollection()
         {
-            var url = "ServerDb/GetPlanAtributesCollection?shopId=" + shopId;
-            var response = await AlertDecorator(url, "Получение списка вида планов");
+            var url = "ServerDb/GetPlanAtributesCollection";
+            var response = await AlertDecorator(url, "Получение списка доступных атрибутов");
             return response;
             
         }
 
+        // Получение списка планов выбранного атрибута
         public static async Task<HttpResponseMessage> GetAtributedShopPlansCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
         {
             throw new NotImplementedException();
         }
 
+        // Получение списка данных выбранного атрибута
         public static async Task<HttpResponseMessage> GetAtributeObjectsCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
         {
             throw new NotImplementedException();
