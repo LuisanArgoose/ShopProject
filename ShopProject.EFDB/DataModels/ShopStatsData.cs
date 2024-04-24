@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.DataModels
 {
-    public partial class ShopStats : ObservableObject
+    public partial class ShopStatsData : ObservableObject
     {
         [ObservableProperty]
-        private DateTime _day;
+        private List<DateTime> _day = new();
         [ObservableProperty]
-        private decimal _averageBill;
+        private List<decimal?> _averageBill = new();
         [ObservableProperty]
-        private decimal _allProfit;
+        private List<decimal?> _allProfit = new();
         [ObservableProperty]
-        private decimal _clearProfit;
+        private List<decimal?> _clearProfit = new();
         [ObservableProperty]
-        private int _purchasesCount;
+        private List<int?> _purchasesCount = new();
     }
 }

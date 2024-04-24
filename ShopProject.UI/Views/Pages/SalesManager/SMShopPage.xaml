@@ -141,72 +141,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
+                <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
 
-
-                <TabControl 
-         
-                    Grid.RowSpan="2">
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Margin="0,0,6,0" Symbol="ClipboardTextEdit20" />
-                                <TextBlock Text="Информация" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
-                    </TabItem>
-                    <TabItem >
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Margin="0,0,6,0" Symbol="ClipboardTextEdit20" />
-                                <TextBlock Text="Планы" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <Grid Margin="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:ListView Grid.Column="0"  ItemsSource="{Binding ViewModel.PlanAtributesCollection}" SelectedItem="{Binding ViewModel.SelectedPlanAtribute}">
-                                <ui:ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Width="200">
-                                            <TextBlock Text="{Binding AtributeName}"/>
-                                        </Grid>
-                                        
-                                    </DataTemplate>
-                                </ui:ListView.ItemTemplate>
-                            </ui:ListView>
-                            <ui:ListView SelectionMode="Single" Grid.Column="1" ItemsSource="{Binding ViewModel.PlansCollection}" SelectedItem="{Binding ViewModel.SelectedPlan}">
-                                <ui:ListView.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type efdb:Shop}">
-                                        <Grid Width="300">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock
-                                                Grid.Row="0"
-                                                Grid.Column="1"
-                                                Margin="12,6,0,0"
-                                                FontSize="18"
-                                                FontWeight="Bold"
-                                                TextWrapping="WrapWithOverflow"
-                                                Text="{Binding ShopName, Mode=OneWay}" />
-                                            <TextBlock
-                                                TextWrapping="WrapWithOverflow"
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Margin="12,0,0,6"
-                                                Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-                                                Text="{Binding Address, Mode=OneWay}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ui:ListView.ItemTemplate>
-                            </ui:ListView>
-                        </Grid>
-                    </TabItem>
-                </TabControl>
             </Grid>
         </Border>
 
