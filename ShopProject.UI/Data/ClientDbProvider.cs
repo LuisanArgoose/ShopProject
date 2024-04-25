@@ -159,13 +159,13 @@ namespace ShopProject.UI.Data
         // Получение списка планов выбранного атрибута
         public static async Task<HttpResponseMessage> GetAtributedShopPlansCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
         {
-            throw new NotImplementedException();
+            return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway);
         }
 
         // Получение списка данных выбранного атрибута
         public static async Task<HttpResponseMessage> GetAtributeObjectsCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
         {
-            throw new NotImplementedException();
+            return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway);
         }
     }
 }

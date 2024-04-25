@@ -76,13 +76,8 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        Margin="12,6,0,0"
-                                        FontSize="18"
-                                        FontWeight="Bold"
-                                        TextWrapping="WrapWithOverflow"
-                                        Text="{Binding AtributeName, Mode=OneWay}" />
+                                        Margin="6,3"
+                                        Text="{Binding AtributeViewName, Mode=OneWay}" />
                                 </Grid>
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>

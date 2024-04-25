@@ -57,12 +57,34 @@ namespace ShopProject.UI.ViewModels.Examples
         }
 
 
-        [ObservableProperty]
         private DateTime _startDate = DateTime.Today.AddDays(-15);
+        public DateTime StartDate
+        {
+            get => _startDate;
+            set
+            {
+                SetProperty(ref _startDate, value);
+                OnSetDates();
+            }
+        }
 
-        [ObservableProperty]
         private DateTime _endDate = DateTime.Today;
 
+        public DateTime EndDate
+        {
+            get => _endDate;
+            set
+            {
+                SetProperty(ref _endDate, value);
+                OnSetDates();
+            }
+        }
+
+
+        private async void OnSetDates()
+        {
+            await GetMainShopPlanCommand.ExecuteAsync(this);
+        }
         [ObservableProperty]
         private bool _isLoading;
 
@@ -105,11 +127,13 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
                     series.Add(new ColumnSeries<decimal?>
                     {
+                        ZIndex = 1,
                         Fill = new SolidColorPaint
                         {
                             
                             Color = SKColors.DeepSkyBlue,
                         },
+                        YToolTipLabelFormatter = point => $"{point.Model}%",
                         Name = "Среднее значение заказа",
                         Values = ShopStatsData.AverageBill,
                     });
@@ -118,10 +142,12 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
                     series.Add(new ColumnSeries<decimal?>
                     {
+                        ZIndex = 1,
                         Fill = new SolidColorPaint
                         {
                             Color = SKColors.DarkOrange,
                         },
+                        YToolTipLabelFormatter = point => $"{point.Model}%",
                         Name = "Общий доход",
                         Values = ShopStatsData.AllProfit,
                     });
@@ -130,10 +156,12 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
                     series.Add(new ColumnSeries<decimal?>
                     {
+                        ZIndex = 1,
                         Fill = new SolidColorPaint
                         {
                             Color = SKColors.Indigo,
                         },
+                        YToolTipLabelFormatter = point => $"{point.Model}%",
                         Name = "Чистая прибыль",
                         Values = ShopStatsData.ClearProfit,
                     });
@@ -142,10 +170,12 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
                     series.Add(new ColumnSeries<decimal?>
                     {
+                        ZIndex = 1,
                         Fill = new SolidColorPaint
                         {
                             Color = SKColors.Salmon,
                         },
+                        YToolTipLabelFormatter = point => $"{point.Model}%",
                         Name = "Количество транзакций",
                         Values = ShopStatsData.PurchasesCount,
                     });
@@ -154,7 +184,7 @@ namespace ShopProject.UI.ViewModels.Examples
                 SetChartCollection(series);
 
             }                
-            //GetPlanAtributesCollection();
+            GetPlanAtributesCollection();
             IsLoading = false;
             return;
         }
@@ -223,6 +253,7 @@ namespace ShopProject.UI.ViewModels.Examples
                 SetChartLabels(AtributeObjectsCollection.Select(x => x.Day.ToString("dd.MM.yyyy")).ToList());
                 SetChartCollection(new ColumnSeries<decimal>
                 {
+                    ZIndex = 0,
                     Name = planAtribute.AtributeViewName,
                     Values = AtributeObjectsCollection.Select(x => x.ArtibuteValue),
                     
@@ -255,6 +286,7 @@ namespace ShopProject.UI.ViewModels.Examples
             {
                 new Axis()
                 {
+                     Labeler = (value) => value.ToString() + "%",
                      LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
                      SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
                      MinLimit = 0
@@ -277,6 +309,8 @@ namespace ShopProject.UI.ViewModels.Examples
         }
         private void SetChartCollection(List<ISeries> seriesCollection)
         {
+
+
             Series = new(seriesCollection);
 
         }
