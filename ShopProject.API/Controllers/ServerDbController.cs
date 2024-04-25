@@ -74,14 +74,8 @@ namespace ShopProject.API.Controllers
             
             return Ok();
         }
-
-
-        [HttpGet("GetMainShopPlan")]
-        public IActionResult GetMainShopPlan(int shopId, string startDate, string endDate)
+        private void TrueData(ref DateTime startDateD, ref DateTime endDateD)
         {
-            //Получаю дату начала и конца периода 
-            DateTime startDateD = DateTime.Parse(startDate);
-            DateTime endDateD = DateTime.Parse(endDate);
 
             //Вложенный метод замены переменных
             void Swap<T>(ref T a, ref T b)
@@ -96,6 +90,18 @@ namespace ShopProject.API.Controllers
             {
                 Swap(ref startDateD, ref endDateD);
             }
+        }
+
+        [HttpGet("GetMainShopPlan")]
+        public IActionResult GetMainShopPlan(int shopId, string startDate, string endDate)
+        {
+            //Получаю дату начала и конца периода 
+            DateTime startDateD = DateTime.Parse(startDate);
+            DateTime endDateD = DateTime.Parse(endDate);
+
+
+            // Установка соответствующ
+            TrueData(ref startDateD, ref endDateD);
 
 
             //Нахожу магазин по ID
@@ -201,7 +207,207 @@ namespace ShopProject.API.Controllers
             return Json(shop, _options);
         }
 
+        [HttpGet("GetAtributedShopPlansCollection")]
+        public IActionResult GetAtributedShopPlansCollection(int shopId, int planAtributeId, string startDate, string endDate )
+        {
+            //Получаю дату начала и конца периода 
+            DateTime startDateD = DateTime.Parse(startDate);
+            DateTime endDateD = DateTime.Parse(endDate);
 
+            // Установка соответствующих дат
+            TrueData(ref startDateD, ref endDateD);
+
+            List<ShopPlan> plansCollection = [];
+
+            var firstPlan = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date <= startDateD.Date && x.ShopId == shopId && x.PlanAtributeId == planAtributeId);
+            if (firstPlan != null) 
+                plansCollection.Add(firstPlan);
+            
+            var plans = _context.ShopPlans.Where(x => x.SetTime.Date > startDateD.Date && x.SetTime.Date <= endDateD.Date &&
+                x.ShopId == shopId && x.PlanAtributeId == planAtributeId);
+            plansCollection.AddRange(plans);
+
+
+            return Json(plansCollection, _options);
+        }
+
+        [HttpGet("GetAtributeObjectsCollection")]
+        public IActionResult GetAtributeObjectsCollection(int shopId, int planAtributeId, string startDate, string endDate)
+        {
+            //Получаю дату начала и конца периода 
+            DateTime startDateD = DateTime.Parse(startDate);
+            DateTime endDateD = DateTime.Parse(endDate);
+
+            // Установка соответствующих дат
+            TrueData(ref startDateD, ref endDateD);
+
+            //Нахожу магазин по ID
+            var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
+            if (shop == null) { return BadRequest("Shop not found"); }
+
+            List<AtributeObject> atributeValuesCollection = [];
+
+            var atribute = _context.PlanAtributes.FirstOrDefault(x => x.PlanAtributeId == planAtributeId);
+            if (atribute == null)
+                return BadRequest();
+            switch (atribute.AtributeName)
+            {
+                case "AverageBill":
+                    atributeValuesCollection = GetAverageBillAtributesCollection(shop, startDateD, endDateD);
+                    break;
+                case "AllProfit":
+                    atributeValuesCollection = GetAllProfitAtributesCollection(shop, startDateD, endDateD); 
+                    break;
+                case "ClearProfit":
+                    atributeValuesCollection = GetClearProfitAtributesCollection(shop, startDateD, endDateD);
+                    break;
+                case "PurchasesCount":
+                    atributeValuesCollection = GetPurchasesCountAtributesCollection(shop, startDateD, endDateD);
+                    break;
+            }
+
+
+            return Json(atributeValuesCollection, _options);
+        }
+
+        private List<AtributeObject> GetAverageBillAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
+        {
+            List<AtributeObject> atributeValuesCollection = [];
+            // Все покупки в данный период времени
+            var allPurchasesInShop = _context.Purchases
+               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                   x.OperationTime.Date >= startDate &&
+                   x.OperationTime.Date <= endDate);
+
+            // Начальная дата
+            DateTime currentDate = startDate;
+
+            while (currentDate <= endDate)
+            {
+                var selectedDay = currentDate;
+
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                var averageBill = daysPurchasesCount != 0 ? Math.Round(daysAllProfit / daysPurchasesCount, 2, MidpointRounding.AwayFromZero) : 0;
+
+                atributeValuesCollection.Add(new AtributeObject()
+                {
+                    Day = currentDate,
+                    ArtibuteValue = averageBill
+                });
+
+                currentDate = currentDate.AddDays(1);
+            }
+
+                return atributeValuesCollection;
+        }
+
+        private List<AtributeObject> GetAllProfitAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
+        {
+            List<AtributeObject> atributeValuesCollection = [];
+            // Все покупки в данный период времени
+            var allPurchasesInShop = _context.Purchases
+               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                   x.OperationTime.Date >= startDate &&
+                   x.OperationTime.Date <= endDate);
+
+            // Начальная дата
+            DateTime currentDate = startDate;
+
+            while (currentDate <= endDate)
+            {
+                var selectedDay = currentDate;
+
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+                var daysAllProfit = Math.Round(daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum(), 2, MidpointRounding.AwayFromZero);
+
+                atributeValuesCollection.Add(new AtributeObject()
+                {
+                    Day = currentDate,
+                    ArtibuteValue = daysAllProfit
+                });
+
+                currentDate = currentDate.AddDays(1);
+            }
+
+            return atributeValuesCollection;
+        }
+
+        private List<AtributeObject> GetClearProfitAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
+        {
+            List<AtributeObject> atributeValuesCollection = [];
+            // Все покупки в данный период времени
+            var allPurchasesInShop = _context.Purchases
+               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                   x.OperationTime.Date >= startDate &&
+                   x.OperationTime.Date <= endDate);
+
+            // Начальная дата
+            DateTime currentDate = startDate;
+
+            while (currentDate <= endDate)
+            {
+                var selectedDay = currentDate;
+
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+
+                var daysClearProfit = Math.Round(daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum(), 2, MidpointRounding.AwayFromZero);               
+
+                atributeValuesCollection.Add(new AtributeObject()
+                {
+                    Day = currentDate,
+                    ArtibuteValue = daysClearProfit
+                });
+
+                currentDate = currentDate.AddDays(1);
+            }
+
+            return atributeValuesCollection;
+        }
+
+        private List<AtributeObject> GetPurchasesCountAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
+        {
+            List<AtributeObject> atributeValuesCollection = [];
+            // Все покупки в данный период времени
+            var allPurchasesInShop = _context.Purchases
+               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                   x.OperationTime.Date >= startDate &&
+                   x.OperationTime.Date <= endDate);
+
+            // Начальная дата
+            DateTime currentDate = startDate;
+
+            while (currentDate <= endDate)
+            {
+                var selectedDay = currentDate;
+
+                var daysPurchaseProducts = _context.PurchaseProducts
+                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.Purchase.OperationTime.Date == selectedDay);
+
+                var daysPurchasesCount = daysPurchaseProducts.Count();
+
+                
+                atributeValuesCollection.Add(new AtributeObject()
+                {
+                    Day = currentDate,
+                    ArtibuteValue = daysPurchasesCount
+                });
+
+                currentDate = currentDate.AddDays(1);
+            }
+
+            return atributeValuesCollection;
+        }
 
         [HttpGet("Test")]
         public IActionResult Test(Shop shop, DateTime startDate, DateTime endDate)

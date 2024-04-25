@@ -69,7 +69,7 @@ namespace ShopProject.UI.Data
                 BaseAddress = new Uri(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url)
             };
             if (authorize && _token == null)
-                AlertPoster.PostSystemInformationAlert("Авторизация отключена");
+                //AlertPoster.PostSystemInformationAlert("Авторизация отключена");
             if(_token != null)
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             return client;
@@ -116,7 +116,7 @@ namespace ShopProject.UI.Data
 
         public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
         {
-            var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString() + "&endDate=" + endDate.ToString();
+            var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
             var response = await AlertDecorator(url, "Создание тестовых данных");
             return response;
         }
@@ -157,15 +157,21 @@ namespace ShopProject.UI.Data
         }
 
         // Получение списка планов выбранного атрибута
-        public static async Task<HttpResponseMessage> GetAtributedShopPlansCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
+        public static async Task<HttpResponseMessage> GetAtributedShopPlansCollection(int shopId, int planAtributeId, DateTime startDate, DateTime endDate)
         {
-            return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway);
+            var url = "ServerDb/GetAtributedShopPlansCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
+                "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
+            var response = await AlertDecorator(url, "Получение списка планов по атрибуту"); 
+            return response;
         }
 
         // Получение списка данных выбранного атрибута
-        public static async Task<HttpResponseMessage> GetAtributeObjectsCollection(int shopId, int planAtributeId, DateTime endDate, DateTime startDate)
+        public static async Task<HttpResponseMessage> GetAtributeObjectsCollection(int shopId, int planAtributeId, DateTime startDate, DateTime endDate)
         {
-            return new HttpResponseMessage(System.Net.HttpStatusCode.BadGateway);
+            var url = "ServerDb/GetAtributeObjectsCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
+                "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
+            var response = await AlertDecorator(url, "Получение списка данных по атрибуту");
+            return response;
         }
     }
 }

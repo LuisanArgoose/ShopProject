@@ -14,7 +14,9 @@
              
              d:DesignHeight="700" d:DesignWidth="800">
 
-
+    <UserControl.Resources>
+        <helpers:DateTimeToStringDateConverter x:Key="DateToString"/>
+    </UserControl.Resources>
     <Grid Margin="10">
 
         <Grid.ColumnDefinitions>
@@ -49,12 +51,13 @@
                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
                 <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
             </StackPanel>
-
+            
         </StackPanel>
+
         <TabControl Grid.Row="1">
             <TabItem>
                 <TabItem.Header>
-                    <Grid MinWidth="186">
+                    <Grid Margin="6,0,0,0">
                         <ui:TextBlock Text="Атрибуты" HorizontalAlignment="Center"/>
                     </Grid>
 
@@ -87,14 +90,51 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <Grid MinWidth="186">
+                    <Grid  Margin="6,0,0,0">
                         <ui:TextBlock Text="Планы" HorizontalAlignment="Center"/>
                     </Grid>
                 </TabItem.Header>
+                <ui:ListView   SelectionMode="Single" ItemsSource="{Binding AtributedShopPlansCollection, UpdateSourceTrigger=PropertyChanged}"  Grid.ColumnSpan="2">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type efdb:ShopPlan}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="16"
+                                        Margin="6,3,6,0"
+                                        Text="{Binding AtributeValue}" FontWeight="Bold" />    
+                                    <TextBlock
+                                        Margin="6,0,6,3"
+                                        Text="{Binding SetTime, Converter={StaticResource DateToString}}" />
+                                </StackPanel>
+
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <ui:Button 
+                                        Margin="2"
+                                        Width="36" 
+                                        Height="36"
+                                        Icon="{ui:SymbolIcon Edit32}"/>
+                                    <ui:Button 
+                                        Margin="2"
+                                        Width="36" 
+                                        Height="36" 
+                                        Icon="{ui:SymbolIcon Delete32}"/>
+                                </StackPanel>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
             </TabItem>
         </TabControl>
         <lvc:CartesianChart 
-            ZoomMode="X"
+            ZoomMode="Both"
+            
             x:Name="ShopChart"
             Grid.Column="1"
             Grid.RowSpan="2"
