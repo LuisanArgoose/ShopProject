@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ShopProject.UI.Views.Examples"
              xmlns:ex="clr-namespace:ShopProject.UI.ViewModels.Examples"
+             xmlns:models="clr-namespace:ShopProject.UI.Models"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
              xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
@@ -16,11 +17,12 @@
 
     <UserControl.Resources>
         <helpers:DateTimeToStringDateConverter x:Key="DateToString"/>
+        <helpers:DecimalValidationConverter x:Key="DecimalValidation"/>
     </UserControl.Resources>
     <Grid Margin="10">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="225"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -33,11 +35,6 @@
         <StackPanel>
             <ui:TextBlock Text="Единица данных" Visibility="Collapsed"/>
 
-            <ComboBox Visibility="Collapsed" ItemsSource="{Binding Intervals}" SelectedItem="{Binding SelectedInterval}" SelectedIndex="0"  Margin="0,5,0,0">
-
-
-            </ComboBox>
-            <ui:TextBlock Text="Временной интервал" Margin="0,5,0,0" FontTypography="Subtitle" />
             <DatePicker 
                         Margin="0,5,0,0"
                         SelectedDate="{Binding StartDate}"  Grid.Row="1" 
@@ -47,93 +44,80 @@
                         SelectedDate="{Binding EndDate}" Grid.Row="2"
                         x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <StackPanel Grid.Row="3">
-                <ui:Button  Command="{Binding GetMainShopPlanCommand}" 
-                                Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />
-                <ProgressBar IsIndeterminate="{Binding IsLoading}"/>
+                
+                <!--<ui:Button Command="{Binding GetMainShopPlanCommand}" 
+                                Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />-->
+                <ProgressBar Margin="0,5,0,0" IsIndeterminate="{Binding IsLoading}"/>
+                <ComboBox ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}"  Margin="0,5,0,0" SelectedIndex="0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock
+                                    Margin="6,3"
+                                    Text="{Binding AtributeViewName, Mode=OneWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                
             </StackPanel>
             
         </StackPanel>
-
-        <TabControl Grid.Row="1">
-            <TabItem>
-                <TabItem.Header>
-                    <Grid Margin="6,0,0,0">
-                        <ui:TextBlock Text="Атрибуты" HorizontalAlignment="Center"/>
-                    </Grid>
-
-                </TabItem.Header>
-
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="13*"/>
-                        <ColumnDefinition Width="7*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <ui:ListView   SelectionMode="Single" ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}" Grid.ColumnSpan="2">
-                        <ui:ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock
-                                        Margin="6,3"
-                                        Text="{Binding AtributeViewName, Mode=OneWay}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ui:ListView.ItemTemplate>
-                    </ui:ListView>
-
-                </Grid>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <Grid  Margin="6,0,0,0">
-                        <ui:TextBlock Text="Планы" HorizontalAlignment="Center"/>
-                    </Grid>
-                </TabItem.Header>
-                <ui:ListView   SelectionMode="Single" ItemsSource="{Binding AtributedShopPlansCollection, UpdateSourceTrigger=PropertyChanged}"  Grid.ColumnSpan="2">
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type efdb:ShopPlan}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock
-                                        FontSize="16"
-                                        Margin="6,3,6,0"
-                                        Text="{Binding AtributeValue}" FontWeight="Bold" />    
-                                    <TextBlock
-                                        Margin="6,0,6,3"
-                                        Text="{Binding SetTime, Converter={StaticResource DateToString}}" />
-                                </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:TextBlock Text="Планы" Margin="0,5" FontTypography="Subtitle" HorizontalAlignment="Center" />
+            <ui:ListView Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding AtributedShopPlansCollection, UpdateSourceTrigger=PropertyChanged}" >
+                <ui:ListView.ItemTemplate >
+                    <DataTemplate DataType="{x:Type models:ShopPlanModel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock
+                            FontSize="16"
+                            Margin="6,3,6,0"
+                            Text="{Binding ShopPlan.AtributeValue}" FontWeight="Bold" />
+                                <TextBlock
+                            Margin="6,0,6,3"
+                            Text="{Binding ShopPlan.SetTime, Converter={StaticResource DateToString}}" />
+                            </StackPanel>
 
 
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <ui:Button 
-                                        Margin="2"
-                                        Width="36" 
-                                        Height="36"
-                                        Icon="{ui:SymbolIcon Edit32}"/>
-                                    <ui:Button 
-                                        Margin="2"
-                                        Width="36" 
-                                        Height="36" 
-                                        Icon="{ui:SymbolIcon Delete32}"/>
-                                </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                
+                                <ui:Button 
+                                    Margin="2"
+                                    Width="36" 
+                                    Height="36" 
+                                    Command="{Binding DeleteShopPlanCommand}"
+                                    CommandParameter="{Binding ShopPlan.ShopPlanId}"
+                                    Icon="{ui:SymbolIcon Delete32}"/>
+                            </StackPanel>
 
-                            </Grid>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
-            </TabItem>
-        </TabControl>
+                        </Grid>
+                    </DataTemplate>
+                </ui:ListView.ItemTemplate>
+            </ui:ListView>
+            <StackPanel Grid.Row="2">
+                <ui:Button  IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" Margin="0,5,0,0" Content="Добавить" HorizontalAlignment="Stretch"/>
+                <ui:TextBox x:Name="PlanValue" Margin="0,5,0,0">
+                </ui:TextBox>
+                <DatePicker Margin="0,5,0,0"/>
+            </StackPanel>
+        </Grid>
         <lvc:CartesianChart 
-            ZoomMode="Both"
+            ZoomMode="X"
             
             x:Name="ShopChart"
             Grid.Column="1"

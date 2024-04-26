@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ShopProject.EFDB.DataModels;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
-using ShopProject.UI.Models.Examples;
+using ShopProject.UI.Models;
 using System.Collections;
 using ShopProject.UI.AuxiliarySystems;
 using ShopProject.EFDB.Models;
@@ -17,6 +17,7 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using LiveChartsCore.Defaults;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 
 namespace ShopProject.UI.ViewModels.Examples
@@ -42,18 +43,13 @@ namespace ShopProject.UI.ViewModels.Examples
 
                 // Магазин по Id
                 GetShopInfoCommand.Execute(this);
-
-                // Общий план магазина
-                GetMainShopPlanCommand.Execute(this);
+                OnSetDates();
             }
         }
         public ShopVM(int shopId)
         {
-            // Инициализация команд
-            GetMainShopPlanCommand = new AsyncRelayCommand(GetMainShopPlan);
-            GetShopInfoCommand = new AsyncRelayCommand(GetShopInfo);
             // Стандартный диапозон дат даты
-        
+
             ShopId = shopId;
         }
 
@@ -85,16 +81,17 @@ namespace ShopProject.UI.ViewModels.Examples
 
         private async void OnSetDates()
         {
-            await GetMainShopPlanCommand.ExecuteAsync(this);
+            await GetPlanAtributesCollectionCommand.ExecuteAsync(this).WaitAsync(CancellationToken.None);
+            SelectedPlanAtribute = PlanAtributesCollection[0];
         }
         [ObservableProperty]
         private bool _isLoading;
 
         //OnPropertyChanged(nameof(Series));
         //OnPropertyChanged(nameof(XAxes));
-        public IAsyncRelayCommand GetShopInfoCommand { get; }
 
         // Загрузка данных магазина с API
+        [RelayCommand]
         private async Task GetShopInfo()
         {
             IsLoading = true;
@@ -106,13 +103,11 @@ namespace ShopProject.UI.ViewModels.Examples
             return;
         }
 
-        //Команда получения данных общего плана
-        public IAsyncRelayCommand GetMainShopPlanCommand { get; }
-
         // Коллекция для главного плана
         [ObservableProperty]
         private ShopStatsData _shopStatsData = new ShopStatsData();
 
+        [RelayCommand]
         private async Task GetMainShopPlan()
         {
             IsLoading = true;
@@ -216,20 +211,38 @@ namespace ShopProject.UI.ViewModels.Examples
                 SetChartCollection(series);
 
             }                
-            GetPlanAtributesCollection();
+            
             IsLoading = false;
             return;
         }
+
+        private List<PlanAtribute> AddPlanAtributesCollection(List<PlanAtribute> result)
+        {
+            var range = new List<PlanAtribute>()
+            {
+                new PlanAtribute()
+                {
+                    AtributeName = "MainPlan",
+                    AtributeViewName = "Общий план"
+                }
+            };
+            range.AddRange(result);
+            return range;
+
+
+        }
         [ObservableProperty]
         private List<PlanAtribute> _planAtributesCollection;
-        private async void GetPlanAtributesCollection()
+
+        [RelayCommand]
+        private async Task GetPlanAtributesCollection()
         {
             IsLoading = true;
             var response = await ClientDbProvider.GetPlanAtributesCollection().WaitAsync(CancellationToken.None);
             var result = await AlertDeserializer.Deserialize<List<PlanAtribute>>(response, "Загрузка коллекции атрибутов").WaitAsync(CancellationToken.None);
             if (result != null)
             {
-                PlanAtributesCollection = result;
+                PlanAtributesCollection = AddPlanAtributesCollection(result);
             }
                 
             IsLoading = false;
@@ -268,6 +281,12 @@ namespace ShopProject.UI.ViewModels.Examples
 
         private async void GetAtributeObjects(PlanAtribute planAtribute)
         {
+            IsLoading = true;
+            if (planAtribute.AtributeName == "MainPlan")
+            {
+                await GetMainShopPlanCommand.ExecuteAsync(this).WaitAsync(CancellationToken.None);
+                return;
+            }
             await GetAtributedShopPlans(planAtribute).WaitAsync(CancellationToken.None);
             var response = await ClientDbProvider.GetAtributeObjectsCollection(ShopId, planAtribute.PlanAtributeId, EndDate, StartDate).WaitAsync(CancellationToken.None);
             var result = await AlertDeserializer.Deserialize<List<AtributeObject>> (response, "Загрузка атрибута: " + planAtribute.AtributeViewName).WaitAsync(CancellationToken.None);
@@ -283,12 +302,12 @@ namespace ShopProject.UI.ViewModels.Examples
                 {
 
 
-                    collection.AddRange(AtributedShopPlansCollection.OrderBy(item => item.SetTime).ToList().Select(x => new ObservablePoint(AtributeObjectsCollection.FindLastIndex(z => z.Day.Day == x.SetTime.Day), (double?)x.AtributeValue)));
+                    collection.AddRange(AtributedShopPlansCollection.OrderBy(item => item.ShopPlan.SetTime).ToList().Select(x => new ObservablePoint(AtributeObjectsCollection.FindLastIndex(z => z.Day.Day == x.ShopPlan.SetTime.Day), (double?)x.ShopPlan.AtributeValue)));
                     
                     var isFirstExist = collection.FirstOrDefault(x => x.X == 0);
                     if (isFirstExist == null)
-                        collection.Insert(0, new ObservablePoint(-1, (double?)AtributedShopPlansCollection.MinBy(x => x.SetTime).AtributeValue));
-                    collection.Add(new ObservablePoint(AtributeObjectsCollection.Count, (double?)AtributedShopPlansCollection.MaxBy(x => x.SetTime).AtributeValue));
+                        collection.Insert(0, new ObservablePoint(-1, (double?)AtributedShopPlansCollection.MinBy(x => x.ShopPlan.SetTime).ShopPlan.AtributeValue));
+                    collection.Add(new ObservablePoint(AtributeObjectsCollection.Count, (double?)AtributedShopPlansCollection.MaxBy(x => x.ShopPlan.SetTime).ShopPlan.AtributeValue));
                 }
                 var series = new List<ISeries>()
                 {
@@ -344,41 +363,47 @@ namespace ShopProject.UI.ViewModels.Examples
                     }
                 };
             }
-                
+            IsLoading = false;
             return;
         }
 
+        
 
         [ObservableProperty]
-        private List<ShopPlan> _atributedShopPlansCollection;
+        private List<ShopPlanModel> _atributedShopPlansCollection;
 
         private async Task GetAtributedShopPlans(PlanAtribute planAtribute)
         {
+            IsLoading = true;
             var response = await ClientDbProvider.GetAtributedShopPlansCollection(ShopId, planAtribute.PlanAtributeId, EndDate, StartDate).WaitAsync(CancellationToken.None);
             var result = await AlertDeserializer.Deserialize<List<ShopPlan>>(response, "Загрузка планов атрибута: " + planAtribute.AtributeViewName).WaitAsync(CancellationToken.None);
             if (result != null)
-                AtributedShopPlansCollection = result;
+            {
+                AtributedShopPlansCollection = result.Select(x => new ShopPlanModel(x, OnDeleteShopPlan)).ToList();
+            }
+                
+            IsLoading = false;
             return;
         }
+        private void OnDeleteShopPlan(object sender, EventArgs e)
+        {
+            GetAtributeObjects(SelectedPlanAtribute);
+        }
+
+        [ObservableProperty]
+        private decimal _addedPlanValue;
 
         private SKColor GetAtributeColor(string atributeName)
         {
-            var color = SKColors.Lavender;
-            switch (atributeName)
+            var color = atributeName switch
             {
-                case "AverageBill":
-                    color = SKColors.DeepSkyBlue;
-                    break;
-                case "AllProfit":
-                    color = SKColors.DarkOrange;
-                    break;
-                case "ClearProfit":
-                    color = SKColors.Indigo;
-                    break;
-                case "PurchasesCount":
-                    color = SKColors.Salmon;
-                    break;
-            }
+                "AverageBill" =>  SKColors.DeepSkyBlue,
+                "AllProfit" => SKColors.DarkOrange,
+                "ClearProfit" => SKColors.Indigo,
+                "PurchasesCount" => SKColors.Salmon,
+                _ => SKColors.Lavender
+
+            };
             return color;
         }
 

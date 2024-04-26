@@ -173,5 +173,11 @@ namespace ShopProject.UI.Data
             var response = await AlertDecorator(url, "Получение списка данных по атрибуту");
             return response;
         }
+        public static async Task<HttpResponseMessage> DeleteShopPlan(int shopPlanId)
+        {
+            var url = "ServerDb/DeleteShopPlan?shopPlanId=" + shopPlanId;
+            var response = await AlertDecorator(url, "Удаление плана");
+            return response;
+        }
     }
 }

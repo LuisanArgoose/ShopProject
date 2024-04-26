@@ -250,21 +250,15 @@ namespace ShopProject.API.Controllers
             var atribute = _context.PlanAtributes.FirstOrDefault(x => x.PlanAtributeId == planAtributeId);
             if (atribute == null)
                 return BadRequest();
-            switch (atribute.AtributeName)
+
+            atributeValuesCollection = atribute.AtributeName switch
             {
-                case "AverageBill":
-                    atributeValuesCollection = GetAverageBillAtributesCollection(shop, startDateD, endDateD);
-                    break;
-                case "AllProfit":
-                    atributeValuesCollection = GetAllProfitAtributesCollection(shop, startDateD, endDateD); 
-                    break;
-                case "ClearProfit":
-                    atributeValuesCollection = GetClearProfitAtributesCollection(shop, startDateD, endDateD);
-                    break;
-                case "PurchasesCount":
-                    atributeValuesCollection = GetPurchasesCountAtributesCollection(shop, startDateD, endDateD);
-                    break;
-            }
+                "AverageBill" => GetAverageBillAtributesCollection(shop, startDateD, endDateD),
+                "AllProfit" => GetAllProfitAtributesCollection(shop, startDateD, endDateD),
+                "ClearProfit" => GetClearProfitAtributesCollection(shop, startDateD, endDateD),
+                "PurchasesCount" => GetPurchasesCountAtributesCollection(shop, startDateD, endDateD),
+                _ => []
+            };
 
 
             return Json(atributeValuesCollection, _options);
