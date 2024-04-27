@@ -59,23 +59,23 @@
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
                     TargetPageType="{x:Type manager:ManagerPage}"
                     />
-                <ui:NavigationViewItem
+                <!--<ui:NavigationViewItem
                     Content="Работники"
                     Icon="{ui:SymbolIcon BuildingPeople20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsShopManager, Converter={StaticResource myVisibilityConverter}}"
-                    TargetPageType="{x:Type manager:MCashiersPage}"/> 
+                    TargetPageType="{x:Type manager:MCashiersPage}"/>--> 
 
 
 
 
                 <ui:NavigationViewItemSeparator
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
-                <ui:NavigationViewItem
+                <!--<ui:NavigationViewItem
                     Content="Менеджер по продажам"
                     Icon="{ui:SymbolIcon PersonMoney20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"
 
-                    />
+                    />-->
                 <ui:NavigationViewItem
                     Content="Магазины"
                     Icon="{ui:SymbolIcon BuildingShop20}"

@@ -18,6 +18,8 @@
     <UserControl.Resources>
         <helpers:DateTimeToStringDateConverter x:Key="DateToString"/>
         <helpers:DecimalValidationConverter x:Key="DecimalValidation"/>
+        <helpers:MainPlanValidationConverter x:Key="MainPlanValidation"/>
+        <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
     </UserControl.Resources>
     <Grid Margin="10">
 
@@ -48,7 +50,7 @@
                 <!--<ui:Button Command="{Binding GetMainShopPlanCommand}" 
                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />-->
                 <ProgressBar Margin="0,5,0,0" IsIndeterminate="{Binding IsLoading}"/>
-                <ComboBox ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}"  Margin="0,5,0,0" SelectedIndex="0">
+                <ComboBox x:Name="PlanAtributes" ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}"  Margin="0,5,0,0" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type efdb:PlanAtribute}">
                             <Grid>
@@ -68,7 +70,7 @@
             </StackPanel>
             
         </StackPanel>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Visibility="{Binding IsSalesManager, Converter={StaticResource myVisibilityConverter }}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -109,11 +111,11 @@
                     </DataTemplate>
                 </ui:ListView.ItemTemplate>
             </ui:ListView>
-            <StackPanel Grid.Row="2">
-                <ui:Button  IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" Margin="0,5,0,0" Content="Добавить" HorizontalAlignment="Stretch"/>
-                <ui:TextBox x:Name="PlanValue" Margin="0,5,0,0">
+            <StackPanel IsEnabled="{Binding ElementName=PlanAtributes, Path=SelectedItem, Converter={StaticResource MainPlanValidation}}"  Grid.Row="2">
+                <ui:Button Command="{Binding AddShopPlanCommand}" IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" Margin="0,5,0,0" Content="Добавить" HorizontalAlignment="Stretch"/>
+                <ui:TextBox Text="{Binding AddedPlan.AtributeValue}" x:Name="PlanValue" Margin="0,5,0,0">
                 </ui:TextBox>
-                <DatePicker Margin="0,5,0,0"/>
+                <DatePicker Margin="0,5,0,0" SelectedDate="{Binding AddedPlan.SetTime}"/>
             </StackPanel>
         </Grid>
         <lvc:CartesianChart 

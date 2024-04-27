@@ -142,9 +142,9 @@ namespace ShopProject.API.Controllers
 
                 decimal? GetPlanAtributeValue(string atribute)
                 {
-                    var result = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == currentDate.Date && x.PlanAtribute.AtributeName == atribute);
-                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date < currentDate.Date && x.PlanAtribute.AtributeName == atribute);
-                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date > currentDate.Date && x.PlanAtribute.AtributeName == atribute);
+                    var result = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date < currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date > currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
 
                     return result?.AtributeValue;
 
@@ -401,6 +401,43 @@ namespace ShopProject.API.Controllers
             }
 
             return atributeValuesCollection;
+        }
+
+        [HttpGet("DeleteShopPlan")]
+        public IActionResult DeleteShopPlan(int shopPlanId)
+        {
+            var plan = _context.ShopPlans.FirstOrDefault(x => x.ShopPlanId == shopPlanId);
+            if (plan != null)
+            {
+                _context.ShopPlans.Remove(plan);
+                _context.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+                
+
+        }
+
+        [HttpPost("AddShopPlan")]
+        public IActionResult AddShopPlan(JsonElement content)
+        {
+            var jsonShopPlan = content.ToString();
+
+            var shopPlan = JsonSerializer.Deserialize<ShopPlan>(jsonShopPlan);
+            if (shopPlan == null)
+                return BadRequest();
+            var planToUpdate = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == shopPlan.SetTime.Date && 
+                x.ShopId == shopPlan.ShopId && 
+                x.PlanAtributeId == shopPlan.PlanAtributeId);
+            if (planToUpdate != null)
+                planToUpdate.AtributeValue = shopPlan.AtributeValue;
+            else
+                _context.ShopPlans.Add(shopPlan);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpGet("Test")]

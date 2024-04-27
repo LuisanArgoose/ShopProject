@@ -284,6 +284,7 @@ namespace ShopProject.UI.ViewModels.Examples
             IsLoading = true;
             if (planAtribute.AtributeName == "MainPlan")
             {
+                AtributedShopPlansCollection = [];
                 await GetMainShopPlanCommand.ExecuteAsync(this).WaitAsync(CancellationToken.None);
                 return;
             }
@@ -301,8 +302,8 @@ namespace ShopProject.UI.ViewModels.Examples
                 if (AtributedShopPlansCollection.Count != 0)
                 {
 
-
-                    collection.AddRange(AtributedShopPlansCollection.OrderBy(item => item.ShopPlan.SetTime).ToList().Select(x => new ObservablePoint(AtributeObjectsCollection.FindLastIndex(z => z.Day.Day == x.ShopPlan.SetTime.Day), (double?)x.ShopPlan.AtributeValue)));
+                    var sortedCollection = AtributedShopPlansCollection.OrderBy(item => item.ShopPlan.SetTime.Date).ToList();
+                    collection.AddRange(sortedCollection.Select(x => new ObservablePoint(AtributeObjectsCollection.FindLastIndex(z => z.Day.Date == x.ShopPlan.SetTime.Date), (double?)x.ShopPlan.AtributeValue)));
                     
                     var isFirstExist = collection.FirstOrDefault(x => x.X == 0);
                     if (isFirstExist == null)
@@ -385,13 +386,26 @@ namespace ShopProject.UI.ViewModels.Examples
             IsLoading = false;
             return;
         }
-        private void OnDeleteShopPlan(object sender, EventArgs e)
+        private async void OnDeleteShopPlan(object sender, EventArgs e)
         {
             GetAtributeObjects(SelectedPlanAtribute);
         }
 
         [ObservableProperty]
-        private decimal _addedPlanValue;
+        private ShopPlan _addedPlan = new()
+        {
+            SetTime = DateTime.Today,
+            AtributeValue = 100
+        };
+
+        [RelayCommand]
+        private async Task AddShopPlan()
+        {
+            AddedPlan.PlanAtributeId = SelectedPlanAtribute.PlanAtributeId;
+            AddedPlan.ShopId = ShopId;
+            await ClientDbProvider.AddShopPlan(AddedPlan).WaitAsync(CancellationToken.None);
+            GetAtributeObjects(SelectedPlanAtribute);
+        }
 
         private SKColor GetAtributeColor(string atributeName)
         {

@@ -7,10 +7,12 @@ using ShopProject.UI.Helpers;
 using ShopProject.UI.Models.SettingsComponents;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
@@ -26,18 +28,26 @@ namespace ShopProject.UI.Data
         private static Settings _settings = Settings.GetInstance();
         private static string? _token = null!;
         static ClientDbProvider()
-        {            
-            
+        {
         }
 
-        private static async Task<HttpResponseMessage> AlertDecorator(string url, string message)
+
+        private static async Task<HttpResponseMessage> GetAlertDecorator(string url, string message)
+        {
+            return await AlertDecorator(url, message, async (client) => await client.GetAsync(url));
+        }
+        private static async Task<HttpResponseMessage> PostAlertDecorator(string url, StringContent content, string message)
+        {
+            return await AlertDecorator(url, message, async (client) => await client.PostAsync(url, content));
+        }
+        private static async Task<HttpResponseMessage> AlertDecorator(string url, string message, Func<HttpClient, Task<HttpResponseMessage>> clientMethod)
         {
             try
             {
                 using (var client = MyHttpClient())
                 {
                     
-                    var response = await client.GetAsync(url);
+                    var response = await clientMethod(client); ;
                     if (response.IsSuccessStatusCode)
                     {
                         AlertPoster.PostSystemSuccessAlert(message);
@@ -79,7 +89,7 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> SingIn(string login, string password)
         {
             var url = "ServerDb/SingIn?login=" + login + "&password=" + password;
-            var response = await AlertDecorator(url, "Вход в систему");
+            var response = await GetAlertDecorator(url, "Вход в систему");
             if (!response.IsSuccessStatusCode)
             {
                 _token = null;
@@ -92,7 +102,7 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> TestConnect(string login, string password)
         {
             var url = "Auth?login=" + login + "&password=" + password;
-            var response = await AlertDecorator(url, "Подключение к API");
+            var response = await GetAlertDecorator(url, "Подключение к API");
             if (!response.IsSuccessStatusCode)
             {
                 var jsonToken = await response.Content.ReadAsStringAsync();
@@ -110,14 +120,14 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> InitDb()
         {
             var url = "ServerDb/InitializeDataBase";
-            var response = await AlertDecorator(url, "Создание стартовых данных");
+            var response = await GetAlertDecorator(url, "Создание стартовых данных");
             return response;
         }
 
         public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
         {
             var url = "ServerDb/FillDataBase?startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await AlertDecorator(url, "Создание тестовых данных");
+            var response = await GetAlertDecorator(url, "Создание тестовых данных");
             return response;
         }
 
@@ -125,7 +135,7 @@ namespace ShopProject.UI.Data
         {
             var url = "ServerDb/GetMainShopPlan?shopId=" + shopId + "&startDate=" + startDate.ToString("MM.dd.yyyy")
                         + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await AlertDecorator(url, "Получение общего плана");
+            var response = await GetAlertDecorator(url, "Получение общего плана");
             return response;
            
         }
@@ -134,7 +144,7 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> GetShopInfo(int shopId)
         {
             var url = "ServerDb/GetShopInfo?shopId=" + shopId;
-            var response = await AlertDecorator(url, "Получение данных магазина");
+            var response = await GetAlertDecorator(url, "Получение данных магазина");
             return response;
             
         }
@@ -142,7 +152,7 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> GetShopsCollection()
         {
             var url = "ServerDb/GetShopsCollection";
-            var response = await AlertDecorator(url, "Получение списка магазинов");
+            var response = await GetAlertDecorator(url, "Получение списка магазинов");
             return response;
 
         }
@@ -151,7 +161,7 @@ namespace ShopProject.UI.Data
         public static async Task<HttpResponseMessage> GetPlanAtributesCollection()
         {
             var url = "ServerDb/GetPlanAtributesCollection";
-            var response = await AlertDecorator(url, "Получение списка доступных атрибутов");
+            var response = await GetAlertDecorator(url, "Получение списка доступных атрибутов");
             return response;
             
         }
@@ -161,7 +171,7 @@ namespace ShopProject.UI.Data
         {
             var url = "ServerDb/GetAtributedShopPlansCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
                 "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await AlertDecorator(url, "Получение списка планов по атрибуту"); 
+            var response = await GetAlertDecorator(url, "Получение списка планов по атрибуту"); 
             return response;
         }
 
@@ -170,13 +180,22 @@ namespace ShopProject.UI.Data
         {
             var url = "ServerDb/GetAtributeObjectsCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
                 "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await AlertDecorator(url, "Получение списка данных по атрибуту");
+            var response = await GetAlertDecorator(url, "Получение списка данных по атрибуту");
             return response;
         }
         public static async Task<HttpResponseMessage> DeleteShopPlan(int shopPlanId)
         {
             var url = "ServerDb/DeleteShopPlan?shopPlanId=" + shopPlanId;
-            var response = await AlertDecorator(url, "Удаление плана");
+            var response = await GetAlertDecorator(url, "Удаление плана");
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> AddShopPlan(ShopPlan shopPlan)
+        {
+            string requestDataJson = JsonSerializer.Serialize<ShopPlan>(shopPlan);
+            var content = new StringContent(requestDataJson, Encoding.UTF8, "application/json");
+            var url = "ServerDb/AddShopPlan";
+            var response = await PostAlertDecorator(url, content, "Добавление плана");
             return response;
         }
     }
