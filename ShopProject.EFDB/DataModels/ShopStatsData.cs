@@ -18,6 +18,6 @@ namespace ShopProject.EFDB.DataModels
         [ObservableProperty]
         private List<decimal?> _clearProfit = new();
         [ObservableProperty]
-        private List<int?> _purchasesCount = new();
+        private List<decimal?> _purchasesCount = new();
     }
 }

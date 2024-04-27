@@ -95,10 +95,10 @@
                
                 
                 
-                <ui:ListView SelectionMode="Single" Grid.Row="1" ItemsSource="{Binding ViewModel.ShopsCollection}" SelectedItem="{Binding ViewModel.SelectedShop}">
+                <ui:ListView  SelectionMode="Single" Grid.Row="1" ItemsSource="{Binding ViewModel.ShopsCollection}" SelectedItem="{Binding ViewModel.SelectedShop}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type efdb:Shop}">
-                            <Grid Width="300">
+                            <Grid Width="260">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />

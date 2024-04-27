@@ -13,6 +13,8 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
         public void AddItem(T value, TimeSpan expirationTime)
         {
 
+            if (Application.Current == null)
+                return;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 if (Count > 9)
@@ -24,7 +26,8 @@ namespace ShopProject.UI.AuxiliarySystems.ExpiringListSystem
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 Thread.Sleep(expirationTime);
-                
+                if (Application.Current == null)
+                    return;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (Application.Current.MainWindow != null)

@@ -14,7 +14,7 @@ namespace ShopProject.UI.Helpers
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var boolValue = (bool)value;
-            return boolValue ? Visibility.Visible : (parameter ?? Visibility.Hidden);
+            return boolValue ? Visibility.Visible : (parameter ?? Visibility.Collapsed);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
