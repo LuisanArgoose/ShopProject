@@ -135,13 +135,13 @@
             CornerRadius="8"
             Margin="5,0,10,10">
 
-            <Grid Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myVisibilityConverter}}">
+            <Grid x:Name="MainGrid" Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myVisibilityConverter}}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+                <ex:ShopView MaxHeight="{Binding ElementName=MainGrid, Path=ActualHeight}" Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
 
             </Grid>
         </Border>

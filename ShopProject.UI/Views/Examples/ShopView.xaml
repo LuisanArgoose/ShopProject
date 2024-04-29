@@ -30,11 +30,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
 
 
-        <StackPanel>
+        <StackPanel >
             <ui:TextBlock Text="Единица данных" Visibility="Collapsed"/>
 
             <DatePicker 
@@ -46,7 +47,7 @@
                         SelectedDate="{Binding EndDate}" Grid.Row="2"
                         x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <StackPanel Grid.Row="3">
-                
+
                 <!--<ui:Button Command="{Binding GetMainShopPlanCommand}" 
                                 Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />-->
                 <ProgressBar Margin="0,5,0,0" IsIndeterminate="{Binding IsLoading}"/>
@@ -65,65 +66,65 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                
-                
+
+
             </StackPanel>
-            
+
         </StackPanel>
         <Grid Grid.Row="1" Visibility="{Binding IsSalesManager, Converter={StaticResource myVisibilityConverter }}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <ui:TextBlock Text="Планы" Margin="0,5" FontTypography="Subtitle" HorizontalAlignment="Center" />
-            <ui:ListView Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding AtributedShopPlansCollection, UpdateSourceTrigger=PropertyChanged}" >
+            <ui:ListView  Grid.Row="1"  SelectionMode="Single" ItemsSource="{Binding AtributedShopPlansCollection, UpdateSourceTrigger=PropertyChanged}" >
                 <ui:ListView.ItemTemplate >
                     <DataTemplate DataType="{x:Type models:ShopPlanModel}">
-                        <Grid>
+                        <Grid Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel>
                                 <TextBlock
-                            FontSize="16"
-                            Margin="6,3,6,0"
-                            Text="{Binding ShopPlan.AtributeValue}" FontWeight="Bold" />
+                                FontSize="16"
+                                Margin="6,3,6,0"
+                                Text="{Binding ShopPlan.AtributeValue}" FontWeight="Bold" />
                                 <TextBlock
-                            Margin="6,0,6,3"
-                            Text="{Binding ShopPlan.SetTime, Converter={StaticResource DateToString}}" />
+                                Margin="6,0,6,3"
+                                Text="{Binding ShopPlan.SetTime, Converter={StaticResource DateToString}}" />
                             </StackPanel>
 
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                
+
                                 <ui:Button 
-                                    Margin="2"
-                                    Width="36" 
-                                    Height="36" 
-                                    Command="{Binding DeleteShopPlanCommand}"
-                                    CommandParameter="{Binding ShopPlan.ShopPlanId}"
-                                    Icon="{ui:SymbolIcon Delete32}"/>
+                                        Margin="2"
+                                        Width="36" 
+                                        Height="36" 
+                                        Command="{Binding DeleteShopPlanCommand}"
+                                        CommandParameter="{Binding ShopPlan.ShopPlanId}"
+                                        Icon="{ui:SymbolIcon Delete32}"/>
                             </StackPanel>
 
                         </Grid>
                     </DataTemplate>
                 </ui:ListView.ItemTemplate>
             </ui:ListView>
-            <StackPanel IsEnabled="{Binding ElementName=PlanAtributes, Path=SelectedItem, Converter={StaticResource MainPlanValidation}}"  Grid.Row="2">
-                <ui:Button Command="{Binding AddShopPlanCommand}" IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" Margin="0,5,0,0" Content="Добавить" HorizontalAlignment="Stretch"/>
-                <ui:TextBox Text="{Binding AddedPlan.AtributeValue}" x:Name="PlanValue" Margin="0,5,0,0">
-                </ui:TextBox>
-                <DatePicker Margin="0,5,0,0" SelectedDate="{Binding AddedPlan.SetTime}"/>
-            </StackPanel>
+
         </Grid>
+        <StackPanel Visibility="{Binding IsSalesManager, Converter={StaticResource myVisibilityConverter }}" IsEnabled="{Binding ElementName=PlanAtributes, Path=SelectedItem, Converter={StaticResource MainPlanValidation}}"  Grid.Row="2">
+            <ui:Button Command="{Binding AddShopPlanCommand}" IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" Margin="0,5,0,0" Content="Добавить" HorizontalAlignment="Stretch"/>
+            <ui:TextBox Text="{Binding AddedPlan.AtributeValue}" x:Name="PlanValue" Margin="0,5,0,0">
+            </ui:TextBox>
+            <DatePicker Margin="0,5,0,0" SelectedDate="{Binding AddedPlan.SetTime}"/>
+        </StackPanel>
         <lvc:CartesianChart 
             ZoomMode="X"
             
             x:Name="ShopChart"
             Grid.Column="1"
-            Grid.RowSpan="2"
+            Grid.RowSpan="3"
             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
             Sections ="{Binding Sections}"
             YAxes="{Binding YAxes}"

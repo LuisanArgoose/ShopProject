@@ -38,7 +38,7 @@
         Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
         Text="{Binding  ViewModel.SelectedShop.Address, Mode=OneWay}"/>
         </Grid>
-        <Border
+        <Border 
     Grid.Row="1"
     Padding="16"
     Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -46,7 +46,9 @@
     BorderThickness="1,1,1,0"
     CornerRadius="8"
     Margin="10,0,5,10">
-            <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+            <Grid x:Name="MainGrid">
+                <ex:ShopView MaxHeight="{Binding ElementName=MainGrid, Path=ActualHeight}" Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
         </Border>
        
     </Grid>

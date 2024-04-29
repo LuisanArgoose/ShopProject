@@ -55,7 +55,7 @@ namespace ShopProject.UI.ViewModels.Examples
 
 
 
-        private DateTime _startDate = DateTime.Today.AddDays(-15);
+        private DateTime _startDate = DateTime.Today.AddDays(-31);
         public DateTime StartDate
         {
             get => _startDate;
@@ -380,7 +380,7 @@ namespace ShopProject.UI.ViewModels.Examples
             var result = await AlertDeserializer.Deserialize<List<ShopPlan>>(response, "Загрузка планов атрибута: " + planAtribute.AtributeViewName).WaitAsync(CancellationToken.None);
             if (result != null)
             {
-                AtributedShopPlansCollection = result.Select(x => new ShopPlanModel(x, OnDeleteShopPlan)).ToList();
+                AtributedShopPlansCollection = result.OrderBy(x => x.SetTime).Select(x => new ShopPlanModel(x, OnDeleteShopPlan)).ToList();
             }
                 
             IsLoading = false;

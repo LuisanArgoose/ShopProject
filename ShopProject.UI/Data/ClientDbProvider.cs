@@ -78,10 +78,13 @@ namespace ShopProject.UI.Data
             {
                 BaseAddress = new Uri(_settings.SettingsModel.APISettingsPart.APILoginSettings.Url)
             };
-            if (authorize && _token == null)
+            //if (authorize && _token == null)
                 //AlertPoster.PostSystemInformationAlert("Авторизация отключена");
             if(_token != null)
+            {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            }
+                
             return client;
             
         }
@@ -103,9 +106,9 @@ namespace ShopProject.UI.Data
         {
             var url = "Auth?login=" + login + "&password=" + password;
             var response = await GetAlertDecorator(url, "Подключение к API");
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                var jsonToken = await response.Content.ReadAsStringAsync();
+                var jsonToken = await response.Content.ReadAsStringAsync().WaitAsync(CancellationToken.None);
 
                 var result = JsonSerializer.Deserialize<TokenModel>(jsonToken);
                 _token = result.Token;

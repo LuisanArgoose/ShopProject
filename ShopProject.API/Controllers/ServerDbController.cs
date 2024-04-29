@@ -20,7 +20,7 @@ using ShopProject.EFDB.DataModels;
 
 namespace ShopProject.API.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ServerDbController : Controller
@@ -53,7 +53,6 @@ namespace ShopProject.API.Controllers
             
             return Json(user, _options);
         }
-
 
         [HttpGet("InitializeDataBase")]
         public IActionResult InitializeDataBase()

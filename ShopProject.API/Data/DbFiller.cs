@@ -16,6 +16,7 @@ namespace ShopProject.API.Data
             context.Roles.RemoveRange(context.Roles);
             context.Users.RemoveRange(context.Users);
             context.TokenLogins.RemoveRange(context.TokenLogins);
+            context.PlanAtributes.RemoveRange(context.PlanAtributes);
 
             var cashiers = new List<Cashier>()
             {
@@ -409,11 +410,7 @@ namespace ShopProject.API.Data
                 }
             };
 
-            var tokenLogin = new TokenLogin()
-            {
-                Login = "TokenKey",
-                Password = "TokenPass"
-            };
+
             var planAtributes = new List<PlanAtribute>()
             {
                 new PlanAtribute()
@@ -445,7 +442,7 @@ namespace ShopProject.API.Data
             context.AddRange(products);
             context.AddRange(roles);
             context.AddRange(users);
-            context.AddRange(tokenLogin);
+            context.AddRange(planAtributes);
 
             context.SaveChanges();
         }
@@ -467,7 +464,9 @@ namespace ShopProject.API.Data
 
             //Очистка всех покупок
             context.Purchases.RemoveRange(context.Purchases);
+            context.ShopPlans.RemoveRange(context.ShopPlans);
 
+            /*
             //Перебор каждого дня в промежутке дат
             for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
@@ -518,7 +517,145 @@ namespace ShopProject.API.Data
                         context.AddRange(purchaseProductList);
                     }
                 }
+            }*/
+            
+            var cashiers = context.Cashiers.ToList();
+            var products = context.Products.ToList();
+
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                foreach (var cashier in cashiers)
+                {
+                    var randomPurchasesCount = _rnd.Next(15, 25);
+                    for (int i = 0; i < randomPurchasesCount; i++)
+                    {
+                        var purchase = new Purchase()
+                        {
+                            Cashier = cashier,
+                            OperationTime = date.AddHours(8).AddMinutes(_rnd.Next(0, 720)),
+                        };
+
+                        var purchaseProductList = new List<PurchaseProduct>();
+
+                        int count = _rnd.Next(1, 5);
+                        while (purchaseProductList.Count < count)
+                        {
+                            var randomProduct = products[_rnd.Next(products.Count)];
+
+                            if (!purchaseProductList.Any(pp => pp.Product == randomProduct))
+                            {
+                                purchaseProductList.Add(new PurchaseProduct()
+                                {
+                                    Product = randomProduct,
+                                    Purchase = purchase,
+                                    Count = _rnd.Next(1, 5)
+                                });
+                            }
+                        }
+                        context.AddRange(purchaseProductList);
+                    }
+                }
             }
+            
+            /*
+            var shops = context.Shops.ToList();
+            List<ShopPlan> shopPlans = [];
+            foreach(var shop in shops)
+            {
+                var plansCount = _rnd.Next(15, 20);
+                for (int i = 0; i < plansCount;)
+                {
+                    shopPlans.Add(new ShopPlan()
+                    {
+                        PlanAtributeId = context.PlanAtributes.First(x => x.AtributeName == "AverageBill").PlanAtributeId,
+                        ShopId = shop.ShopId,
+                        AtributeValue = _rnd.Next(590, 620),
+                        SetTime = startDate.AddDays(_rnd.Next(0,(endDate - startDate).Days))
+                    });
+                }
+                plansCount = _rnd.Next(15, 20);
+                for (int i = 0; i < plansCount;)
+                {
+                    shopPlans.Add(new ShopPlan()
+                    {
+                        PlanAtributeId = context.PlanAtributes.First(x => x.AtributeName == "AllProfit").PlanAtributeId,
+                        ShopId = shop.ShopId,
+                        AtributeValue = _rnd.Next(130000, 165000),
+                        SetTime = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days))
+                    });
+                }
+                plansCount = _rnd.Next(15, 20);
+                for (int i = 0; i < plansCount;)
+                {
+                    shopPlans.Add(new ShopPlan()
+                    {
+                        PlanAtributeId = context.PlanAtributes.First(x => x.AtributeName == "ClearProfit").PlanAtributeId,
+                        ShopId = shop.ShopId,
+                        AtributeValue = _rnd.Next(80000, 90000),
+                        SetTime = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days))
+                    });
+                }
+                plansCount = _rnd.Next(15, 20);
+                for (int i = 0; i < plansCount;)
+                {
+                    shopPlans.Add(new ShopPlan()
+                    {
+                        PlanAtributeId = context.PlanAtributes.First(x => x.AtributeName == "PurchasesCount").PlanAtributeId,
+                        ShopId = shop.ShopId,
+                        AtributeValue = _rnd.Next(220, 260),
+                        SetTime = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days))
+                    });
+                }
+                
+            }
+            */
+            var shops = context.Shops.ToList();
+            var planAtributes = context.PlanAtributes.ToList();
+
+            List<ShopPlan> shopPlans = new List<ShopPlan>();
+
+            foreach (var shop in shops)
+            {
+                foreach (var atribute in planAtributes)
+                {
+                    var plansCount = _rnd.Next(15, 21); // Генерируем случайное число от 15 до 20
+                    var dates = new List<DateTime>();
+                    for (int i = 0; i < plansCount; i++)
+                    {
+                        var date = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days));
+                        while (dates.Contains(date))
+                        {
+                            date = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days));
+                        }
+                        dates.Add(date);
+                        var plan = new ShopPlan()
+                        {
+                            PlanAtribute = atribute,
+                            Shop = shop,
+                            SetTime = date
+                        };
+
+                        switch (atribute.AtributeName)
+                        {
+                            case "AverageBill":
+                                plan.AtributeValue = _rnd.Next(590, 620);
+                                break;
+                            case "AllProfit":
+                                plan.AtributeValue = _rnd.Next(130000, 165000);
+                                break;
+                            case "ClearProfit":
+                                plan.AtributeValue = _rnd.Next(80000, 90000);
+                                break;
+                            case "PurchasesCount":
+                                plan.AtributeValue = _rnd.Next(220, 260);
+                                break;
+                        }
+
+                        shopPlans.Add(plan);
+                    }
+                }
+            }
+            context.AddRange(shopPlans);
             context.SaveChanges();
         }
     }

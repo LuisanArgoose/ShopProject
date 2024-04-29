@@ -13,10 +13,14 @@ namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
         {
             FillDbCommand = new AsyncRelayCommand(FillDb);
         }
+
+        [ObservableProperty]
+        private bool isLoading;
         public IAsyncRelayCommand FillDbCommand { get; }
         private async Task FillDb()
         {
-            await ClientDbProvider.FillDb(DateTime.Now.AddDays(-30), DateTime.Now);
+            await ClientDbProvider.FillDb(DateTime.Now.AddDays(-90), DateTime.Now);
+
         }
     }
 }
