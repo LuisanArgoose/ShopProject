@@ -93,9 +93,6 @@
 
             <ui:NavigationView.ContentOverlay>
                 <Grid x:Name="PresenterGrid">
-                    <Grid.RowDefinitions>
-                        
-                    </Grid.RowDefinitions>
 
                     <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" ContentSource="wad" />
                     

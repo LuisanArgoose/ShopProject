@@ -1,4 +1,5 @@
-﻿using ShopProject.UI.Data;
+﻿using ShopProject.UI.AuxiliarySystems.AlertSystem;
+using ShopProject.UI.Data;
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,11 @@ namespace ShopProject.UI.Models.SettingsComponents.APISettings
 
         public async Task TestConnection()
         {
-            await ClientDbProvider.TestConnect(Login, Password);
+            var result = await ClientDbProvider.TestConnect(Login, Password);
+            if (result.IsSuccessStatusCode)
+                AlertPoster.PostSuccessAlert("Подключение установлено");
+            else
+                AlertPoster.PostErrorAlert("Ошибка подключения");
             return;
 
         }
