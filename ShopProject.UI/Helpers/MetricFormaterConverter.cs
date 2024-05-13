@@ -8,17 +8,17 @@ using System.Windows.Data;
 
 namespace ShopProject.UI.Helpers
 {
-    public class MainPlanValidationConverter : IValueConverter
+    public class MetricFormaterConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var input = value as Metric;
-            if(input == null)
-            {
-                return false;
-            }
-            return input.MetricName == "MainPlan" ? false : true;
+            var input = value as decimal?;
+            if (input > 0)
+                return "+" + input + "% ↑";
+            else
+                return input + "% ↓";
         }
+
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

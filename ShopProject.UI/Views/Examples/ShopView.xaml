@@ -8,20 +8,39 @@
              xmlns:models="clr-namespace:ShopProject.UI.Models"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" 
+             xmlns:efdbdm="clr-namespace:ShopProject.EFDB.DataModels;assembly=ShopProject.EFDB"
              xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
              xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance ex:ShopVM}"
+             d:DataContext="{d:DesignInstance ex:ShopVM,
+                               IsDesignTimeCreatable=False}"
+             
              
              d:DesignHeight="700" d:DesignWidth="800">
-
+    <!--d:DataContext="{d:DesignInstance ex:ShopVM}"-->
     <UserControl.Resources>
+        <helpers:MetricFormaterConverter x:Key="MetricFormater"/>
+        <helpers:DecimalToColorConverter x:Key="DecimalColor"/>
         <helpers:DateTimeToStringDateConverter x:Key="DateToString"/>
         <helpers:DecimalValidationConverter x:Key="DecimalValidation"/>
         <helpers:MainPlanValidationConverter x:Key="MainPlanValidation"/>
         <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
+        <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ToggleButton Width="48"
+                            Click="ToggleButton_Click"
+                            Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
+                            CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
+                            IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                            Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" PreviewMouseDown="ToggleButton_PreviewMouseDown"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
-    <Grid Margin="10">
+    <!--<Grid Margin="10">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="225"/>
@@ -48,8 +67,8 @@
                         x:Name="EndDate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <StackPanel Grid.Row="3">
 
-                <!--<ui:Button Command="{Binding GetMainShopPlanCommand}" 
-                                Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />-->
+                --><!--<ui:Button Command="{Binding GetMainShopPlanCommand}" 
+                                Appearance="Info" Content="Общий план" HorizontalAlignment="Stretch" Margin="0,5,0,0"  />--><!--
                 <ProgressBar Margin="0,5,0,0" IsIndeterminate="{Binding IsLoading}"/>
                 <ComboBox x:Name="PlanAtributes" ItemsSource="{Binding PlanAtributesCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPlanAtribute}"  Margin="0,5,0,0" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
@@ -133,6 +152,148 @@
             LegendPosition="Right">
         </lvc:CartesianChart>
 
-    </Grid>
+    </Grid>-->
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="500"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="500"/>
+            
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:TextBlock FontTypography="Title" Text="Общий план" Padding="0,5"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <RadioButton x:Name="FirstBut" IsChecked="True" GroupName="123" Content="7Д" Margin="5,0" Command="{Binding SetTimeIntervalCommand}" CommandParameter="7"/>
+                <RadioButton GroupName="123" Content="1М" Margin="5,0" Command="{Binding SetTimeIntervalCommand}" CommandParameter="30"/>
+                <RadioButton GroupName="123" Content="3М" Margin="5,0" Command="{Binding SetTimeIntervalCommand}" CommandParameter="90"/>
+                <RadioButton GroupName="123" Content="6М" Margin="5,0" Command="{Binding SetTimeIntervalCommand}" CommandParameter="180"/>
+                <RadioButton GroupName="123" Content="1Г" Margin="5,0" Command="{Binding SetTimeIntervalCommand}" CommandParameter="365"/>
 
+
+            </StackPanel>
+            <ProgressBar IsIndeterminate="{Binding IsLoading}" Grid.Row="1"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <lvc:CartesianChart 
+        
+                x:Name="ShopChart"
+                Grid.Column="1"
+                Grid.RowSpan="3"
+                Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                Sections ="{Binding MainSections}"
+                YAxes="{Binding MainYAxes}"
+                Series="{Binding MainSeries, UpdateSourceTrigger=PropertyChanged}"
+                XAxes="{Binding MainXAxes}"
+                LegendPosition="Hidden">
+            </lvc:CartesianChart>
+        </Grid>
+        <Grid Grid.Row="2">
+            <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
+        </Grid>
+        <Grid Grid.Row="3">
+            <ItemsControl ItemsSource="{Binding MetricsDataList}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type efdbdm:MetricData}">
+                        <Border  
+                            Margin="5"
+                            Padding="10"
+                            Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1,1,1,0"
+                            CornerRadius="8">
+                            <StackPanel>
+                                <ui:TextBlock
+                                    Margin="0"
+                                    FontTypography="BodyStrong"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="{Binding MetricName, Mode=OneTime}"
+                                    FontSize="18"
+                                    TextWrapping="WrapWithOverflow" />
+                                <ui:TextBlock
+                                    Margin="0"
+                                    FontTypography="BodyStrong"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="{Binding MetricValue, Mode=OneTime}"
+                                    TextWrapping="WrapWithOverflow" FontSize="22" />
+                                <ui:TextBlock
+                                    Margin="0,3,0,0"
+                                    FontTypography="Body"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="По плану"
+                                    FontSize="14"
+                                    TextWrapping="WrapWithOverflow" />
+                                <ui:TextBlock
+                                    Margin="0"
+                                    FontTypography="Body"
+                                    Foreground="{Binding MetricPlanResult, Converter={StaticResource DecimalColor}}"
+                                    Text="{Binding MetricPlanResult, Mode=OneTime, Converter={StaticResource MetricFormater}}"
+                                    TextWrapping="WrapWithOverflow" FontSize="18" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ui:VirtualizingWrapPanel
+                                    IsItemsHost="True"
+                                    ItemSize="200,130"
+                                    Orientation="Vertical"
+                                    SpacingMode="Uniform"
+                                    StretchItems="True" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+             
+            </ItemsControl>
+        </Grid>
+        <Grid Grid.Row="4" >
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel>
+                
+            
+            <ui:TextBlock FontTypography="Title" Text="Подробный план метрик" Padding="0,5"/>
+            <ComboBox Margin="5" Grid.Column="1" Height="42" MinWidth="200"  x:Name="PlanAtributes" ItemsSource="{Binding MetricsCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMetric}"  SelectedIndex="0" HorizontalAlignment="Left">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type efdb:Metric}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                 Margin="6,3"
+                                 Text="{Binding MetricViewName, Mode=OneWay}" />
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+
+            </ComboBox>
+            </StackPanel>
+            <ProgressBar Grid.Row="1" />
+        </Grid>
+        <Grid Grid.Row="5">
+            <lvc:CartesianChart 
+    
+        x:Name="MetricChart"
+        Grid.Column="1"
+        Grid.RowSpan="3"
+        Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+        Sections ="{Binding MainSections}"
+        YAxes="{Binding MainYAxes}"
+        Series="{Binding MainSeries, UpdateSourceTrigger=PropertyChanged}"
+        XAxes="{Binding MainXAxes}"
+        LegendPosition="Right" PreviewMouseWheel="ShopChart_PreviewMouseWheel">
+            </lvc:CartesianChart>
+        </Grid>
+    </Grid>
 </UserControl>

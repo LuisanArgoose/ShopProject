@@ -126,6 +126,12 @@ namespace ShopProject.UI.Data
             var response = await GetAlertDecorator(url, "Создание стартовых данных");
             return response;
         }
+        public static async Task<HttpResponseMessage> ClearDb()
+        {
+            var url = "ServerDb/ClearDataBase";
+            var response = await GetAlertDecorator(url, "Очистка базы данных");
+            return response;
+        }
 
         public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
         {
@@ -160,11 +166,18 @@ namespace ShopProject.UI.Data
 
         }
 
-        // Получение списка доступных атрибутов
-        public static async Task<HttpResponseMessage> GetPlanAtributesCollection()
+        public static async Task<HttpResponseMessage> GetMainShopInfo(int shopId, int daysInterval)
         {
-            var url = "ServerDb/GetPlanAtributesCollection";
-            var response = await GetAlertDecorator(url, "Получение списка доступных атрибутов");
+            var url = "ServerDb/GetMainShopInfo?shopId=" + shopId + "&daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение основных данных магазина");
+            return response;
+        }
+
+        // Получение списка метрик
+        public static async Task<HttpResponseMessage> GetMetricsCollection()
+        {
+            var url = "ServerDb/GetMetricsCollection";
+            var response = await GetAlertDecorator(url, "Получение списка метрик");
             return response;
             
         }

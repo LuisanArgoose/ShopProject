@@ -19,29 +19,17 @@ public partial class ShopProjectDbContext : DbContext
     }
 
     public virtual DbSet<Cashier> Cashiers { get; set; }
-
-    public virtual DbSet<PlanAtribute> PlanAtributes { get; set; }
-
+    public virtual DbSet<Metric> Metrics { get; set; }
     public virtual DbSet<Product> Products { get; set; }
-
     public virtual DbSet<ProductPlan> ProductPlans { get; set; }
-
     public virtual DbSet<Purchase> Purchases { get; set; }
-
     public virtual DbSet<PurchaseProduct> PurchaseProducts { get; set; }
-
     public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Shop> Shops { get; set; }
-
     public virtual DbSet<ShopPlan> ShopPlans { get; set; }
-
     public virtual DbSet<TokenLogin> TokenLogins { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<WorkerPlan> WorkerPlans { get; set; }
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.Models
 {
-    public partial class PlanAtribute : ObservableObject
+    public partial class Metric : ObservableObject
     {
         [ObservableProperty]
-        private int _planAtributeId;
+        private int _MetricId;
 
         [ObservableProperty]
-        private string _atributeName = null!;
+        private string _MetricName = null!;
         [ObservableProperty]
-        private string _atributeViewName = null!;
+        private string _MetricViewName = null!;
 
         [ObservableProperty]
         private ICollection<ShopPlan> _shopPlans = new List<ShopPlan>();

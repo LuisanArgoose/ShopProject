@@ -91,11 +91,11 @@
             </ui:NavigationView.FooterMenuItems>
 
 
-            <ui:NavigationView.ContentOverlay>
-                <Grid x:Name="PresenterGrid">
+            <ui:NavigationView.ContentOverlay >
+                <Grid x:Name="PresenterGrid" >
 
-                    <ui:SnackbarPresenter Grid.Row="0" x:Name="SnackbarPresenter" ContentSource="wad" />
-                    
+                    <ui:SnackbarPresenter Grid.Row="0" ContentSource="wad"/>
+
                 </Grid>
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>

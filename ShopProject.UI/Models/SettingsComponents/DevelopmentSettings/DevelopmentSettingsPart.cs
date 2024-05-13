@@ -38,8 +38,12 @@ namespace ShopProject.UI.Models.SettingsComponents.DevelopmentSettings
         {
             await ClientDbProvider.InitDb();
         }
+        [RelayCommand]
+        private async Task ClearDb()
+        {
+            await ClientDbProvider.ClearDb();
+        }
 
-        
         private FillDbSettings _fillDbSettings;
         public FillDbSettings FillDbSettings
         {

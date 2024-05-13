@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ShopProject.EFDB.Models.Cashier">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAkAAAAAAAAAIAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Cashier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.PlanAtribute">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAADBAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\PlanAtribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.Product">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAIAAAAAABAAAAAAAAAAAAIAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Models\Product.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.ProductPlan">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAQAAAgAAAAAAAAAAAIAAAAAAAAIAAAAAgAAA=</HashCode>
+      <FileName>Models\ProductPlan.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.Purchase">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAQAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAQAAAAg=</HashCode>
+      <FileName>Models\Purchase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.PurchaseProduct">
+    <Position X="7.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAFAAAAAAAAAAAAIAAAAAAAAICAAAAAAAg=</HashCode>
+      <FileName>Models\PurchaseProduct.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.Role">
+    <Position X="4" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAEAAAAQAAAABAAAAJAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Role.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.Shop">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAgCAAAAAAAAAAAAAEAIgAAAAAAUAAAAA=</HashCode>
+      <FileName>Models\Shop.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.ShopPlan">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAKAAgAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\ShopPlan.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.User">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQIAAAAAAAAgAAAAAAAAAIAAAAAABAIAAABIAAAAAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopProject.EFDB.Models.WorkerPlan">
+    <Position X="0.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAACAQAAAgIAAAAAAAAAAAEAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Models\WorkerPlan.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

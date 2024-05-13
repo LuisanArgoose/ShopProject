@@ -224,6 +224,25 @@
                         <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0" >
                             <ui:CardControl.Header>
                                 <ui:TextBlock
+            FontSize="16"
+            Text="Очистка базы данных"
+            TextWrapping="WrapWithOverflow" />
+                            </ui:CardControl.Header>
+
+                            <StackPanel  Orientation="Horizontal"   >
+
+                                <ui:Button 
+            Content="Очистить"
+            Command="{Binding ViewModel.Settings.SettingsModel.DevelopmentSettingsPart.ClearDbCommand}"/>
+
+
+                            </StackPanel>
+
+
+                        </ui:CardControl>
+                        <ui:CardControl Padding="20,10,20,10" Margin="0,10,0,0" >
+                            <ui:CardControl.Header>
+                                <ui:TextBlock
                                     FontSize="16"
                                     Text="Создание стартовых данных"
                                     TextWrapping="WrapWithOverflow" />

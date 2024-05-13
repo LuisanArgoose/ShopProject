@@ -12,13 +12,13 @@ namespace ShopProject.EFDB.Models
         private int _shopPlanId;
 
         [ObservableProperty]
-        private int _planAtributeId;
+        private int _metricId;
 
         [ObservableProperty]
-        private PlanAtribute _planAtribute = null!;
+        private Metric _metric = null!;
 
         [ObservableProperty]
-        private decimal _atributeValue;
+        private decimal _metricValue;
 
         [ObservableProperty]
         private DateTime _setTime;

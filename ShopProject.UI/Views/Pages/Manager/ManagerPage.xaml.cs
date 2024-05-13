@@ -42,5 +42,8 @@ namespace ShopProject.UI.Views.Pages.Manager
         {
             ViewModel.SelectShopWithUser();
         }
+
+
+
     }
 }

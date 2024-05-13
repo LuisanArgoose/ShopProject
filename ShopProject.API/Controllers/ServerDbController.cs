@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Collections;
 using System.Globalization;
 using ShopProject.EFDB.DataModels;
+using Microsoft.VisualBasic;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -54,6 +55,15 @@ namespace ShopProject.API.Controllers
             return Json(user, _options);
         }
 
+        [HttpGet("ClearDataBase")]
+        public IActionResult ClearDataBase()
+        {
+
+            DbFiller.ClearDb(_context);
+
+            return Ok();
+        }
+
         [HttpGet("InitializeDataBase")]
         public IActionResult InitializeDataBase()
         {
@@ -91,16 +101,12 @@ namespace ShopProject.API.Controllers
             }
         }
 
-        [HttpGet("GetMainShopPlan")]
-        public IActionResult GetMainShopPlan(int shopId, string startDate, string endDate)
+        [HttpGet("GetMainShopInfo")]
+        public IActionResult GetMainShopInfo(int shopId, int daysInterval)
         {
             //Получаю дату начала и конца периода 
-            DateTime startDateD = DateTime.Parse(startDate);
-            DateTime endDateD = DateTime.Parse(endDate);
+            
 
-
-            // Установка соответствующ
-            TrueData(ref startDateD, ref endDateD);
 
 
             //Нахожу магазин по ID
@@ -108,78 +114,114 @@ namespace ShopProject.API.Controllers
             if(shop == null) { return BadRequest("Shop not found"); }
 
             //Список данных
-            ShopStatsData shopStatsList = GetShopStatsDay(shop, startDateD, endDateD); // GetShopStatsDay(shop, startDateD, endDateD);
+            ShopStatsData shopStatsList = GetShopStatsDay(shop, daysInterval); // GetShopStatsDay(shop, startDateD, endDateD);
 
 
 
 
             return Json(shopStatsList, _options);
         }
-
-        private ShopStatsData GetShopStatsDay(Shop shop, DateTime startDate, DateTime endDate)
+        
+        private ShopStatsData GetShopStatsDay(Shop shop, int daysInterval)
         {
-
-            ShopStatsData shopStatsData = new ShopStatsData();
+            DateTime startDate = DateTime.Today.AddDays(-daysInterval);
+            DateTime endDate = DateTime.Today;
+            ShopStatsData shopStatsData = new ShopStatsData()
+            {
+                MetricsData =
+                [
+                    new("Количество продаж"),
+                    new("Средний чек"),
+                    new("Выручка"),
+                    new("Прибыль"),
+                ]
+            };
             var allPurchasesInShop = _context.Purchases
                 .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
                     x.OperationTime.Date >= startDate &&
-                    x.OperationTime.Date <= endDate);
-            DateTime currentDate = startDate;
-            while (currentDate <= endDate)
+                    x.OperationTime.Date <= endDate).Include("PurchaseProducts");
+
+
+            
+            for (int daysCount = 0; daysCount < daysInterval; daysCount++)
             {
-                var selectedDay = currentDate;
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+                var selectedDay = DateTime.Today.AddDays(-daysInterval + daysCount);
+                var allPurchasesInShopToday = allPurchasesInShop.Where(x => x.OperationTime.Date == selectedDay);
+                var daysSalesCount = allPurchasesInShopToday.Count();
+                var daysRevenue = allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * v.Product.SellPrice).Sum()).Sum();
+                var daysProfit = allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * (v.Product.SellPrice - v.Product.CostPrice) * 0.87m).Sum()).Sum();
+                var averageBill = daysSalesCount != 0 ? daysRevenue / daysSalesCount : 0;
 
-                var daysPurchasesCount = daysPurchaseProducts.Count();
 
-                var daysClearProfit = daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum();
-
-                var averageBill = daysPurchasesCount != 0 ? daysAllProfit / daysPurchasesCount : 0;
-
-                decimal? GetPlanAtributeValue(string atribute)
+                decimal? GetMetricValue(string metric)
                 {
-                    var result = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
-                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date < currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
-                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date > currentDate.Date && x.PlanAtribute.AtributeName == atribute && x.ShopId == shop.ShopId);
+                    var result = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == selectedDay.Date && x.Metric.MetricName == metric && x.ShopId == shop.ShopId);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date < selectedDay.Date && x.Metric.MetricName == metric && x.ShopId == shop.ShopId);
+                    result ??= _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date > selectedDay.Date && x.Metric.MetricName == metric && x.ShopId == shop.ShopId);
 
-                    return result?.AtributeValue;
+                    return result?.MetricValue;
 
                 }
 
-                var averageBillAtributeValue = GetPlanAtributeValue("AverageBill");
-                var averageBillPercent = averageBillAtributeValue != null ? (decimal?)Math.Round((decimal)(averageBill * 100 / averageBillAtributeValue), 2, MidpointRounding.AwayFromZero): null;
+                
+                var daysSalesCountMetricValue = GetMetricValue("SalesCount");
+                var daysSalesCountPercent = daysSalesCountMetricValue != null ? (decimal?)Math.Round((decimal)(daysSalesCount * 100 / daysSalesCountMetricValue), 2, MidpointRounding.AwayFromZero) : null;
+                shopStatsData.MetricsData[0].MetricValue += daysSalesCount;
+                shopStatsData.MetricsData[0].MetricPlanResult += daysSalesCountPercent;
 
-                var daysPurchasesCountAtributeValue = GetPlanAtributeValue("PurchasesCount");
-                var daysPurchasesCountPercent = daysPurchasesCountAtributeValue != null ? (decimal?)Math.Round((decimal)(daysPurchasesCount * 100 / daysPurchasesCountAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
+                var averageBillMetricValue = GetMetricValue("AverageBill");
+                var averageBillPercent = averageBillMetricValue != null ? (decimal?)Math.Round((decimal)(averageBill * 100 / averageBillMetricValue), 2, MidpointRounding.AwayFromZero): null;
+                shopStatsData.MetricsData[1].MetricValue += averageBill;
+                shopStatsData.MetricsData[1].MetricPlanResult += averageBillPercent;
 
-                var daysAllProfitAtributeValue = GetPlanAtributeValue("AllProfit");
-                var daysAllProfitPercent = daysAllProfitAtributeValue != null ? (decimal?)Math.Round((decimal)(daysAllProfit * 100 / daysAllProfitAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
+                var daysRevenueMetricValue = GetMetricValue("Revenue");
+                var daysRevenuePercent = daysRevenueMetricValue != null ? (decimal?)Math.Round((decimal)(daysRevenue * 100 / daysRevenueMetricValue), 2, MidpointRounding.AwayFromZero) : null;
+                shopStatsData.MetricsData[2].MetricValue += daysRevenue;
+                shopStatsData.MetricsData[2].MetricPlanResult += daysRevenuePercent;
 
-                var clearProfitAtributeValue = GetPlanAtributeValue("ClearProfit");
-                var daysClearProfitPercent = clearProfitAtributeValue != null ? (decimal?)Math.Round((decimal)(daysClearProfit * 100 / clearProfitAtributeValue), 2, MidpointRounding.AwayFromZero) : null;
+                var profitMetricValue = GetMetricValue("Profit");
+                var daysProfitPercent = profitMetricValue != null ? (decimal?)Math.Round((decimal)(daysProfit * 100 / profitMetricValue), 2, MidpointRounding.AwayFromZero) : null;
+                shopStatsData.MetricsData[3].MetricValue += daysProfit;
+                shopStatsData.MetricsData[3].MetricPlanResult += daysProfitPercent;
 
                 shopStatsData.Day.Add(selectedDay);
+                shopStatsData.SalesCount.Add((decimal?)daysSalesCountPercent);
                 shopStatsData.AverageBill.Add((decimal?)averageBillPercent);
-                shopStatsData.PurchasesCount.Add((decimal?)daysPurchasesCountPercent);
-                shopStatsData.AllProfit.Add((decimal?)daysAllProfitPercent);
-                shopStatsData.ClearProfit.Add((decimal?)daysClearProfitPercent);
+                shopStatsData.Revenue.Add((decimal?)daysRevenuePercent);
+                shopStatsData.Profit.Add((decimal?)daysProfitPercent);
 
-                currentDate = currentDate.AddDays(1);
+;
             }
+            shopStatsData.MetricsData[1].MetricValue = (decimal?)Math.Round((decimal)(shopStatsData.MetricsData[1].MetricValue / daysInterval), 2, MidpointRounding.AwayFromZero);
+
+            foreach (var metric in shopStatsData.MetricsData)
+            {
+                metric.MetricPlanResult = (decimal?)Math.Round((decimal)(metric.MetricPlanResult / daysInterval - 100), 2, MidpointRounding.AwayFromZero);
+            }
+
             return shopStatsData;
         }
 
+        [HttpGet("GetMainShopMetrics")]
+        public IActionResult GetMainShopMetrics(int shopId, int daysInterval)
+        {
+
+            //Нахожу магазин по ID
+            var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
+            if (shop == null) { return BadRequest("Shop not found"); }
+
+            List<MetricData> metricsDataList = [];
 
 
 
+            
+            return Json(metricsDataList, _options);
+        }
+        
 
 
 
-
-            [HttpGet("GetShopsCollection")]
+        [HttpGet("GetShopsCollection")]
         public IActionResult GetShopsCollection()
         {
             var shopCollection = _context.Shops.Select(x => x);
@@ -187,15 +229,15 @@ namespace ShopProject.API.Controllers
             return Json(shopCollection, _options);
         }
 
-
-        [HttpGet("GetPlanAtributesCollection")]
+        
+        [HttpGet("GetMetricsCollection")]
         public IActionResult GetPlanAtributesCollection()
         {
-            var planAtributesCollection = _context.PlanAtributes;
+            var metricsCollection = _context.Metrics;
 
-            return Json(planAtributesCollection, _options);
+            return Json(metricsCollection, _options);
         }
-
+       
 
         [HttpGet("GetShopInfo")]
         public IActionResult GetShopInfo(int shopId)
@@ -205,7 +247,7 @@ namespace ShopProject.API.Controllers
                 return BadRequest();
             return Json(shop, _options);
         }
-
+        /*
         [HttpGet("GetAtributedShopPlansCollection")]
         public IActionResult GetAtributedShopPlansCollection(int shopId, int planAtributeId, string startDate, string endDate )
         {
@@ -229,7 +271,8 @@ namespace ShopProject.API.Controllers
 
             return Json(plansCollection, _options);
         }
-
+        */
+        /*
         [HttpGet("GetAtributeObjectsCollection")]
         public IActionResult GetAtributeObjectsCollection(int shopId, int planAtributeId, string startDate, string endDate)
         {
@@ -261,7 +304,7 @@ namespace ShopProject.API.Controllers
 
 
             return Json(atributeValuesCollection, _options);
-        }
+        }*/
 
         private List<AtributeObject> GetAverageBillAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
         {
@@ -419,7 +462,7 @@ namespace ShopProject.API.Controllers
                 
 
         }
-
+        /*
         [HttpPost("AddShopPlan")]
         public IActionResult AddShopPlan(JsonElement content)
         {
@@ -438,7 +481,7 @@ namespace ShopProject.API.Controllers
             _context.SaveChanges();
             return Ok();
         }
-
+        */
         [HttpGet("Test")]
         public IActionResult Test(Shop shop, DateTime startDate, DateTime endDate)
         {

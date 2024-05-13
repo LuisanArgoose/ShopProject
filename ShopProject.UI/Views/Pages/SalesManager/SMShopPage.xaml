@@ -38,7 +38,7 @@
         <Grid Margin="20,0,10,0" Grid.Row="0" Grid.Column="1" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Row="0"

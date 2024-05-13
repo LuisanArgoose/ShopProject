@@ -43,7 +43,7 @@ namespace ShopProject.UI.ViewModels.Examples
 
                 // Магазин по Id
                 GetShopInfoCommand.Execute(this);
-                OnSetDates();
+                
             }
         }
         public ShopVM(int shopId)
@@ -53,44 +53,50 @@ namespace ShopProject.UI.ViewModels.Examples
             ShopId = shopId;
         }
 
+        private int _daysInterval = 7;
 
 
-        private DateTime _startDate = DateTime.Today.AddDays(-31);
-        public DateTime StartDate
+        [RelayCommand]
+        public void SetTimeInterval(string days)
         {
-            get => _startDate;
-            set
+            try
             {
-                SetProperty(ref _startDate, value);
-                OnSetDates();
+                _daysInterval = int.Parse(days);
+                LoadMainPlan();
+                LoadMetricsList();
+
+            }
+            catch
+            {
+
             }
         }
 
-        private DateTime _endDate = DateTime.Today;
-
-        public DateTime EndDate
+        private async void LoadMainPlan()
         {
-            get => _endDate;
-            set
-            {
-                SetProperty(ref _endDate, value);
-                OnSetDates();
-            }
+            IsLoading = true;
+            await GetMainShopInfo().WaitAsync(CancellationToken.None);
+            IsLoading = false;
         }
 
-
+        private async void LoadMetricsList()
+        {
+            IsLoading = true;
+            await GetMetricsCollection().WaitAsync(CancellationToken.None);
+            IsLoading = false;
+        }
+        /*
         private async void OnSetDates()
         {
             await GetPlanAtributesCollectionCommand.ExecuteAsync(this).WaitAsync(CancellationToken.None);
             SelectedPlanAtribute = PlanAtributesCollection[0];
-        }
+        }*/
+
+        // отображение процесса загрузки
         [ObservableProperty]
         private bool _isLoading;
 
-        //OnPropertyChanged(nameof(Series));
-        //OnPropertyChanged(nameof(XAxes));
-
-        // Загрузка данных магазина с API
+        // Загрузка первичных данных магазина с API
         [RelayCommand]
         private async Task GetShopInfo()
         {
@@ -107,115 +113,108 @@ namespace ShopProject.UI.ViewModels.Examples
         [ObservableProperty]
         private ShopStatsData _shopStatsData = new ShopStatsData();
 
-        [RelayCommand]
-        private async Task GetMainShopPlan()
+        [ObservableProperty]
+        private List<MetricData> _metricsDataList = new List<MetricData>();
+        private async Task GetMainShopInfo()
         {
-            IsLoading = true;
-            var response = await ClientDbProvider.GetMainShopPlan(ShopId, EndDate, StartDate).WaitAsync(CancellationToken.None);
+            // Данные общего плана
+            var response = await ClientDbProvider.GetMainShopInfo(ShopId, _daysInterval).WaitAsync(CancellationToken.None);
             var result = await AlertDeserializer.Deserialize<ShopStatsData>(response, "Загрузка главного плана").WaitAsync(CancellationToken.None);
-            if (result != null)
+            if (result == null)
             {
-                ChartClear();
-                ShopStatsData = result;
-                SetChartLabels(ShopStatsData.Day.Select(x => x.ToString("dd.MM.yyyy")).ToList());
-                var daysCount = EndDate - StartDate;
-                var series = new List<ISeries>();
-
-                if (ShopStatsData.AverageBill.All(x => x != null))
-                {
-                    series.Add(new ColumnSeries<decimal?>
-                    {
-                        ZIndex = 1,
-                        Fill = new SolidColorPaint
-                        {
-                            
-                            Color = SKColors.DeepSkyBlue,
-                        },
-                        YToolTipLabelFormatter = point => $"{point.Model}%",
-                        Name = "Среднее значение заказа",
-                        Values = ShopStatsData.AverageBill,
-                    });
-                }
-                if (ShopStatsData.AllProfit.All(x => x != null))
-                {
-                    series.Add(new ColumnSeries<decimal?>
-                    {
-                        ZIndex = 1,
-                        Fill = new SolidColorPaint
-                        {
-                            Color = SKColors.DarkOrange,
-                        },
-                        YToolTipLabelFormatter = point => $"{point.Model}%",
-                        Name = "Общий доход",
-                        Values = ShopStatsData.AllProfit,
-                    });
-                }
-                if (ShopStatsData.ClearProfit.All(x => x != null))
-                {
-                    series.Add(new ColumnSeries<decimal?>
-                    {
-                        ZIndex = 1,
-                        Fill = new SolidColorPaint
-                        {
-                            Color = SKColors.Indigo,
-                        },
-                        YToolTipLabelFormatter = point => $"{point.Model}%",
-                        Name = "Чистая прибыль",
-                        Values = ShopStatsData.ClearProfit,
-                    });
-                }
-                if (ShopStatsData.PurchasesCount.All(x => x != null))
-                {
-                    series.Add(new ColumnSeries<decimal?>
-                    {
-                        ZIndex = 1,
-                        Fill = new SolidColorPaint
-                        {
-                            Color = SKColors.Salmon,
-                        },
-                        YToolTipLabelFormatter = point => $"{point.Model}%",
-                        Name = "Количество транзакций",
-                        Values = ShopStatsData.PurchasesCount,
-                    });
-                }
-                Sections = new()
-                {
-                    
-                    new RectangularSection
-                    {
-                        
-                        Label = "План",
-                        ZIndex = 10,
-                        Yi = 100,
-                        Yj = 100,
-                        Stroke = new SolidColorPaint
-                        {
-                            Color = SKColors.Red,
-                            StrokeThickness = 3,
-                            PathEffect = new DashEffect(new float[] { 6, 6 })
-                        }
-                    },
-                };
-
-                YAxes =  new()
-                {
-                    new Axis()
-                    {
-                         Labeler = (value) => value.ToString() + "%",
-                         LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
-                         SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
-                         MinLimit = 0
-                    }
-                };
-
-                SetChartCollection(series);
-
-            }                
+                return;
+            }
+            MetricsDataList = result.MetricsData;
             
-            IsLoading = false;
+            ChartClear();
+            ShopStatsData = result;
+            SetChartLabels(ShopStatsData.Day.Select(x => x.ToString("dd.MM.yyyy")).ToList());
+            var daysCount = _daysInterval;
+            var series = new List<ISeries>();
+
+            if (ShopStatsData.AverageBill.All(x => x != null))
+            {
+                series.Add(new LineSeries<decimal?>
+                {
+                    ZIndex = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    YToolTipLabelFormatter = point => $"{point.Model}%",
+                    Name = "Средний чек",
+                    Values = ShopStatsData.AverageBill,
+                });
+            }
+            if (ShopStatsData.Revenue.All(x => x != null))
+            {
+                series.Add(new LineSeries<decimal?>
+                {
+                    ZIndex = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    YToolTipLabelFormatter = point => $"{point.Model}%",
+                    Name = "Выручка",
+                    Values = ShopStatsData.Revenue,
+                });
+            }
+            if (ShopStatsData.Profit.All(x => x != null))
+            {
+                series.Add(new LineSeries<decimal?>
+                {
+                    ZIndex = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    YToolTipLabelFormatter = point => $"{point.Model}%",
+                    Name = "Прибыль",
+                    Values = ShopStatsData.Profit,
+                });
+            }
+            if (ShopStatsData.SalesCount.All(x => x != null))
+            {
+                series.Add(new LineSeries<decimal?>
+                {
+                    ZIndex = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    YToolTipLabelFormatter = point => $"{point.Model}%",
+                    Name = "Количество продаж",
+                    Values = ShopStatsData.SalesCount,
+                });
+            }
+            MainSections = new()
+            {
+                    
+                new RectangularSection
+                {
+                        
+                    Label = "План",
+                    ZIndex = 10,
+                    Yi = 100,
+                    Yj = 100,
+                    Stroke = new SolidColorPaint
+                    {
+                        Color = SKColors.Red,
+                        StrokeThickness = 3,
+                        PathEffect = new DashEffect(new float[] { 6, 6 })
+                    }
+                },
+            };
+
+            MainYAxes =  new()
+            {
+                new Axis()
+                {
+                        Labeler = (value) => value.ToString() + "%",
+                        LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
+                        SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
+                        MinLimit = 0
+                }
+            };
+
+            SetChartCollection(series);
+            
             return;
         }
-
+        /*
         private List<PlanAtribute> AddPlanAtributesCollection(List<PlanAtribute> result)
         {
             var range = new List<PlanAtribute>()
@@ -231,31 +230,30 @@ namespace ShopProject.UI.ViewModels.Examples
 
 
         }
+        */
+        
         [ObservableProperty]
-        private List<PlanAtribute> _planAtributesCollection;
-
+        private List<Metric> _metricsCollection;
+        
         [RelayCommand]
-        private async Task GetPlanAtributesCollection()
+        private async Task GetMetricsCollection()
         {
-            IsLoading = true;
-            var response = await ClientDbProvider.GetPlanAtributesCollection().WaitAsync(CancellationToken.None);
-            var result = await AlertDeserializer.Deserialize<List<PlanAtribute>>(response, "Загрузка коллекции атрибутов").WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetMetricsCollection().WaitAsync(CancellationToken.None);
+            var result = await AlertDeserializer.Deserialize<List<Metric>>(response, "Загрузка коллекции метрик").WaitAsync(CancellationToken.None);
             if (result != null)
             {
-                PlanAtributesCollection = AddPlanAtributesCollection(result);
+                MetricsCollection = result;
             }
                 
-            IsLoading = false;
             return;
         }
+        
+        
+
 
         [ObservableProperty]
-        private List<RectangularSection> _sections;
-
-
-
-        private PlanAtribute _selectedPlanAtribute;
-
+        private Metric _selectedMetric;
+        /*
         public PlanAtribute SelectedPlanAtribute
         {
             get => _selectedPlanAtribute;
@@ -275,10 +273,12 @@ namespace ShopProject.UI.ViewModels.Examples
 
             }
         }
+        */
 
         [ObservableProperty]
         private List<AtributeObject> _atributeObjectsCollection;
 
+        /*
         private async void GetAtributeObjects(PlanAtribute planAtribute)
         {
             IsLoading = true;
@@ -367,9 +367,9 @@ namespace ShopProject.UI.ViewModels.Examples
             IsLoading = false;
             return;
         }
+        */
 
-        
-
+        /*
         [ObservableProperty]
         private List<ShopPlanModel> _atributedShopPlansCollection;
 
@@ -389,8 +389,8 @@ namespace ShopProject.UI.ViewModels.Examples
         private async void OnDeleteShopPlan(object sender, EventArgs e)
         {
             GetAtributeObjects(SelectedPlanAtribute);
-        }
-
+        }*/
+        /*
         [ObservableProperty]
         private ShopPlan _addedPlan = new()
         {
@@ -405,38 +405,27 @@ namespace ShopProject.UI.ViewModels.Examples
             AddedPlan.ShopId = ShopId;
             await ClientDbProvider.AddShopPlan(AddedPlan).WaitAsync(CancellationToken.None);
             GetAtributeObjects(SelectedPlanAtribute);
-        }
-
-        private SKColor GetAtributeColor(string atributeName)
-        {
-            var color = atributeName switch
-            {
-                "AverageBill" =>  SKColors.DeepSkyBlue,
-                "AllProfit" => SKColors.DarkOrange,
-                "ClearProfit" => SKColors.Indigo,
-                "PurchasesCount" => SKColors.Salmon,
-                _ => SKColors.Lavender
-
-            };
-            return color;
-        }
+        } */
 
         [ObservableProperty]
-        public List<ISeries> _series = [];
+        public List<ISeries> _mainSeries = [];
 
         [ObservableProperty]
-        private List<Axis> _YAxes;
+        private List<RectangularSection> _mainSections;
+
+        [ObservableProperty]
+        private List<Axis> _mainYAxes;
 
 
         private void SetChartLabels(List<string> labels)
         {
-            XAxes[0].Labels = labels;
-            OnPropertyChanged(nameof(XAxes));
+            MainXAxes[0].Labels = labels;
+            OnPropertyChanged(nameof(MainXAxes));
         }
 
         private void SetChartCollection(ISeries seriesCollection)
         {
-            Series = new()
+            MainSeries = new()
             {
                 seriesCollection
             };
@@ -445,34 +434,34 @@ namespace ShopProject.UI.ViewModels.Examples
         {
 
 
-            Series = new(seriesCollection);
+            MainSeries = new(seriesCollection);
 
         }
 
         private void ChartClear()
         {
-            YAxes = [];
-            Sections = [];
+            MainYAxes = [];
+            MainSections = [];
         }
 
-        private List<Axis> _XAxes = new()
+        private List<Axis> _mainXAxes = new()
         {
             new Axis
             {
 
-                LabelsRotation = 45,
+                //LabelsRotation = 45,
                 SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
                 SeparatorsAtCenter = false,
                 TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35)),
                 TicksAtCenter = true,
                 LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
-                ForceStepToMin = true,
-                MinStep = 1
+                //ForceStepToMin = true,
+                //MinStep = 1
             }
         };
-        public List<Axis> XAxes
+        public List<Axis> MainXAxes
         {
-            get => _XAxes;
+            get => _mainXAxes;
         }
     }
 }
