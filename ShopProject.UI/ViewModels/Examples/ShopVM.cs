@@ -44,7 +44,8 @@ namespace ShopProject.UI.ViewModels.Examples
 
                 // Магазин по Id
                 GetShopInfoCommand.Execute(this);
-                
+                LoadMainPlan();
+                LoadMetricsList();
             }
         }
         public ShopVM(int shopId)
@@ -116,6 +117,9 @@ namespace ShopProject.UI.ViewModels.Examples
 
         [ObservableProperty]
         private List<MetricData> _metricsDataList = new List<MetricData>();
+
+        [ObservableProperty]
+        private List<MetricData> _nonPlanedMetricsDataList = new List<MetricData>();
         private async Task GetMainShopInfo()
         {
             // Данные общего плана
@@ -125,7 +129,8 @@ namespace ShopProject.UI.ViewModels.Examples
             {
                 return;
             }
-            MetricsDataList = result.MetricsData;
+            MetricsDataList = result.MetricsData.Where(x => x.IsNonPlanedMetric == false).ToList();
+            NonPlanedMetricsDataList = result.MetricsData.Where(x => x.IsNonPlanedMetric == true).ToList();
 
             MainChartClear();
             ShopStatsData = result;
@@ -145,7 +150,7 @@ namespace ShopProject.UI.ViewModels.Examples
                     Values = ShopStatsData.AverageBill,
                 });
             }
-            if (ShopStatsData.Revenue.All(x => x != null))
+            if (ShopStatsData.RevenueInDay.All(x => x != null))
             {
                 series.Add(new LineSeries<decimal?>
                 {
@@ -154,10 +159,10 @@ namespace ShopProject.UI.ViewModels.Examples
                     Fill = null,
                     YToolTipLabelFormatter = point => $"{point.Model}%",
                     Name = "Выручка",
-                    Values = ShopStatsData.Revenue,
+                    Values = ShopStatsData.RevenueInDay,
                 });
             }
-            if (ShopStatsData.Profit.All(x => x != null))
+            if (ShopStatsData.ProfitInDay.All(x => x != null))
             {
                 series.Add(new LineSeries<decimal?>
                 {
@@ -166,10 +171,10 @@ namespace ShopProject.UI.ViewModels.Examples
                     Fill = null,
                     YToolTipLabelFormatter = point => $"{point.Model}%",
                     Name = "Прибыль",
-                    Values = ShopStatsData.Profit,
+                    Values = ShopStatsData.ProfitInDay,
                 });
             }
-            if (ShopStatsData.SalesCount.All(x => x != null))
+            if (ShopStatsData.SalesCountInDay.All(x => x != null))
             {
                 series.Add(new LineSeries<decimal?>
                 {
@@ -178,7 +183,7 @@ namespace ShopProject.UI.ViewModels.Examples
                     Fill = null,
                     YToolTipLabelFormatter = point => $"{point.Model}%",
                     Name = "Количество продаж",
-                    Values = ShopStatsData.SalesCount,
+                    Values = ShopStatsData.SalesCountInDay,
                 });
             }
             MainSections = new()
@@ -244,8 +249,9 @@ namespace ShopProject.UI.ViewModels.Examples
             if (result != null)
             {
                 MetricsCollection = result;
+                SelectedMetric = MetricsCollection.First();
             }
-                
+            
             return;
         }
         
@@ -379,22 +385,24 @@ namespace ShopProject.UI.ViewModels.Examples
         {
             GetMetricPlanData(SelectedMetric);
         }
-        /*
+        
         [ObservableProperty]
         private ShopPlan _addedPlan = new()
         {
             SetTime = DateTime.Today,
-            AtributeValue = 100
+            MetricValue = 100
         };
 
         [RelayCommand]
         private async Task AddShopPlan()
         {
-            AddedPlan.PlanAtributeId = SelectedPlanAtribute.PlanAtributeId;
+            if (SelectedMetric == null)
+                return;
+            AddedPlan.MetricId = SelectedMetric.MetricId;
             AddedPlan.ShopId = ShopId;
             await ClientDbProvider.AddShopPlan(AddedPlan).WaitAsync(CancellationToken.None);
-            GetAtributeObjects(SelectedPlanAtribute);
-        } */
+            GetMetricPlanData(SelectedMetric);
+        } 
         #region MainPlanChart
         [ObservableProperty]
         public List<ISeries> _mainSeries = [];

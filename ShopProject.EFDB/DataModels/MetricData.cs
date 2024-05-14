@@ -9,13 +9,17 @@ namespace ShopProject.EFDB.DataModels
     public partial class MetricData : ObservableObject
     {
 
-        public MetricData(string metricName)
+        public MetricData(string metricName, bool isNonPlanedMetric = false)
         {
             MetricName = metricName;
             MetricOldValue = 0;
             MetricValue = 0;
             MetricPlanResult = 0;
+            IsNonPlanedMetric = isNonPlanedMetric;
         }
+
+        [ObservableProperty]
+        private bool _isNonPlanedMetric;
 
         [ObservableProperty]
         private string _metricName;

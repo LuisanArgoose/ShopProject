@@ -435,8 +435,8 @@ namespace ShopProject.API.Data
             {
                 new Metric()
                 {
-                    MetricName = "SalesCount",
-                    MetricViewName = "Количество продаж"
+                    MetricName = "SalesCountInDay",
+                    MetricViewName = "Продажи в день"
                 },
                 new Metric()
                 {
@@ -445,15 +445,17 @@ namespace ShopProject.API.Data
                 },
                 new Metric()
                 {
-                    MetricName = "Revenue",
-                    MetricViewName = "Выручка"
+                    MetricName = "RevenueInDay",
+                    MetricViewName = "Выручка в день"
                 },
                 new Metric()
                 {
-                    MetricName = "Profit",
-                    MetricViewName = "Прибыль"
+                    MetricName = "ProfitInDay",
+                    MetricViewName = "Прибыль в день"
                 },
-                
+
+
+
             };
             
 
@@ -654,22 +656,15 @@ namespace ShopProject.API.Data
                             Shop = shop,
                             SetTime = date
                         };
-
-                        switch (metric.MetricName)
+                        plan.MetricValue = metric.MetricName switch
                         {
-                            case "AverageBill":
-                                plan.MetricValue = _rnd.Next(590, 620);
-                                break;
-                            case "Revenue":
-                                plan.MetricValue = _rnd.Next(130000, 165000);
-                                break;
-                            case "Profit":
-                                plan.MetricValue = _rnd.Next(80000, 90000);
-                                break;
-                            case "SalesCount":
-                                plan.MetricValue = _rnd.Next(220, 260);
-                                break;
-                        }
+                            "SalesCountInDay" => _rnd.Next(90, 110),
+                            "AverageBill" => _rnd.Next(1450, 1600),
+                            "RevenueInDay" => _rnd.Next(140000, 160000),
+                            "ProfitInDay" => _rnd.Next(60000, 80000),
+                            
+
+                        };
 
                         shopPlans.Add(plan);
                     }

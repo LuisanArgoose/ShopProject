@@ -15,6 +15,8 @@ using System.Collections;
 using System.Globalization;
 using ShopProject.EFDB.DataModels;
 using Microsoft.VisualBasic;
+using ShopProject.EFDB.Migrations;
+using System.Drawing.Drawing2D;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -130,10 +132,15 @@ namespace ShopProject.API.Controllers
             {
                 MetricsData =
                 [
-                    new("Количество продаж"),
+                    new("Продаж в день"),
                     new("Средний чек"),
-                    new("Выручка"),
-                    new("Прибыль"),
+                    new("Выручка в день"),
+                    new("Прибыль в день"),
+
+                    new("Количество продаж", true),
+                    new("Выручка", true),
+                    new("Прибыль", true),
+
                 ]
             };
             var allPurchasesInShop = _context.Purchases
@@ -146,7 +153,7 @@ namespace ShopProject.API.Controllers
             for (int daysCount = 0; daysCount < daysInterval; daysCount++)
             {
                 var selectedDay = DateTime.Today.AddDays(-daysInterval + daysCount);
-                var allPurchasesInShopToday = allPurchasesInShop.Where(x => x.OperationTime.Date == selectedDay);
+                var allPurchasesInShopToday = allPurchasesInShop.Where(x => x.OperationTime.Date == selectedDay.Date);
                 var daysSalesCount = allPurchasesInShopToday.Count();
                 var daysRevenue = allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * v.Product.SellPrice).Sum()).Sum();
                 var daysProfit = allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * (v.Product.SellPrice - v.Product.CostPrice) * 0.87m).Sum()).Sum();
@@ -164,9 +171,9 @@ namespace ShopProject.API.Controllers
                 }
 
                 
-                var daysSalesCountMetricValue = GetMetricValue("SalesCount");
+                var daysSalesCountMetricValue = GetMetricValue("SalesCountInDay");
                 var daysSalesCountPercent = daysSalesCountMetricValue != null ? (decimal?)Math.Round((decimal)(daysSalesCount * 100 / daysSalesCountMetricValue), 2, MidpointRounding.AwayFromZero) : null;
-                shopStatsData.MetricsData[0].MetricValue += daysSalesCount;
+                shopStatsData.MetricsData[4].MetricValue += daysSalesCount;
                 shopStatsData.MetricsData[0].MetricPlanResult += daysSalesCountPercent;
 
                 var averageBillMetricValue = GetMetricValue("AverageBill");
@@ -174,29 +181,38 @@ namespace ShopProject.API.Controllers
                 shopStatsData.MetricsData[1].MetricValue += averageBill;
                 shopStatsData.MetricsData[1].MetricPlanResult += averageBillPercent;
 
-                var daysRevenueMetricValue = GetMetricValue("Revenue");
+                var daysRevenueMetricValue = GetMetricValue("RevenueInDay");
                 var daysRevenuePercent = daysRevenueMetricValue != null ? (decimal?)Math.Round((decimal)(daysRevenue * 100 / daysRevenueMetricValue), 2, MidpointRounding.AwayFromZero) : null;
-                shopStatsData.MetricsData[2].MetricValue += daysRevenue;
+                shopStatsData.MetricsData[5].MetricValue += daysRevenue;
                 shopStatsData.MetricsData[2].MetricPlanResult += daysRevenuePercent;
 
-                var profitMetricValue = GetMetricValue("Profit");
+                var profitMetricValue = GetMetricValue("ProfitInDay");
                 var daysProfitPercent = profitMetricValue != null ? (decimal?)Math.Round((decimal)(daysProfit * 100 / profitMetricValue), 2, MidpointRounding.AwayFromZero) : null;
-                shopStatsData.MetricsData[3].MetricValue += daysProfit;
+                shopStatsData.MetricsData[6].MetricValue += daysProfit;
                 shopStatsData.MetricsData[3].MetricPlanResult += daysProfitPercent;
 
                 shopStatsData.Day.Add(selectedDay);
-                shopStatsData.SalesCount.Add((decimal?)daysSalesCountPercent);
+                shopStatsData.SalesCountInDay.Add((decimal?)daysSalesCountPercent);
                 shopStatsData.AverageBill.Add((decimal?)averageBillPercent);
-                shopStatsData.Revenue.Add((decimal?)daysRevenuePercent);
-                shopStatsData.Profit.Add((decimal?)daysProfitPercent);
+                shopStatsData.RevenueInDay.Add((decimal?)daysRevenuePercent);
+                shopStatsData.ProfitInDay.Add((decimal?)daysProfitPercent);
 
 ;
             }
+           
+            // Количество продаж в день
+            shopStatsData.MetricsData[0].MetricValue = (decimal?)Math.Round((decimal)(shopStatsData.MetricsData[4].MetricValue / daysInterval), 2, MidpointRounding.AwayFromZero);
+
+            //Средний чек
             shopStatsData.MetricsData[1].MetricValue = (decimal?)Math.Round((decimal)(shopStatsData.MetricsData[1].MetricValue / daysInterval), 2, MidpointRounding.AwayFromZero);
 
+
+            shopStatsData.MetricsData[2].MetricValue = (decimal?)Math.Round((decimal)(shopStatsData.MetricsData[5].MetricValue / daysInterval), 2, MidpointRounding.AwayFromZero);
+            shopStatsData.MetricsData[3].MetricValue = (decimal?)Math.Round((decimal)(shopStatsData.MetricsData[6].MetricValue / daysInterval), 2, MidpointRounding.AwayFromZero);
             foreach (var metric in shopStatsData.MetricsData)
             {
-                metric.MetricPlanResult = (decimal?)Math.Round((decimal)(metric.MetricPlanResult / daysInterval - 100), 2, MidpointRounding.AwayFromZero);
+                if(metric.IsNonPlanedMetric == false)
+                    metric.MetricPlanResult = (decimal?)Math.Round((decimal)(metric.MetricPlanResult / daysInterval - 100), 2, MidpointRounding.AwayFromZero);
             }
 
             return shopStatsData;
@@ -247,203 +263,90 @@ namespace ShopProject.API.Controllers
                 return BadRequest();
             return Json(shop, _options);
         }
-        /*
-        [HttpGet("GetAtributedShopPlansCollection")]
-        public IActionResult GetAtributedShopPlansCollection(int shopId, int planAtributeId, string startDate, string endDate )
+        
+        [HttpGet("GetMetricShopPlansCollection")]
+        public IActionResult GetMetricShopPlansCollection(int shopId, int metricId, int daysInterval)
         {
-            //Получаю дату начала и конца периода 
-            DateTime startDateD = DateTime.Parse(startDate);
-            DateTime endDateD = DateTime.Parse(endDate);
-
-            // Установка соответствующих дат
-            TrueData(ref startDateD, ref endDateD);
+            DateTime startDate = DateTime.Today.AddDays(-daysInterval);
+            DateTime endDate = DateTime.Today.AddDays(30);
 
             List<ShopPlan> plansCollection = [];
 
-            var firstPlan = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date <= startDateD.Date && x.ShopId == shopId && x.PlanAtributeId == planAtributeId);
+            var firstPlan = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date <= startDate.Date && x.ShopId == shopId && x.MetricId == metricId);
             if (firstPlan != null) 
                 plansCollection.Add(firstPlan);
             
-            var plans = _context.ShopPlans.Where(x => x.SetTime.Date > startDateD.Date && x.SetTime.Date <= endDateD.Date &&
-                x.ShopId == shopId && x.PlanAtributeId == planAtributeId);
+            var plans = _context.ShopPlans.Where(x => x.SetTime.Date > startDate.Date && x.SetTime.Date <= endDate.Date &&
+                x.ShopId == shopId && x.MetricId == metricId);
             plansCollection.AddRange(plans);
 
 
             return Json(plansCollection, _options);
         }
-        */
-        /*
-        [HttpGet("GetAtributeObjectsCollection")]
-        public IActionResult GetAtributeObjectsCollection(int shopId, int planAtributeId, string startDate, string endDate)
+        
+        
+        [HttpGet("GetMetricPlanDataCollection")]
+        public IActionResult GetMetricPlanDataCollection(int shopId, int metricId, int daysInterval)
         {
             //Получаю дату начала и конца периода 
-            DateTime startDateD = DateTime.Parse(startDate);
-            DateTime endDateD = DateTime.Parse(endDate);
+            DateTime startDate = DateTime.Today.AddDays(-daysInterval);
+            DateTime endDate = DateTime.Today.AddDays(30);
 
-            // Установка соответствующих дат
-            TrueData(ref startDateD, ref endDateD);
 
             //Нахожу магазин по ID
             var shop = _context.Shops.FirstOrDefault(x => x.ShopId == shopId);
             if (shop == null) { return BadRequest("Shop not found"); }
 
-            List<AtributeObject> atributeValuesCollection = [];
+            List<MetricPlanData> atributeValuesCollection = [];
 
-            var atribute = _context.PlanAtributes.FirstOrDefault(x => x.PlanAtributeId == planAtributeId);
-            if (atribute == null)
+            var metric = _context.Metrics.FirstOrDefault(x => x.MetricId == metricId);
+            if (metric == null)
                 return BadRequest();
 
-            atributeValuesCollection = atribute.AtributeName switch
-            {
-                "AverageBill" => GetAverageBillAtributesCollection(shop, startDateD, endDateD),
-                "AllProfit" => GetAllProfitAtributesCollection(shop, startDateD, endDateD),
-                "ClearProfit" => GetClearProfitAtributesCollection(shop, startDateD, endDateD),
-                "PurchasesCount" => GetPurchasesCountAtributesCollection(shop, startDateD, endDateD),
-                _ => []
-            };
+            atributeValuesCollection = GetMetricValues(shop, startDate, endDate, metric.MetricName, daysInterval);
 
 
             return Json(atributeValuesCollection, _options);
-        }*/
+        }
 
-        private List<AtributeObject> GetAverageBillAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
+        private List<MetricPlanData> GetMetricValues(Shop shop, DateTime startDate, DateTime endDate, string metricName, int daysInterval)
         {
-            List<AtributeObject> atributeValuesCollection = [];
+            List<MetricPlanData> MetricValuesCollection = [];
             // Все покупки в данный период времени
             var allPurchasesInShop = _context.Purchases
-               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
-                   x.OperationTime.Date >= startDate &&
-                   x.OperationTime.Date <= endDate);
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.OperationTime.Date >= startDate &&
+                    x.OperationTime.Date <= endDate).Include("PurchaseProducts");
 
-            // Начальная дата
             DateTime currentDate = startDate;
 
             while (currentDate <= endDate)
             {
-                var selectedDay = currentDate;
+                var allPurchasesInShopToday = allPurchasesInShop.Where(x => x.OperationTime.Date == currentDate.Date);
 
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-                var daysAllProfit = daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum();
+                decimal metricValue = metricName switch
+                {
+                   
+                    "AverageBill" => allPurchasesInShopToday.Count() != 0 ? allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * v.Product.SellPrice).Sum()).Sum() / allPurchasesInShopToday.Count() : 0,
+                    "SalesCountInDay" => allPurchasesInShopToday.Count() ,
+                    "RevenueInDay" => allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * v.Product.SellPrice).Sum()).Sum(),
+                    "ProfitInDay" => allPurchasesInShopToday.Select(x => x.PurchaseProducts.Select(v => v.Count * (v.Product.SellPrice - v.Product.CostPrice) * 0.87m).Sum()).Sum(),
+                    _ => 0
+                };
 
-                var daysPurchasesCount = daysPurchaseProducts.Count();
-
-                var averageBill = daysPurchasesCount != 0 ? Math.Round(daysAllProfit / daysPurchasesCount, 2, MidpointRounding.AwayFromZero) : 0;
-
-                atributeValuesCollection.Add(new AtributeObject()
+                MetricValuesCollection.Add(new MetricPlanData()
                 {
                     Day = currentDate,
-                    ArtibuteValue = averageBill
+                    MetricValue = metricValue
                 });
-
                 currentDate = currentDate.AddDays(1);
             }
-
-                return atributeValuesCollection;
+            
+            return MetricValuesCollection;
         }
 
-        private List<AtributeObject> GetAllProfitAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
-        {
-            List<AtributeObject> atributeValuesCollection = [];
-            // Все покупки в данный период времени
-            var allPurchasesInShop = _context.Purchases
-               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
-                   x.OperationTime.Date >= startDate &&
-                   x.OperationTime.Date <= endDate);
 
-            // Начальная дата
-            DateTime currentDate = startDate;
-
-            while (currentDate <= endDate)
-            {
-                var selectedDay = currentDate;
-
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-                var daysAllProfit = Math.Round(daysPurchaseProducts.Select(x => x.Count * x.Product.SellPrice).Sum(), 2, MidpointRounding.AwayFromZero);
-
-                atributeValuesCollection.Add(new AtributeObject()
-                {
-                    Day = currentDate,
-                    ArtibuteValue = daysAllProfit
-                });
-
-                currentDate = currentDate.AddDays(1);
-            }
-
-            return atributeValuesCollection;
-        }
-
-        private List<AtributeObject> GetClearProfitAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
-        {
-            List<AtributeObject> atributeValuesCollection = [];
-            // Все покупки в данный период времени
-            var allPurchasesInShop = _context.Purchases
-               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
-                   x.OperationTime.Date >= startDate &&
-                   x.OperationTime.Date <= endDate);
-
-            // Начальная дата
-            DateTime currentDate = startDate;
-
-            while (currentDate <= endDate)
-            {
-                var selectedDay = currentDate;
-
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-
-                var daysClearProfit = Math.Round(daysPurchaseProducts.Select(x => x.Count * (x.Product.SellPrice - x.Product.CostPrice)).Sum(), 2, MidpointRounding.AwayFromZero);               
-
-                atributeValuesCollection.Add(new AtributeObject()
-                {
-                    Day = currentDate,
-                    ArtibuteValue = daysClearProfit
-                });
-
-                currentDate = currentDate.AddDays(1);
-            }
-
-            return atributeValuesCollection;
-        }
-
-        private List<AtributeObject> GetPurchasesCountAtributesCollection(Shop shop, DateTime startDate, DateTime endDate)
-        {
-            List<AtributeObject> atributeValuesCollection = [];
-            // Все покупки в данный период времени
-            var allPurchasesInShop = _context.Purchases
-               .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
-                   x.OperationTime.Date >= startDate &&
-                   x.OperationTime.Date <= endDate);
-
-            // Начальная дата
-            DateTime currentDate = startDate;
-
-            while (currentDate <= endDate)
-            {
-                var selectedDay = currentDate;
-
-                var daysPurchaseProducts = _context.PurchaseProducts
-                    .Where(x => x.Purchase.Cashier.Shop.ShopId == shop.ShopId &&
-                    x.Purchase.OperationTime.Date == selectedDay);
-
-                var daysPurchasesCount = daysPurchaseProducts.Count();
-
-                
-                atributeValuesCollection.Add(new AtributeObject()
-                {
-                    Day = currentDate,
-                    ArtibuteValue = daysPurchasesCount
-                });
-
-                currentDate = currentDate.AddDays(1);
-            }
-
-            return atributeValuesCollection;
-        }
+        
 
         [HttpGet("DeleteShopPlan")]
         public IActionResult DeleteShopPlan(int shopPlanId)
@@ -462,7 +365,7 @@ namespace ShopProject.API.Controllers
                 
 
         }
-        /*
+        
         [HttpPost("AddShopPlan")]
         public IActionResult AddShopPlan(JsonElement content)
         {
@@ -473,15 +376,15 @@ namespace ShopProject.API.Controllers
                 return BadRequest();
             var planToUpdate = _context.ShopPlans.FirstOrDefault(x => x.SetTime.Date == shopPlan.SetTime.Date && 
                 x.ShopId == shopPlan.ShopId && 
-                x.PlanAtributeId == shopPlan.PlanAtributeId);
+                x.MetricId == shopPlan.MetricId);
             if (planToUpdate != null)
-                planToUpdate.AtributeValue = shopPlan.AtributeValue;
+                planToUpdate.MetricValue = shopPlan.MetricValue;
             else
                 _context.ShopPlans.Add(shopPlan);
             _context.SaveChanges();
             return Ok();
         }
-        */
+        
         [HttpGet("Test")]
         public IActionResult Test(Shop shop, DateTime startDate, DateTime endDate)
         {

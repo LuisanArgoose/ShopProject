@@ -16,7 +16,7 @@
                                IsDesignTimeCreatable=False}"
              
              
-             d:DesignHeight="700" d:DesignWidth="800">
+             d:DesignHeight="2700" d:DesignWidth="800">
     <!--d:DataContext="{d:DesignInstance ex:ShopVM}"-->
     <UserControl.Resources>
         <helpers:MetricFormaterConverter x:Key="MetricFormater"/>
@@ -24,7 +24,9 @@
         <helpers:DateTimeToStringDateConverter x:Key="DateToString"/>
         <helpers:DecimalValidationConverter x:Key="DecimalValidation"/>
         <helpers:MainPlanValidationConverter x:Key="MainPlanValidation"/>
+        <helpers:IsNullToVisibilityConverter x:Key="IsNullToVisibility"/>
         <helpers:BoolToVisibilityConverter x:Key="myVisibilityConverter"/>
+        <helpers:InverseBoolToVisibilityConverter x:Key="myInverseVisibilityConverter"/>
         <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -160,8 +162,11 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="500"/>
-            
+            <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
@@ -195,13 +200,62 @@
             </lvc:CartesianChart>
         </Grid>
         <Grid Grid.Row="2">
-            <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
+            <ui:TextBlock FontTypography="Title" Text="Результаты за период" Padding="0,5"/>
         </Grid>
         <Grid Grid.Row="3">
-            <ItemsControl ItemsSource="{Binding MetricsDataList}">
+            <ItemsControl ItemsSource="{Binding NonPlanedMetricsDataList}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type efdbdm:MetricData}">
                         <Border  
+                            
+                    Margin="5"
+                    Padding="10"
+                    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1,1,1,0"
+                    CornerRadius="8">
+                            <StackPanel>
+                                <ui:TextBlock
+                            Margin="0"
+                            FontTypography="BodyStrong"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="{Binding MetricName, Mode=OneTime}"
+                            FontSize="18"
+                            TextWrapping="WrapWithOverflow" />
+                                <ui:TextBlock
+                            Margin="0"
+                            FontTypography="BodyStrong"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="{Binding MetricValue, Mode=OneTime}"
+                            TextWrapping="WrapWithOverflow" FontSize="22" />
+                               
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ui:VirtualizingWrapPanel
+                            IsItemsHost="True"
+                            ItemSize="200,130"
+                            Orientation="Vertical"
+                            SpacingMode="Uniform"
+                            StretchItems="True" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+            </ItemsControl>
+        </Grid>
+
+        <Grid Grid.Row="4">
+            <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
+        </Grid>
+        <Grid Grid.Row="5">
+            <ItemsControl ItemsSource="{Binding MetricsDataList}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type efdbdm:MetricData}">
+                        <Border
+                            
                             Margin="5"
                             Padding="10"
                             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -223,6 +277,7 @@
                                     Text="{Binding MetricValue, Mode=OneTime}"
                                     TextWrapping="WrapWithOverflow" FontSize="22" />
                                 <ui:TextBlock
+                                    Visibility="{Binding MetricPlanResult, Converter={StaticResource IsNullToVisibility}}"
                                     Margin="0,3,0,0"
                                     FontTypography="Body"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -232,6 +287,7 @@
                                 <ui:TextBlock
                                     Margin="0"
                                     FontTypography="Body"
+                                    Visibility="{Binding MetricPlanResult, Converter={StaticResource IsNullToVisibility}}"
                                     Foreground="{Binding MetricPlanResult, Converter={StaticResource DecimalColor}}"
                                     Text="{Binding MetricPlanResult, Mode=OneTime, Converter={StaticResource MetricFormater}}"
                                     TextWrapping="WrapWithOverflow" FontSize="18" />
@@ -252,7 +308,7 @@
              
             </ItemsControl>
         </Grid>
-        <Grid Grid.Row="4" >
+        <Grid Grid.Row="6" >
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -281,7 +337,7 @@
             </StackPanel>
             <ProgressBar Grid.Row="1" />
         </Grid>
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="7">
             <lvc:CartesianChart 
     
         x:Name="MetricChart"
@@ -291,8 +347,85 @@
         YAxes="{Binding MetricYAxes}"
         Series="{Binding MetricSeries, UpdateSourceTrigger=PropertyChanged}"
         XAxes="{Binding MetricXAxes}"
-        LegendPosition="Right" PreviewMouseWheel="ShopChart_PreviewMouseWheel">
+        LegendPosition="Hidden" PreviewMouseWheel="ShopChart_PreviewMouseWheel">
             </lvc:CartesianChart>
+        </Grid>
+        <Grid Grid.Row="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:TextBlock Grid.Row="0" FontTypography="Title" Text="Список планов" Padding="0,5"/>
+            <Border  
+                Grid.Row="1"
+    Margin="5"
+    Padding="10"
+    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+    BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1,1,1,0"
+    CornerRadius="8">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="300"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                
+                <ui:ListView  Grid.Row="0"  SelectionMode="Single" ItemsSource="{Binding MetricShopPlansCollection, UpdateSourceTrigger=PropertyChanged}" >
+                    <ui:ListView.ItemTemplate >
+                        <DataTemplate DataType="{x:Type models:ShopPlanModel}">
+                            <Grid Margin="0,0,5,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock
+                    FontSize="16"
+                    Margin="6,3,6,0"
+                    Text="{Binding ShopPlan.MetricValue}" FontWeight="Bold" />
+                                    <TextBlock
+                    Margin="6,0,6,3"
+                    Text="{Binding ShopPlan.SetTime, Converter={StaticResource DateToString}}" />
+                                </StackPanel>
+
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                                    <ui:Button 
+                            Margin="2,2,5,2"
+                            Width="36" 
+                            Height="36" 
+                            Command="{Binding DeleteShopPlanCommand}"
+                            CommandParameter="{Binding ShopPlan.ShopPlanId}"
+                            Icon="{ui:SymbolIcon Delete32}"/>
+                                </StackPanel>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+                <ItemsControl Grid.Row="1" Visibility="{Binding IsSalesManager, Converter={StaticResource myVisibilityConverter }}">
+                    <ui:TextBox Height="32" Margin="5" Text="{Binding AddedPlan.MetricValue}" x:Name="PlanValue">
+                    </ui:TextBox>
+                    <DatePicker Height="32" Margin="5" SelectedDate="{Binding AddedPlan.SetTime}"/>
+                    <ui:Button 
+                    Height="32" Margin="5" Command="{Binding AddShopPlanCommand}" 
+                    IsEnabled="{Binding ElementName=PlanValue, Path=Text, Converter={StaticResource DecimalValidation}}" 
+                    Content="Добавить" HorizontalAlignment="Stretch"/>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ui:VirtualizingWrapPanel
+                    IsItemsHost="True"
+                    ItemSize="200,42"
+                    Orientation="Vertical"
+                    SpacingMode="Uniform"
+                    StretchItems="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>
