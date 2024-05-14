@@ -288,10 +288,9 @@
         Grid.Column="1"
         Grid.RowSpan="3"
         Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
-        Sections ="{Binding MainSections}"
-        YAxes="{Binding MainYAxes}"
-        Series="{Binding MainSeries, UpdateSourceTrigger=PropertyChanged}"
-        XAxes="{Binding MainXAxes}"
+        YAxes="{Binding MetricYAxes}"
+        Series="{Binding MetricSeries, UpdateSourceTrigger=PropertyChanged}"
+        XAxes="{Binding MetricXAxes}"
         LegendPosition="Right" PreviewMouseWheel="ShopChart_PreviewMouseWheel">
             </lvc:CartesianChart>
         </Grid>

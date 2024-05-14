@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using LiveChartsCore.Defaults;
 using static SkiaSharp.HarfBuzz.SKShaper;
+using Microsoft.Extensions.Diagnostics.Metrics;
 
 
 namespace ShopProject.UI.ViewModels.Examples
@@ -125,10 +126,10 @@ namespace ShopProject.UI.ViewModels.Examples
                 return;
             }
             MetricsDataList = result.MetricsData;
-            
-            ChartClear();
+
+            MainChartClear();
             ShopStatsData = result;
-            SetChartLabels(ShopStatsData.Day.Select(x => x.ToString("dd.MM.yyyy")).ToList());
+            SetMainChartLabels(ShopStatsData.Day.Select(x => x.ToString("dd.MM.yyyy")).ToList());
             var daysCount = _daysInterval;
             var series = new List<ISeries>();
 
@@ -210,7 +211,7 @@ namespace ShopProject.UI.ViewModels.Examples
                 }
             };
 
-            SetChartCollection(series);
+            SetMainChartCollection(series);
             
             return;
         }
@@ -251,64 +252,59 @@ namespace ShopProject.UI.ViewModels.Examples
         
 
 
-        [ObservableProperty]
         private Metric _selectedMetric;
-        /*
-        public PlanAtribute SelectedPlanAtribute
+        
+        public Metric SelectedMetric
         {
-            get => _selectedPlanAtribute;
+            get => _selectedMetric;
             set
             {
-                SetProperty(ref _selectedPlanAtribute, value);
-                if (_selectedPlanAtribute != null)
+                SetProperty(ref _selectedMetric, value);
+                if (_selectedMetric != null)
                 {
-                    GetAtributeObjects(_selectedPlanAtribute);
+                    GetMetricPlanData(_selectedMetric);
                     
                 }
                 else
                 {
-                    AtributedShopPlansCollection = [];
+                    MetricShopPlansCollection = [];
+                    MetricPlanDataCollection = [];
+                    MetricChartClear();
                 }
                     
 
             }
         }
-        */
+        
 
         [ObservableProperty]
-        private List<AtributeObject> _atributeObjectsCollection;
+        private List<MetricPlanData> _metricPlanDataCollection;
 
-        /*
-        private async void GetAtributeObjects(PlanAtribute planAtribute)
+        
+        private async void GetMetricPlanData(Metric metric)
         {
             IsLoading = true;
-            if (planAtribute.AtributeName == "MainPlan")
-            {
-                AtributedShopPlansCollection = [];
-                await GetMainShopPlanCommand.ExecuteAsync(this).WaitAsync(CancellationToken.None);
-                return;
-            }
-            await GetAtributedShopPlans(planAtribute).WaitAsync(CancellationToken.None);
-            var response = await ClientDbProvider.GetAtributeObjectsCollection(ShopId, planAtribute.PlanAtributeId, EndDate, StartDate).WaitAsync(CancellationToken.None);
-            var result = await AlertDeserializer.Deserialize<List<AtributeObject>> (response, "Загрузка атрибута: " + planAtribute.AtributeViewName).WaitAsync(CancellationToken.None);
+            await GetMetricShopPlans(metric).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetMetricPlanDataCollection(ShopId, metric.MetricId, _daysInterval).WaitAsync(CancellationToken.None);
+            var result = await AlertDeserializer.Deserialize<List<MetricPlanData>> (response, "Загрузка данных метрики: " + metric.MetricViewName).WaitAsync(CancellationToken.None);
             if (result != null)
             {
-                ChartClear();
-                AtributeObjectsCollection = result;
-                SetChartLabels(AtributeObjectsCollection.Select(x => x.Day.ToString("dd.MM.yyyy")).ToList());
+                MetricChartClear();
+                MetricPlanDataCollection = result;
+                SetMetricChartLabels(MetricPlanDataCollection.Select(x => x.Day.ToString("dd.MM.yyyy")).ToList());
 
                 var collection = new List<ObservablePoint>();
 
-                if (AtributedShopPlansCollection.Count != 0)
+                if (MetricShopPlansCollection.Count != 0)
                 {
 
-                    var sortedCollection = AtributedShopPlansCollection.OrderBy(item => item.ShopPlan.SetTime.Date).ToList();
-                    collection.AddRange(sortedCollection.Select(x => new ObservablePoint(AtributeObjectsCollection.FindLastIndex(z => z.Day.Date == x.ShopPlan.SetTime.Date), (double?)x.ShopPlan.AtributeValue)));
+                    var sortedCollection = MetricShopPlansCollection.OrderBy(item => item.ShopPlan.SetTime.Date).ToList();
+                    collection.AddRange(sortedCollection.Select(x => new ObservablePoint(MetricPlanDataCollection.FindLastIndex(z => z.Day.Date == x.ShopPlan.SetTime.Date), (double?)x.ShopPlan.MetricValue)));
                     
                     var isFirstExist = collection.FirstOrDefault(x => x.X == 0);
                     if (isFirstExist == null)
-                        collection.Insert(0, new ObservablePoint(-1, (double?)AtributedShopPlansCollection.MinBy(x => x.ShopPlan.SetTime).ShopPlan.AtributeValue));
-                    collection.Add(new ObservablePoint(AtributeObjectsCollection.Count, (double?)AtributedShopPlansCollection.MaxBy(x => x.ShopPlan.SetTime).ShopPlan.AtributeValue));
+                        collection.Insert(0, new ObservablePoint(-1, (double?)MetricShopPlansCollection.MinBy(x => x.ShopPlan.SetTime).ShopPlan.MetricValue));
+                    collection.Add(new ObservablePoint(MetricPlanDataCollection.Count, (double?)MetricShopPlansCollection.MaxBy(x => x.ShopPlan.SetTime).ShopPlan.MetricValue));
                 }
                 var series = new List<ISeries>()
                 {
@@ -339,21 +335,17 @@ namespace ShopProject.UI.ViewModels.Examples
                     },
                     new ColumnSeries<decimal>
                     {
-                        Fill = new SolidColorPaint
-                        {
-
-                            Color = GetAtributeColor(planAtribute.AtributeName),
-                        },
+                        
                         ZIndex = 0,
-                        Name = planAtribute.AtributeViewName,
-                        Values = AtributeObjectsCollection.Select(x => x.ArtibuteValue),
+                        Name = metric.MetricViewName,
+                        Values = MetricPlanDataCollection.Select(x => x.MetricValue),
 
                     },
                 };
 
-                SetChartCollection(series);
-                
-                YAxes = new()
+                SetMetricChartCollection(series);
+
+                MetricYAxes = new()
                 {
                     new Axis()
                     {
@@ -367,29 +359,26 @@ namespace ShopProject.UI.ViewModels.Examples
             IsLoading = false;
             return;
         }
-        */
+        
 
-        /*
+        
         [ObservableProperty]
-        private List<ShopPlanModel> _atributedShopPlansCollection;
+        private List<ShopPlanModel> _metricShopPlansCollection;
 
-        private async Task GetAtributedShopPlans(PlanAtribute planAtribute)
+        private async Task GetMetricShopPlans(Metric metric)
         {
-            IsLoading = true;
-            var response = await ClientDbProvider.GetAtributedShopPlansCollection(ShopId, planAtribute.PlanAtributeId, EndDate, StartDate).WaitAsync(CancellationToken.None);
-            var result = await AlertDeserializer.Deserialize<List<ShopPlan>>(response, "Загрузка планов атрибута: " + planAtribute.AtributeViewName).WaitAsync(CancellationToken.None);
+            var response = await ClientDbProvider.GetMetricShopPlansCollection(ShopId, metric.MetricId, _daysInterval).WaitAsync(CancellationToken.None);
+            var result = await AlertDeserializer.Deserialize<List<ShopPlan>>(response, "Загрузка планов метрики: " + metric.MetricName).WaitAsync(CancellationToken.None);
             if (result != null)
             {
-                AtributedShopPlansCollection = result.OrderBy(x => x.SetTime).Select(x => new ShopPlanModel(x, OnDeleteShopPlan)).ToList();
+                MetricShopPlansCollection = result.OrderBy(x => x.SetTime).Select(x => new ShopPlanModel(x, OnDeleteShopPlan)).ToList();
             }
-                
-            IsLoading = false;
             return;
         }
-        private async void OnDeleteShopPlan(object sender, EventArgs e)
+        private void OnDeleteShopPlan(object sender, EventArgs e)
         {
-            GetAtributeObjects(SelectedPlanAtribute);
-        }*/
+            GetMetricPlanData(SelectedMetric);
+        }
         /*
         [ObservableProperty]
         private ShopPlan _addedPlan = new()
@@ -406,7 +395,7 @@ namespace ShopProject.UI.ViewModels.Examples
             await ClientDbProvider.AddShopPlan(AddedPlan).WaitAsync(CancellationToken.None);
             GetAtributeObjects(SelectedPlanAtribute);
         } */
-
+        #region MainPlanChart
         [ObservableProperty]
         public List<ISeries> _mainSeries = [];
 
@@ -417,20 +406,20 @@ namespace ShopProject.UI.ViewModels.Examples
         private List<Axis> _mainYAxes;
 
 
-        private void SetChartLabels(List<string> labels)
+        private void SetMainChartLabels(List<string> labels)
         {
             MainXAxes[0].Labels = labels;
             OnPropertyChanged(nameof(MainXAxes));
         }
 
-        private void SetChartCollection(ISeries seriesCollection)
+        private void SetMainChartCollection(ISeries seriesCollection)
         {
             MainSeries = new()
             {
                 seriesCollection
             };
         }
-        private void SetChartCollection(List<ISeries> seriesCollection)
+        private void SetMainChartCollection(List<ISeries> seriesCollection)
         {
 
 
@@ -438,7 +427,7 @@ namespace ShopProject.UI.ViewModels.Examples
 
         }
 
-        private void ChartClear()
+        private void MainChartClear()
         {
             MainYAxes = [];
             MainSections = [];
@@ -463,5 +452,63 @@ namespace ShopProject.UI.ViewModels.Examples
         {
             get => _mainXAxes;
         }
+        #endregion
+
+
+
+        #region MetricChart
+        [ObservableProperty]
+        public List<ISeries> _metricSeries = [];
+
+        [ObservableProperty]
+        private List<Axis> _metricYAxes;
+
+
+        private void SetMetricChartLabels(List<string> labels)
+        {
+            MetricXAxes[0].Labels = labels;
+            OnPropertyChanged(nameof(MetricXAxes));
+        }
+
+        private void SetMetricChartCollection(ISeries seriesCollection)
+        {
+            MetricSeries = new()
+            {
+                seriesCollection
+            };
+        }
+        private void SetMetricChartCollection(List<ISeries> seriesCollection)
+        {
+
+
+            MetricSeries = new(seriesCollection);
+
+        }
+
+        private void MetricChartClear()
+        {
+            MetricYAxes = [];
+        }
+
+        private List<Axis> _metricXAxes = new()
+        {
+            new Axis
+            {
+
+                //LabelsRotation = 45,
+                SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
+                SeparatorsAtCenter = false,
+                TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35)),
+                TicksAtCenter = true,
+                LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
+                //ForceStepToMin = true,
+                //MinStep = 1
+            }
+        };
+        public List<Axis> MetricXAxes
+        {
+            get => _metricXAxes;
+        }
+        #endregion
     }
 }
