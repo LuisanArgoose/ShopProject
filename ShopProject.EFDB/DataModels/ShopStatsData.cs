@@ -12,12 +12,17 @@ namespace ShopProject.EFDB.DataModels
         [ObservableProperty]
         private List<DateTime> _day = new();
         [ObservableProperty]
+        private List<decimal?> _salesCountInDay = new();
+        [ObservableProperty]
         private List<decimal?> _averageBill = new();
         [ObservableProperty]
-        private List<decimal?> _allProfit = new();
+        private List<decimal?> _revenueInDay = new();
         [ObservableProperty]
-        private List<decimal?> _clearProfit = new();
+        private List<decimal?> _profitInDay = new();
+        
+
         [ObservableProperty]
-        private List<decimal?> _purchasesCount = new();
+        private List<MetricData> _metricsData = new();
+
     }
 }

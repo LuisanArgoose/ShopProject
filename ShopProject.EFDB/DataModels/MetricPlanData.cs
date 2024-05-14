@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ShopProject.EFDB.DataModels
 {
-    public partial class AtributeObject : ObservableObject
+    public partial class MetricPlanData : ObservableObject
     {
         [ObservableProperty]
         private DateTime _day;
 
         [ObservableProperty]
-        private decimal _artibuteValue;
+        private decimal _metricValue;
     }
 }

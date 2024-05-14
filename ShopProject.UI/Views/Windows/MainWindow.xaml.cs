@@ -77,5 +77,9 @@ namespace ShopProject.UI.Views.Windows
             _isUserClosedPane = true;
         }
 
+        private void SnackbarPresenter_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

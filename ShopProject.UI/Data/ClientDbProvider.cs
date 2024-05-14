@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using ShopProject.EFDB.Models;
 using ShopProject.UI.AuxiliarySystems.AlertSystem;
@@ -126,6 +127,12 @@ namespace ShopProject.UI.Data
             var response = await GetAlertDecorator(url, "Создание стартовых данных");
             return response;
         }
+        public static async Task<HttpResponseMessage> ClearDb()
+        {
+            var url = "ServerDb/ClearDataBase";
+            var response = await GetAlertDecorator(url, "Очистка базы данных");
+            return response;
+        }
 
         public static async Task<HttpResponseMessage> FillDb(DateTime startDate, DateTime endDate)
         {
@@ -160,30 +167,37 @@ namespace ShopProject.UI.Data
 
         }
 
-        // Получение списка доступных атрибутов
-        public static async Task<HttpResponseMessage> GetPlanAtributesCollection()
+        public static async Task<HttpResponseMessage> GetMainShopInfo(int shopId, int daysInterval)
         {
-            var url = "ServerDb/GetPlanAtributesCollection";
-            var response = await GetAlertDecorator(url, "Получение списка доступных атрибутов");
+            var url = "ServerDb/GetMainShopInfo?shopId=" + shopId + "&daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение основных данных магазина");
+            return response;
+        }
+
+        // Получение списка метрик
+        public static async Task<HttpResponseMessage> GetMetricsCollection()
+        {
+            var url = "ServerDb/GetMetricsCollection";
+            var response = await GetAlertDecorator(url, "Получение списка метрик");
             return response;
             
         }
 
         // Получение списка планов выбранного атрибута
-        public static async Task<HttpResponseMessage> GetAtributedShopPlansCollection(int shopId, int planAtributeId, DateTime startDate, DateTime endDate)
+        public static async Task<HttpResponseMessage> GetMetricShopPlansCollection(int shopId, int metricId, int daysInterval)
         {
-            var url = "ServerDb/GetAtributedShopPlansCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
-                "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await GetAlertDecorator(url, "Получение списка планов по атрибуту"); 
+            var url = "ServerDb/GetMetricShopPlansCollection?shopId=" + shopId + "&metricId=" + metricId +
+                "&daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение списка планов по метрике"); 
             return response;
         }
 
         // Получение списка данных выбранного атрибута
-        public static async Task<HttpResponseMessage> GetAtributeObjectsCollection(int shopId, int planAtributeId, DateTime startDate, DateTime endDate)
+        public static async Task<HttpResponseMessage> GetMetricPlanDataCollection(int shopId, int metricId, int daysInterval)
         {
-            var url = "ServerDb/GetAtributeObjectsCollection?shopId=" + shopId + "&planAtributeId=" + planAtributeId +
-                "&startDate=" + startDate.ToString("MM.dd.yyyy") + "&endDate=" + endDate.ToString("MM.dd.yyyy");
-            var response = await GetAlertDecorator(url, "Получение списка данных по атрибуту");
+            var url = "ServerDb/GetMetricPlanDataCollection?shopId=" + shopId + "&metricId=" + metricId +
+                "&daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение списка данных по метрике");
             return response;
         }
         public static async Task<HttpResponseMessage> DeleteShopPlan(int shopPlanId)

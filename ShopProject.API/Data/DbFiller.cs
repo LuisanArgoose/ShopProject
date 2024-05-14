@@ -6,6 +6,26 @@ namespace ShopProject.API.Data
 {
     public static class DbFiller
     {
+        public static void ClearDb(ServerAPIDbContext context)
+        {
+            if (context == null) { return; }
+            try
+            {
+                context.Cashiers.RemoveRange(context.Cashiers);
+                context.Shops.RemoveRange(context.Shops);
+                context.Products.RemoveRange(context.Products);
+                context.Roles.RemoveRange(context.Roles);
+                context.Users.RemoveRange(context.Users);
+                context.TokenLogins.RemoveRange(context.TokenLogins);
+                context.Metrics.RemoveRange(context.Metrics);
+            }
+            catch
+            {
+
+            }
+            context.SaveChanges();
+            
+        }
         public static void InitDb(ServerAPIDbContext context)
         {
             if (context == null) { return; }
@@ -16,7 +36,7 @@ namespace ShopProject.API.Data
             context.Roles.RemoveRange(context.Roles);
             context.Users.RemoveRange(context.Users);
             context.TokenLogins.RemoveRange(context.TokenLogins);
-            context.PlanAtributes.RemoveRange(context.PlanAtributes);
+            context.Metrics.RemoveRange(context.Metrics);
 
             var cashiers = new List<Cashier>()
             {
@@ -411,29 +431,31 @@ namespace ShopProject.API.Data
             };
 
 
-            var planAtributes = new List<PlanAtribute>()
+            var planAtributes = new List<Metric>()
             {
-                new PlanAtribute()
+                new Metric()
                 {
-                    AtributeName = "AverageBill",
-                    AtributeViewName = "Средний чек"
+                    MetricName = "SalesCountInDay",
+                    MetricViewName = "Продажи в день"
                 },
-                new PlanAtribute()
+                new Metric()
                 {
-                    AtributeName = "AllProfit",
-                    AtributeViewName = "Общая прибыль"
+                    MetricName = "AverageBill",
+                    MetricViewName = "Средний чек"
                 },
-                new PlanAtribute()
+                new Metric()
                 {
-                    AtributeName = "ClearProfit",
-                    AtributeViewName = "Чистая прибыль"
+                    MetricName = "RevenueInDay",
+                    MetricViewName = "Выручка в день"
                 },
-                new PlanAtribute()
+                new Metric()
                 {
+                    MetricName = "ProfitInDay",
+                    MetricViewName = "Прибыль в день"
+                },
 
-                    AtributeName = "PurchasesCount",
-                    AtributeViewName = "Количество покупок"
-                }
+
+
             };
             
 
@@ -610,46 +632,39 @@ namespace ShopProject.API.Data
             }
             */
             var shops = context.Shops.ToList();
-            var planAtributes = context.PlanAtributes.ToList();
+            var metrics = context.Metrics.ToList();
 
             List<ShopPlan> shopPlans = new List<ShopPlan>();
 
             foreach (var shop in shops)
             {
-                foreach (var atribute in planAtributes)
+                foreach (var metric in metrics)
                 {
                     var plansCount = _rnd.Next(15, 21); // Генерируем случайное число от 15 до 20
                     var dates = new List<DateTime>();
                     for (int i = 0; i < plansCount; i++)
                     {
-                        var date = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days));
+                        var date = startDate.AddDays(_rnd.Next(0, (endDate.AddDays(30) - startDate).Days));
                         while (dates.Contains(date))
                         {
-                            date = startDate.AddDays(_rnd.Next(0, (endDate - startDate).Days));
+                            date = startDate.AddDays(_rnd.Next(0, (endDate.AddDays(30) - startDate).Days));
                         }
                         dates.Add(date);
                         var plan = new ShopPlan()
                         {
-                            PlanAtribute = atribute,
+                            Metric = metric,
                             Shop = shop,
                             SetTime = date
                         };
-
-                        switch (atribute.AtributeName)
+                        plan.MetricValue = metric.MetricName switch
                         {
-                            case "AverageBill":
-                                plan.AtributeValue = _rnd.Next(590, 620);
-                                break;
-                            case "AllProfit":
-                                plan.AtributeValue = _rnd.Next(130000, 165000);
-                                break;
-                            case "ClearProfit":
-                                plan.AtributeValue = _rnd.Next(80000, 90000);
-                                break;
-                            case "PurchasesCount":
-                                plan.AtributeValue = _rnd.Next(220, 260);
-                                break;
-                        }
+                            "SalesCountInDay" => _rnd.Next(90, 110),
+                            "AverageBill" => _rnd.Next(1450, 1600),
+                            "RevenueInDay" => _rnd.Next(140000, 160000),
+                            "ProfitInDay" => _rnd.Next(60000, 80000),
+                            
+
+                        };
 
                         shopPlans.Add(plan);
                     }

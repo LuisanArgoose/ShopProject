@@ -24,21 +24,23 @@
     </Page.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <ui:TextBlock FontTypography="Title" Text="Магазины" Padding="20,5"/>
+        
 
-        <Grid Margin="20,0,10,0" Grid.Row="0" Grid.Column="1" >
+        <!--<Grid Margin="20,0,10,0" Grid.Row="0" Grid.Column="1" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Row="0"
@@ -51,7 +53,7 @@
                 Grid.Column="1"
                 Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                 Text="{Binding ViewModel.SelectedShop.Address, Mode=OneWay}"/>    
-        </Grid>
+        </Grid>-->
 
         <Border
             Grid.Row="1"
@@ -62,86 +64,71 @@
             CornerRadius="8"
             Margin="10,0,5,10">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:Button 
-                        Command="{Binding ViewModel.GetShopsCollectionCommand}"
-                        CornerRadius="90" 
-                        Width="36" 
-                        Height="36" 
-                        Grid.Column="1" 
-                        Icon="{ui:SymbolIcon ArrowClockWise32}" />
-                    <ui:TextBlock 
-                        FontSize="24"
-                        Grid.Column="0"  
-                        FontTypography="Subtitle" 
-                        Text="Список магазинов" 
-                        HorizontalAlignment="Center" 
-                        
-                        />
-                    <ProgressBar Margin="0,5,0,0" Grid.Row="1" Grid.ColumnSpan="2" IsIndeterminate="{Binding ViewModel.IsShopCollectionLoading}"/>
-                </Grid>
-               
-                
-                
-                <ui:ListView  SelectionMode="Single" Grid.Row="1" ItemsSource="{Binding ViewModel.ShopsCollection}" SelectedItem="{Binding ViewModel.SelectedShop}">
-                    <ui:ListView.ItemTemplate>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox MinHeight="48" Grid.Row="1" ItemsSource="{Binding ViewModel.ShopsCollection}" SelectedItem="{Binding ViewModel.SelectedShop}">
+                    <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type efdb:Shop}">
-                            <Grid Width="260">
+                            <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Margin="12,6,0,0"
-                                    FontSize="18"
-                                    FontWeight="Bold"
-                                    TextWrapping="WrapWithOverflow"
-                                    Text="{Binding ShopName, Mode=OneWay}" />
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="12,6,0,0"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    TextWrapping="WrapWithOverflow"
+                    Text="{Binding ShopName, Mode=OneWay}" />
                                 <TextBlock
-                                    TextWrapping="WrapWithOverflow"
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Margin="12,0,0,6"
-                                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="{Binding Address, Mode=OneWay}" />
+                    TextWrapping="WrapWithOverflow"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="12,0,0,6"
+                    Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{Binding Address, Mode=OneWay}" />
                             </Grid>
                         </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <ui:Button
+                    Margin="10,0,0,0"
+    Command="{Binding ViewModel.GetShopsCollectionCommand}"
+    CornerRadius="90" 
+    Width="36" 
+    Height="36" 
+    Grid.Column="1" 
+    Icon="{ui:SymbolIcon ArrowClockWise32}" />
             </Grid>
+               
+                
+                
+                
+
         </Border>
 
-        <Border
-            Grid.Row="1"
-            Grid.Column="1"
+        <Border Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myVisibilityConverter}}"
+            Grid.Row="2"
+            Grid.Column="0"
             Padding="16"
             Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
             BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1,1,1,0"
             CornerRadius="8"
-            Margin="5,0,10,10">
+            Margin="10,0,5,10">
 
-            <Grid x:Name="MainGrid" Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myVisibilityConverter}}">
+            <Grid x:Name="MainGrid" >
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <ex:ShopView MaxHeight="{Binding ElementName=MainGrid, Path=ActualHeight}" Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
+                <ex:ShopView Grid.Row="1" DataContext="{Binding ViewModel.SelectedShopVM, UpdateSourceTrigger=PropertyChanged}"/>
 
             </Grid>
         </Border>
@@ -149,8 +136,8 @@
 
         <TextBlock
 
-            Grid.Row="1"
-            Grid.Column="1"
+            Grid.Row="2"
+            Margin="0,30,0,0"
             FontSize="18"
             FontWeight="Bold"
             Visibility="{Binding ViewModel.IsShopSelected, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myInverseBoolToVisibilityConverter}}"
