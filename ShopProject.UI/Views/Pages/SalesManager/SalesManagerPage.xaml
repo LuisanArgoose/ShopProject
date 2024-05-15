@@ -1,0 +1,129 @@
+﻿<Page x:Class="ShopProject.UI.Views.Pages.SalesManager.SalesManagerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ShopProject.UI.Views.Pages.SalesManager"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+      xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
+      xmlns:helpers="clr-namespace:ShopProject.UI.Helpers" 
+      xmlns:ex="clr-namespace:ShopProject.UI.Views.Examples"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:models="clr-namespace:ShopProject.UI.Models"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:SalesManagerPage,
+                                IsDesignTimeCreatable=False}"
+                ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+                ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      Title="SalesManagerPage">
+    <!--DataType="{x:Type models:PieChartModel}"-->
+    <Page.Resources>
+        <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ToggleButton Width="48"
+                    Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
+                    CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
+                    IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" PreviewMouseDown="ToggleButton_PreviewMouseDown"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:TextBlock FontTypography="Title" Text="Общий план" Padding="20,5"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,0">
+                <RadioButton x:Name="FirstBut" IsChecked="True" GroupName="123" Content="7Д" Margin="5,0" Command="{Binding ViewModel.SetTimeIntervalCommand}" CommandParameter="7"/>
+                <RadioButton GroupName="123" Content="1М" Margin="5,0" Command="{Binding ViewModel.SetTimeIntervalCommand}" CommandParameter="30"/>
+                <RadioButton GroupName="123" Content="3М" Margin="5,0" Command="{Binding ViewModel.SetTimeIntervalCommand}" CommandParameter="90"/>
+                <RadioButton GroupName="123" Content="6М" Margin="5,0" Command="{Binding ViewModel.SetTimeIntervalCommand}" CommandParameter="180"/>
+                <RadioButton GroupName="123" Content="1Г" Margin="5,0" Command="{Binding ViewModel.SetTimeIntervalCommand}" CommandParameter="365"/>
+
+
+            </StackPanel>
+        </Grid>
+        <Border
+    Grid.Row="1"
+    Padding="16"
+    Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+    BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1,1,1,0"
+    CornerRadius="8"
+    Margin="10,0,5,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ui:TextBlock FontTypography="Title" Text="Результаты за период" Padding="0,5"/>
+                <ItemsControl ItemsSource="{Binding ViewModel.PieChartModelList}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:PieChartModel}" >
+                            <Border  
+                                Margin="5"
+                                Padding="10"
+                                Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1,1,1,0"
+                                CornerRadius="8">
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ui:TextBlock
+                                        Margin="0"
+                                        FontTypography="BodyStrong"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="{Binding MetricName, Mode=OneTime}"
+                                        TextWrapping="WrapWithOverflow" FontSize="22" HorizontalAlignment="Center" />
+                                    <lvc:PieChart Grid.Row="1" Series="{Binding MetricSeries}" InitialRotation="-90"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ui:VirtualizingWrapPanel
+                IsItemsHost="True"
+                ItemSize="300,320"
+                Orientation="Vertical"
+                SpacingMode="Uniform"
+                StretchItems="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+            
+        </Border>
+        <Border
+Grid.Row="2"
+Padding="16"
+Background="{ui:ThemeResource CardBackgroundFillColorDefaultBrush}"
+BorderBrush="{ui:ThemeResource CardStrokeColorDefaultBrush}"
+BorderThickness="1,1,1,0"
+CornerRadius="8"
+Margin="10,0,5,10">
+            <Grid>
+
+                <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
+            </Grid>
+
+        </Border>
+    </Grid>
+</Page>

@@ -70,12 +70,12 @@
 
                 <ui:NavigationViewItemSeparator
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"/>
-                <!--<ui:NavigationViewItem
-                    Content="Менеджер по продажам"
+                <ui:NavigationViewItem
+                    Content="Общий план"
                     Icon="{ui:SymbolIcon PersonMoney20}"
                     Visibility="{Binding ViewModel.Settings.ActiveUser.Role.IsSalesManager, Converter={StaticResource myVisibilityConverter}}"
-
-                    />-->
+                    TargetPageType="{x:Type smanager:SalesManagerPage}"
+                    />
                 <ui:NavigationViewItem
                     Content="Магазины"
                     Icon="{ui:SymbolIcon BuildingShop20}"

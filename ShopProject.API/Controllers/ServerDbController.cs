@@ -346,7 +346,6 @@ namespace ShopProject.API.Controllers
         }
 
 
-        
 
         [HttpGet("DeleteShopPlan")]
         public IActionResult DeleteShopPlan(int shopPlanId)
