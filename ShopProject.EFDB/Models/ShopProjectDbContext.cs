@@ -33,10 +33,8 @@ public partial class ShopProjectDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-
         var connectionString = "Host=localhost;Port=5432;Database=ShopProjectDBNewCode;Username=ShopProject.API;Password=Underware";
         optionsBuilder.UseNpgsql(connectionString);
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
