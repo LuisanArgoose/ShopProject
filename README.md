@@ -6,7 +6,10 @@ PostgreSQL -> EFCore -> ASP.NET API -> MVVM -> WPF
 ![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/PGRole.png)
 
 В контексте данных ShopProjectDbContext библиотеки ShopProject.EFDB прописать строку для инициализации базы данных. Строка подключения для ShopProject.API находится в файле appsettings.json.
-![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/SetInitConnecrionString.png)
+```
+"Host=localhost;Port=5432;Database=ShopProjectDBNewCode;Username=ShopProject.API;Password=Underware"
+```
+![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/SetInitConnectionString.png)
 
 В консоли диспетчера пакетов проинициализировать базу данных. Выбранный проект по умолчанию должен быть ShopProject.EFDB, в качестве запускаемого проекта должен быть ShopProject.API.
 ```
