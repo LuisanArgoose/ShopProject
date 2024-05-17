@@ -1,8 +1,11 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.ConditionalDraw;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using Microsoft.VisualBasic;
 using ShopProject.EFDB.DataModels;
 using ShopProject.EFDB.Models;
 using ShopProject.UI.AuxiliarySystems;
@@ -78,36 +81,62 @@ namespace ShopProject.UI.ViewModels.Pages.SalesManager
             {
 
                 var data = new ObservableCollection<ISeries>();
-                foreach(var series in result)
+
+                var metricNames = result.First().MetricsData.Select(x => x.MetricName) ;
+                foreach(var metricName in metricNames)
                 {
-                    data.Add(new RowSeries<TotalPlanModel>()
+                    data.Add(new StackedRowSeries<decimal?>()
                     {
-                        Values = new List<TotalPlanModel>(){ new TotalPlanModel(series.ShopName, series.MetricsData.Select(x => x.MetricPlanResult + 100).Sum()) },
+                        Values = result.Select(x => x.MetricsData.First(z => z.MetricName == metricName).MetricPlanResult + 100 ),
                         DataLabelsPosition = DataLabelsPosition.End,
                         DataLabelsTranslate = new(-1, 0),
-                        DataLabelsFormatter = point => $"{point.Model!.ShopName} {point.Coordinate.PrimaryValue}%",
-                        TooltipLabelFormatter = point => $"{point.PrimaryValue}%",
-                        Name = series.ShopName,
+                        
+                        //DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
+                        XToolTipLabelFormatter = point => $"{point.Label}",
                         MaxBarWidth = 50,
                         Padding = 10,
-
+                        Name = metricName,
                     });
+
                 }
+                
+               
 
+                ShopYAxes = new()
+                {
+                    new Axis
+                    {
+                        //Labels = new List<string>() {"Магазин 1"}
+                        Labels = result.Select(x => x.ShopName).ToList(),
+                        MinStep = 1,
+                        LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
 
-                ShopSeries = data;
+                    }
+                };
+
+                ShopSeries = new(data);
+                
             }
             
             return;
         }
 
         [ObservableProperty]
+        private List<Axis> _shopYAxes;
+
+        [ObservableProperty]
         private List<Axis> _shopXAxes = new()
         {
             new Axis
             {
-
+                SeparatorsPaint = new SolidColorPaint(new SKColor(100, 100, 100)),
+                LabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255)),
+                MinStep = 100,
                 MinLimit = 0,
+                Labeler = (value) =>
+                {
+                    return $"{value}%";
+                }
 
             }
         };

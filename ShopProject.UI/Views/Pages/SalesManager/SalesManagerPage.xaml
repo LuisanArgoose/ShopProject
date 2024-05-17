@@ -134,7 +134,7 @@ Margin="10,0,5,10">
                     <RowDefinition Height="500"/>
                 </Grid.RowDefinitions>
                 <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
-                <lvc:CartesianChart Grid.Row="1" Series="{Binding ViewModel.ShopSeries, UpdateSourceTrigger=PropertyChanged}" XAxes="{Binding ViewModel.ShopXAxes}">
+                <lvc:CartesianChart Grid.Row="1" Series="{Binding ViewModel.ShopSeries, UpdateSourceTrigger=PropertyChanged}" YAxes="{Binding ViewModel.ShopYAxes}" XAxes="{Binding ViewModel.ShopXAxes}">
 
                 </lvc:CartesianChart>
             </Grid>
