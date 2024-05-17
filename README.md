@@ -23,6 +23,7 @@ Update-Database -context ShopProjectDbContext
 https://localhost:7178/api/
 ```
 Потом поочереди прожать кнопки очистки базы данных, создания стартовых и тестовых данных до завершения каждой команды
+
 ![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/InitClient.png)
 
 # Обзор
