@@ -3,6 +3,7 @@ PostgreSQL -> EFCore -> ASP.NET API -> MVVM -> WPF
 
 # Установка
 Система работает на базе PostgreSQL. Необходимо добавить роль для подключения API к серверу базы данных.
+
 ![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/PGRole.png)
 
 В контексте данных ShopProjectDbContext библиотеки ShopProject.EFDB прописать строку для инициализации базы данных. Строка подключения для ShopProject.API находится в файле appsettings.json.
