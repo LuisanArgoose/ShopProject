@@ -540,7 +540,7 @@ namespace ShopProject.API.Data
                     }
                 }
             }*/
-            
+            context.Shops.Load();
             var cashiers = context.Cashiers.ToList();
             var products = context.Products.ToList();
 
@@ -548,7 +548,16 @@ namespace ShopProject.API.Data
             {
                 foreach (var cashier in cashiers)
                 {
-                    var randomPurchasesCount = _rnd.Next(15, 25);
+                    int countIndex = cashier.Shop.ShopName switch
+                    {
+                        "Магазин 1" => 0,
+                        "Магазин 2" => 3,
+                        "Магазин 3" => 5,
+                        "Магазин 4" => 7,
+                        "Магазин 5" => 10,
+                        _ => 0,
+                    };
+                    var randomPurchasesCount = _rnd.Next(10 + countIndex, 20 + countIndex);
                     for (int i = 0; i < randomPurchasesCount; i++)
                     {
                         var purchase = new Purchase()

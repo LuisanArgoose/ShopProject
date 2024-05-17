@@ -70,7 +70,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ui:TextBlock FontTypography="Title" Text="Результаты за период" Padding="0,5"/>
-                <ItemsControl ItemsSource="{Binding ViewModel.PieChartModelList}">
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding ViewModel.PieChartModelList}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:PieChartModel}" >
                             <Border  
@@ -85,14 +85,23 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <ui:TextBlock
                                         Margin="0"
-                                        FontTypography="BodyStrong"
+                                        FontTypography="Body"
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="{Binding MetricName, Mode=OneTime}"
+                                        Text="{Binding TotalMetricData.MetricName, Mode=OneTime}"
                                         TextWrapping="WrapWithOverflow" FontSize="22" HorizontalAlignment="Center" />
-                                    <lvc:PieChart Grid.Row="1" Series="{Binding MetricSeries}" InitialRotation="-90"/>
+                                    <ui:TextBlock Grid.Row="1"
+    Margin="0"
+    FontTypography="BodyStrong"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Text="{Binding TotalMetricData.TotalMetricValue, Mode=OneTime}"
+    TextWrapping="WrapWithOverflow" FontSize="26" HorizontalAlignment="Center" />
+
+                                    <lvc:PieChart Grid.Row="2" Series="{Binding MetricSeries}" InitialRotation="-90"/>
+                                    
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -101,7 +110,7 @@
                         <ItemsPanelTemplate>
                             <ui:VirtualizingWrapPanel
                 IsItemsHost="True"
-                ItemSize="300,320"
+                ItemSize="400,450"
                 Orientation="Vertical"
                 SpacingMode="Uniform"
                 StretchItems="True" />
@@ -120,8 +129,14 @@ BorderThickness="1,1,1,0"
 CornerRadius="8"
 Margin="10,0,5,10">
             <Grid>
-
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="500"/>
+                </Grid.RowDefinitions>
                 <ui:TextBlock FontTypography="Title" Text="Сводка по метрикам" Padding="0,5"/>
+                <lvc:CartesianChart Grid.Row="1" Series="{Binding ViewModel.ShopSeries, UpdateSourceTrigger=PropertyChanged}" XAxes="{Binding ViewModel.ShopXAxes}">
+
+                </lvc:CartesianChart>
             </Grid>
 
         </Border>

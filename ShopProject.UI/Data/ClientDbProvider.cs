@@ -215,5 +215,22 @@ namespace ShopProject.UI.Data
             var response = await PostAlertDecorator(url, content, "Добавление плана");
             return response;
         }
+
+        // Получение общего плана всех магазинов
+        public static async Task<HttpResponseMessage> GetTotalMetricData(int daysInterval)
+        {
+            var url = "ServerDb/GetTotalMetricData?daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение общего плана всех магазинов");
+            return response;
+
+        }
+        public static async Task<HttpResponseMessage> GetTotalPlanData(int daysInterval)
+        {
+            var url = "ServerDb/GetTotalPlanData?daysInterval=" + daysInterval;
+            var response = await GetAlertDecorator(url, "Получение успеваемости всех магазинов");
+            return response;
+
+        }
+        
     }
 }
