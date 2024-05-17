@@ -346,7 +346,6 @@ namespace ShopProject.API.Controllers
         }
 
 
-        
 
         [HttpGet("DeleteShopPlan")]
         public IActionResult DeleteShopPlan(int shopPlanId)
@@ -384,7 +383,75 @@ namespace ShopProject.API.Controllers
             _context.SaveChanges();
             return Ok();
         }
-        
+
+        [HttpGet("GetTotalMetricData")]
+        public IActionResult GetTotalMetricData(int daysInterval)
+        {
+            var totalMetricData = new List<TotalMetricData>()
+            {
+                new("Количество продаж"),
+                new("Выручка"),
+                new("Прибыль"),
+            };
+            var shops = _context.Shops.ToList();
+            DateTime startDate = DateTime.Today.AddDays(-daysInterval);
+            DateTime endDate = DateTime.Today;
+            foreach (var shop in shops)
+            {
+                var allPurchasesInShop = _context.Purchases
+                .Where(x => x.Cashier.Shop.ShopId == shop.ShopId &&
+                    x.OperationTime.Date >= startDate &&
+                    x.OperationTime.Date <= endDate).Include("PurchaseProducts");
+
+                var shopSalesCount = allPurchasesInShop.Count();
+                var shopRevenue = allPurchasesInShop.Select(x => x.PurchaseProducts.Select(v => v.Count * v.Product.SellPrice).Sum()).Sum();
+                var shopProfit = allPurchasesInShop.Select(x => x.PurchaseProducts.Select(v => v.Count * (v.Product.SellPrice - v.Product.CostPrice) * 0.87m).Sum()).Sum();
+
+                totalMetricData[0].ShopMetricList.Add(new ShopMetric()
+                {
+                    ShopName = shop.ShopName,
+                    MetricValue = shopSalesCount,
+                });
+                totalMetricData[1].ShopMetricList.Add(new ShopMetric()
+                {
+                    ShopName = shop.ShopName,
+                    MetricValue = shopRevenue,
+                });
+                totalMetricData[2].ShopMetricList.Add(new ShopMetric()
+                {
+                    ShopName = shop.ShopName,
+                    MetricValue = shopProfit,
+                });
+            }
+            totalMetricData[0].TotalMetricValue = totalMetricData[0].ShopMetricList.Select(x => x.MetricValue).Sum();
+            totalMetricData[1].TotalMetricValue = totalMetricData[1].ShopMetricList.Select(x => x.MetricValue).Sum();
+            totalMetricData[2].TotalMetricValue = totalMetricData[2].ShopMetricList.Select(x => x.MetricValue).Sum();
+
+            return Json(totalMetricData, _options);
+        }
+
+        [HttpGet("GetTotalPlanData")]
+        public IActionResult GetTotalPlanData(int daysInterval)
+        {
+            var shops = _context.Shops.ToList();
+
+            var totalPlanDataList = new List<TotalPlanData>();
+
+            foreach (var shop in shops)
+            {
+                var result = GetShopStatsDay(shop, daysInterval);
+                totalPlanDataList.Add(new()
+                {
+                    ShopName = shop.ShopName,
+                    MetricsData = result.MetricsData.Where(x => x.IsNonPlanedMetric == false).ToList(),
+
+                });
+            }
+
+            return Json(totalPlanDataList, _options);
+        }
+
+
         [HttpGet("Test")]
         public IActionResult Test(Shop shop, DateTime startDate, DateTime endDate)
         {

@@ -1,5 +1,6 @@
 ﻿using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.WPF;
+using ShopProject.UI.Models;
 using ShopProject.UI.ViewModels.Examples;
 using SkiaSharp;
 using System;
@@ -65,5 +66,7 @@ namespace ShopProject.UI.Views.Examples
                 chart.RaiseEvent(eventArg);
             }
         }
+
+        
     }
 }

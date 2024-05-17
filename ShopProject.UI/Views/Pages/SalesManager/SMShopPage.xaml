@@ -8,7 +8,7 @@
       xmlns:efdb="clr-namespace:ShopProject.EFDB.Models;assembly=ShopProject.EFDB"
       xmlns:helpers="clr-namespace:ShopProject.UI.Helpers"
        xmlns:ex="clr-namespace:ShopProject.UI.Views.Examples"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d" 
         d:DataContext="{d:DesignInstance local:SMShopPage,
                                         IsDesignTimeCreatable=False}"
@@ -24,10 +24,6 @@
     </Page.Resources>
 
     <Grid>
-        <!--<Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
