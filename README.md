@@ -40,7 +40,7 @@ https://localhost:7178/api/
 ![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/ManagerMainPlan2.png)
 
 ## Также можно посмотреть каждую метрику и план по отдельности.
-![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/ManagerMainPlan2.png)
+![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/ManagerMainPlan3.png)
 
 ## Менеджер по продажам имеет доступ к вкладке "Магазины" и "Общий план".
 ![](https://github.com/LuisanArgoose/ShopProject/blob/master/Screenshots/SalesManagerProfile.png)
